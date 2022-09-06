@@ -22,4 +22,4 @@ Para correr la aplicacion con expo:
 make start DEVICE=<nombre-dispositivo>
 ```
 
-Para obtener el nombre del dispositivo emulado correr `HOME/Android/Sdk/emulator/emulator -list-avds` o usar la ruta en donde se instalo Android Studio.
+Para obtener el nombre del dispositivo emulado correr `$HOME/Android/Sdk/emulator/emulator -list-avds` o usar la ruta en donde se instalo Android Studio.
