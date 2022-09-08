@@ -2,24 +2,28 @@
 
 ## Requerimientos
 - [Nix](https://nix.dev/tutorials/install-nix)
-- [Android Studio](https://developer.android.com/studio)
-- [Virtual Device](https://docs.expo.dev/workflow/android-studio-emulator/#step-2-set-up-a-virtual-device)
 
 ## Como correrlo
 
-Para entrar en la shell con nix:
+Para entrar en la shell de nix:
 ```
-nix-shell
+make nix
 ```
 
-Instalar dependencias:
+Luego, crear el emulador en donde va a correr nuestra aplicacion.
+
+Solo es necesario correr este comando si es la primera vez que buildamos la app:
 ```
-make setup
+make setup_emulator
+```
+> Aviso: Esto puede tardar un largo tiempo.
+
+Una vez creado el emulador podemos correrlo con:
+```
+make emulator
 ```
 
 Para correr la aplicacion con expo:
 ```
-make start DEVICE=<nombre-dispositivo>
+make start
 ```
-
-Para obtener el nombre del dispositivo emulado correr `$HOME/Android/Sdk/emulator/emulator -list-avds` o usar la ruta en donde se instalo Android Studio.
