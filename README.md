@@ -23,6 +23,11 @@ Una vez creado el emulador podemos correrlo con:
 make emulator
 ```
 
+Luego para instalar las dependencias necesarias:
+```
+make init
+```
+
 Para correr la aplicacion con expo:
 ```
 make start

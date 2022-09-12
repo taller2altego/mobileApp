@@ -13,6 +13,8 @@ setup_emulator:
 emulator:
 	emulator @test_disp -gpu swiftshader_indirect
 
-start: 
+init: 
 	npm install
+	
+start:
 	npx expo start
