@@ -22,7 +22,7 @@ mkShell {
   buildInputs = [
     android-studio
     android-sdk
-    nodejs
+    nodejs-16_x
     git
   ];
 }
