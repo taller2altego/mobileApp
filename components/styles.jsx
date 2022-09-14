@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
-  centered: {
+  end: {
     flex: 1,
     justifyContent: "flex-end",
   },
