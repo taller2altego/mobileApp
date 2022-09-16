@@ -1,19 +1,66 @@
 import { StyleSheet } from "react-native";
+import * as Font from "expo-font";
+
+const PRIMARY_BLUE = "#1d9bc2";
+const SECONDARY_BLUE = "#0b0e12";
+Font.loadAsync({
+  "poppins": require("../assets/fonts/Poppins-Regular.ttf"),
+  "poppins-bold": require("../assets/fonts/Poppins-Bold.ttf"),
+});
 
 const styles = StyleSheet.create({
-  end: {
+  land_container: {
     flex: 1,
     justifyContent: "flex-end",
+    backgroundColor: SECONDARY_BLUE,
   },
   regButton: {
-    padding: 8,
-    margin: 8,
-    backgroundColor: "purple",
-    //borderRadius: "10px",
+    backgroundColor: PRIMARY_BLUE,
+    borderRadius: "10px",
+    width: 175,
+    height: 65,
   },
   textButton: {
     textAlign: "center",
+    textJustify: "center",
     color: "white",
+    fontFamily: "poppins",
+    lineHeight: "4rem",
+    fontSize: "1.3rem",
+  },
+  tinyLogo: {
+    width: 150,
+    height: 150,
+  },
+  logo: {
+    paddingTop: 100,
+    flex: 2,
+    justifyContent: "flex-start",
+    alignItems: "center",
+    marginBottom: 50,
+  },
+  land_text_container: {
+    flex: 0.5,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  land_text: {
+    fontFamily: "poppins-bold",
+    color: PRIMARY_BLUE,
+    fontSize: "3rem",
+  },
+  land_buttons_container: {
+    flex: 1.5,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-around",
+  },
+  land_sub_text: {
+    textAlign: "center",
+    textJustify: "center",
+    color: "white",
+    fontFamily: "poppins",
+    fontSize: "1.1rem",
   },
 });
 

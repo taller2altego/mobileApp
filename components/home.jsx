@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Text, View, Button, Pressable } from "react-native";
+import { Button, Pressable, Text, View } from "react-native";
 
 import { get } from "./../utils/requests";
 import styles from "./styles";
@@ -8,10 +8,13 @@ export default function Home({ navigation, id }) {
   const [data, setData] = useState([]);
 
   const getUserData = () => {
-    return get(localStorage.getItem('token'), `http://127.0.0.1:5000/users/${id}`).then(({ data }) => {
+    return get(
+      `http://127.0.0.1:5000/users/${id}`,
+      localStorage.getItem("token"),
+    ).then(({ data }) => {
       setData(data);
     });
-  }
+  };
 
   useEffect(() => {
     getUserData();

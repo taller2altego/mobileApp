@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Button, TextInput, Pressable, Text } from "react-native";
+import { Button, Pressable, Text, TextInput, View } from "react-native";
 import { post } from "../../utils/requests";
 import styles from "../styles";
 
@@ -8,7 +8,7 @@ export default function Login({ navigation, id }) {
   const [password, setPassword] = useState("");
 
   const onSignIn = () => {
-    return post("url/login")
+    return get(`http:/127.0.0.1:5001/users/${id}`)
       .then(({ data: { token } }) => localStorage.setItem(token))
       .then(() => {
         navigation.navigate("Home");
@@ -28,7 +28,7 @@ export default function Login({ navigation, id }) {
       />
 
       <Pressable style={styles.regButton} onPress={() => onSignIn()}>
-        <Text style={styles.textButton}> Sign In </Text>
+        <Text style={styles.textButton}>Sign In</Text>
       </Pressable>
     </View>
   );
