@@ -12,10 +12,10 @@
   "dependencies": {
     "@expo/webpack-config": "^0.17.0",
     "@react-native-community/masked-view": "^0.1.11",
+    "@react-native-picker/picker": "^2.4.4",
     "@react-navigation/native-stack": "^6.8.0",
     "@react-navigation/stack": "^6.2.3",
     "axios": "^0.27.2",
-    "config": "^3.3.8",
     "expo": "~46.0.9",
     "expo-cli": "^6.0.5",
     "expo-splash-screen": "~0.16.2",
