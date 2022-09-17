@@ -48,6 +48,11 @@ export default function RegisterModal({ ...props }) {
       .catch((error) => setErrorMessage(error.response.data.message));
   };
 
+  const submitDriverData = () => {
+    // TODO request para datos de conductor
+    props.toggle();
+  };
+
   return (
     <Modal animationType="slide" transparent={true} visible={props.visible}>
       <View style={modalStyles.modal_extern_view}>
