@@ -63,6 +63,49 @@ const LandingStyles = StyleSheet.create({
     fontFamily: "poppins",
     fontSize: "1.1rem",
   },
+  modal_view: {
+    height: "75%",
+    backgroundColor: "white",
+  },
+  modal_container: {
+    flex: 1,
+    position: "absolute",
+    justifyContent: "flex-end",
+  },
+  reg_modal: {
+    flex: 1,
+    justifyContent: "flex-end",
+  },
+  centeredView2: {
+    flex: 1,
+    justifyContent: "flex-end",
+  },
+  profile_text: {
+    fontSize: "2rem",
+    fontFamily: "poppins-bold",
+  },
+  profile_container: {
+    flex: 0.5,
+  },
+  profile_text_container: {
+    flex: 1,
+    alignItems: "center",
+    paddingTop: 30,
+  },
+  profile_inputs: {
+    flex: 2,
+    justifyContent: "space-evenly",
+  },
+  profile_input: {
+    fontSize: "1.5rem",
+    textAlign: "justify",
+    marginLeft: 50,
+    width: 250,
+  },
+  edit_profile_button: {
+    flex: 1,
+    alignItems: "center",
+  },
 });
 
 const modalStyles = StyleSheet.create({
