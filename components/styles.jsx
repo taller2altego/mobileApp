@@ -3,12 +3,13 @@ import * as Font from "expo-font";
 
 const PRIMARY_BLUE = "#1d9bc2";
 const SECONDARY_BLUE = "#0b0e12";
+
 Font.loadAsync({
   "poppins": require("../assets/fonts/Poppins-Regular.ttf"),
   "poppins-bold": require("../assets/fonts/Poppins-Bold.ttf"),
 });
 
-const styles = StyleSheet.create({
+const LandingStyles = StyleSheet.create({
   land_container: {
     flex: 1,
     justifyContent: "flex-end",
@@ -62,9 +63,12 @@ const styles = StyleSheet.create({
     fontFamily: "poppins",
     fontSize: "1.1rem",
   },
+});
+
+const modalStyles = StyleSheet.create({
   modal_view: {
     height: "75%",
-    backgroundColor: "white",
+    backgroundColor: PRIMARY_BLUE,
   },
   modal_container: {
     flex: 1,
@@ -75,10 +79,45 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-end",
   },
-  centeredView2: {
+  modal_extern_view: {
     flex: 1,
     justifyContent: "flex-end",
   },
+  flex_modal: {
+    flex: 1,
+    justifyContent: "space-evenly",
+  },
+  modal_button: {
+    backgroundColor: PRIMARY_BLUE,
+    borderRadius: "10px",
+    width: 150,
+    height: 65,
+    alignSelf: "center",
+    borderWidth: 1,
+    borderColor: "white",
+  },
+  modal_input: {
+    borderWidth: 1,
+    borderColor: "#343437",
+    borderRadius: 10,
+    height: 50,
+    paddingLeft: 10,
+    fontSize: "1.3rem",
+    textAlign: "justify",
+    marginLeft: 30,
+    marginRight: 30,
+    outlineStyle: "none",
+    fontFamily: "poppins",
+  },
+  modal_picker: {
+    width: 300,
+    alignSelf: "center",
+    fontSize: "1.2rem",
+    fontFamily: "poppins",
+  },
+});
+
+const Profilestyles = StyleSheet.create({
   profile_text: {
     fontSize: "2rem",
     fontFamily: "poppins-bold",
@@ -107,4 +146,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default styles;
+export { LandingStyles, modalStyles, Profilestyles };

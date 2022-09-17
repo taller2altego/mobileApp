@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button, Modal, Pressable, Text, TextInput, View } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import { post } from "../../utils/requests";
-import styles from "../styles";
+import { LandingStyles, modalStyles } from "../styles";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Entypo } from "@expo/vector-icons";
 
@@ -27,24 +27,32 @@ export default function LoginModal({ navigation, id, ...props }) {
       transparent={true}
       visible={props.visible}
     >
-      <View style={styles.centeredView2}>
-        <View style={[styles.modal_view]}>
+      <View style={modalStyles.modal_extern_view}>
+        <View style={[modalStyles.modal_view]}>
           <Pressable onPress={props.toggle}>
             <Entypo name="cross" size={24} color="black" />
           </Pressable>
-          <TextInput
-            placeholder="email"
-            onChangeText={(email) => setEmail(email)}
-          />
-          <TextInput
-            placeholder="password"
-            secureTextEntry={true}
-            onChangeText={(password) => setPassword(password)}
-          />
-
-          <Pressable style={styles.regButton} onPress={() => onSignIn()}>
-            <Text style={styles.textButton}>Sign In</Text>
-          </Pressable>
+          <View style={[modalStyles.flex_modal]}>
+            <TextInput
+              style={[modalStyles.modal_input]}
+              placeholder="email"
+              placeholderTextColor="#343437"
+              onChangeText={(email) => setEmail(email)}
+            />
+            <TextInput
+              style={[modalStyles.modal_input]}
+              placeholder="Contraseña"
+              placeholderTextColor="#343437"
+              secureTextEntry={true}
+              onChangeText={(password) => setPassword(password)}
+            />
+            <Pressable
+              style={modalStyles.modal_button}
+              onPress={() => onSignIn()}
+            >
+              <Text style={LandingStyles.textButton}>Login</Text>
+            </Pressable>
+          </View>
         </View>
       </View>
     </Modal>

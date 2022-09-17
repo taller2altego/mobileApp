@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Image, Modal, Pressable, Text, View } from "react-native";
 
-import styles from "../styles";
+import { LandingStyles } from "../styles";
 import RegisterModal from "./register";
 import LoginModal from "./login";
 
@@ -18,7 +18,7 @@ export default function Landing({ navigation }) {
   };
 
   return (
-    <View style={[styles.land_container]}>
+    <View style={[LandingStyles.land_container]}>
       <RegisterModal
         visible={modalRegisterVisible}
         toggle={toggleRegisterModal}
@@ -26,36 +26,36 @@ export default function Landing({ navigation }) {
       </RegisterModal>
       <LoginModal visible={modalLoginVisible} toggle={toggleLoginModal}>
       </LoginModal>
-      <View style={[styles.logo]}>
+      <View style={[LandingStyles.logo]}>
         <Image
-          style={styles.tinyLogo}
+          style={LandingStyles.tinyLogo}
           source={{
             uri: "https://reactnative.dev/img/tiny_logo.png",
           }}
         />
       </View>
-      <View style={[styles.land_text_container]}>
-        <Text style={[styles.land_text]}>Bienvenido</Text>
+      <View style={[LandingStyles.land_text_container]}>
+        <Text style={[LandingStyles.land_text]}>Bienvenido</Text>
       </View>
-      <View style={[styles.land_text_container]}>
-        <Text style={[styles.land_sub_text]}>
+      <View style={[LandingStyles.land_text_container]}>
+        <Text style={[LandingStyles.land_sub_text]}>
           Por favor, inicia sesion con tu cuenta o registrate para seguir
           utilizando Fiuber
         </Text>
       </View>
-      <View style={[styles.land_buttons_container]}>
+      <View style={[LandingStyles.land_buttons_container]}>
         <Pressable
-          style={styles.regButton}
+          style={LandingStyles.regButton}
           onPress={() => setModalRegisterVisible(!modalRegisterVisible)}
         >
-          <Text style={styles.textButton}>Sign Up</Text>
+          <Text style={LandingStyles.textButton}>Sign Up</Text>
         </Pressable>
         <Pressable
-          style={styles.regButton}
+          style={LandingStyles.regButton}
           title="Login"
           onPress={() => setModalLoginVisible(!modalLoginVisible)}
         >
-          <Text style={styles.textButton}>Login</Text>
+          <Text style={LandingStyles.textButton}>Login</Text>
         </Pressable>
       </View>
     </View>

@@ -3,7 +3,7 @@ import { Pressable, Text, TextInput, View } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 import { get } from "../../utils/requests";
-import styles from "../styles";
+import { Profilestyles } from "../styles";
 
 export default function Home({ navigation, id }) {
   const Tab = createBottomTabNavigator();
@@ -39,37 +39,39 @@ export default function Home({ navigation, id }) {
     };
 
     return (
-      <View style={styles.profile_container}>
-        <View style={styles.profile_text_container}>
-          <Text style={styles.profile_text}>Bienvenido {userData.nombre}</Text>
+      <View style={Profilestyles.profile_container}>
+        <View style={Profilestyles.profile_text_container}>
+          <Text style={Profilestyles.profile_text}>
+            Bienvenido {userData.nombre}
+          </Text>
         </View>
-        <View style={styles.profile_inputs}>
+        <View style={Profilestyles.profile_inputs}>
           <TextInput
-            style={styles.profile_input}
+            style={Profilestyles.profile_input}
             value={nameText}
             onChangeText={setNameText}
             editable={isEditing}
           />
           <TextInput
-            style={styles.profile_input}
+            style={Profilestyles.profile_input}
             value={lastnameText}
             onChangeText={setLastnameText}
             editable={isEditing}
           />
           <TextInput
-            style={styles.profile_input}
+            style={Profilestyles.profile_input}
             value={phoneText}
             onChangeText={setPhoneText}
             editable={isEditing}
           />
           <TextInput
-            style={styles.profile_input}
+            style={Profilestyles.profile_input}
             value={emailText}
             onChangeText={setEmailText}
             editable={isEditing}
           />
         </View>
-        <View style={styles.edit_profile_button}>
+        <View style={Profilestyles.edit_profile_button}>
           {isEditing
             ? (
               <Pressable
