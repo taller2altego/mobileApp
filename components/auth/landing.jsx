@@ -1,11 +1,31 @@
-import React from "react";
-import { Image, Pressable, Text, View } from "react-native";
+import React, { useState } from "react";
+import { Image, Modal, Pressable, Text, View } from "react-native";
 
 import styles from "../styles";
+import RegisterModal from "./register";
+import LoginModal from "./login";
 
 export default function Landing({ navigation }) {
+  const [modalRegisterVisible, setModalRegisterVisible] = useState(false);
+  const [modalLoginVisible, setModalLoginVisible] = useState(false);
+
+  const toggleRegisterModal = () => {
+    setModalRegisterVisible(!modalRegisterVisible);
+  };
+
+  const toggleLoginModal = () => {
+    setModalLoginVisible(!modalLoginVisible);
+  };
+
   return (
     <View style={[styles.land_container]}>
+      <RegisterModal
+        visible={modalRegisterVisible}
+        toggle={toggleRegisterModal}
+      >
+      </RegisterModal>
+      <LoginModal visible={modalLoginVisible} toggle={toggleLoginModal}>
+      </LoginModal>
       <View style={[styles.logo]}>
         <Image
           style={styles.tinyLogo}
@@ -26,14 +46,14 @@ export default function Landing({ navigation }) {
       <View style={[styles.land_buttons_container]}>
         <Pressable
           style={styles.regButton}
-          onPress={() => navigation.navigate("Register")}
+          onPress={() => setModalRegisterVisible(!modalRegisterVisible)}
         >
           <Text style={styles.textButton}>Sign Up</Text>
         </Pressable>
         <Pressable
           style={styles.regButton}
           title="Login"
-          onPress={() => navigation.navigate("Login")}
+          onPress={() => setModalLoginVisible(!modalLoginVisible)}
         >
           <Text style={styles.textButton}>Login</Text>
         </Pressable>

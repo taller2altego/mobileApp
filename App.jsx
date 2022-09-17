@@ -5,9 +5,9 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 
 import LandingScreen from "./components/auth/landing";
-import RegisterScreen from "./components/auth/register";
-import LoginScreen from "./components/auth/login";
-import HomeScreen from "./components/home";
+import RegisterModal from "./components/auth/register";
+import LoginModal from "./components/auth/login";
+import HomeScreen from "./components/main/home";
 
 const Stack = createStackNavigator();
 
@@ -20,9 +20,21 @@ export default function App(props) {
           component={LandingScreen}
           options={{ headerShown: false }}
         />
-        <Stack.Screen name="Register" component={RegisterScreen} />
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="DriverData" component={DriverData} />
+        <Stack.Screen
+          name="Register"
+          component={RegisterModal}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Login"
+          component={LoginModal}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{ headerShown: false }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
