@@ -12,4 +12,10 @@ const get = (url, token, extraHeaders) => {
   });
 };
 
-export { get, post };
+const patch = (url, token, body, extraHeaders) => {
+  return axios.patch(url, body, {
+    headers: { ...extraHeaders, "Authorization": `Bearer ${token}` },
+  });
+};
+
+export { get, patch, post };
