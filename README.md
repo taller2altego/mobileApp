@@ -1,9 +1,9 @@
-## Mobile App
+# Mobile App
 
 ## Requerimientos
 - [Nix](https://nix.dev/tutorials/install-nix)
 
-## Como correrlo
+## Como correrlo en emulador
 
 Para entrar en la shell de nix:
 ```
@@ -32,3 +32,22 @@ Para correr la aplicacion con expo:
 ```
 make start
 ```
+
+## Como correrlo en web
+
+Para entrar en la shell de nix:
+```
+make nix
+```
+
+Instalamos las dependencias necesarias:
+```
+make init
+```
+
+Para correr la aplicacion con expo:
+```
+make start
+```
+
+Luego seleccionar la opcion _open web_
