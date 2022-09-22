@@ -14,22 +14,23 @@ export default function RegisterModal({ ...props }) {
   const [lastname, setLastName] = useState("");
   const [isDriver, setIsDriver] = useState(false);
   const [isDriverSelected, setIsDriverSelected] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const onSignUp = () => {
-    return post("http://127.0.0.1:5001/users", {
+    return post("http://127.0.0.1:5000/users", {
       name,
       lastname,
       phoneNumber: Number(phone),
       email,
       password,
     })
-      .then(({ data: { id } }) => {
-        if (isDriver) {
+      .then(() => {
+        if (isDriver == "true") {
           setIsDriverSelected(true);
         } else {
-          props.toggle;
+          props.toggle();
         }
-      });
+      }).catch((e) => setErrorMessage(e.response.data.message));
   };
 
   const submitDriverData = () => {
@@ -47,25 +48,29 @@ export default function RegisterModal({ ...props }) {
         {isDriverSelected
           ? (
             <View style={[modalStyles.modal_view]}>
-              <TextInput
-                style={[modalStyles.modal_input]}
-                placeholder="Modelo de auto"
-                onChangeText={(name) => setName(name)}
-              />
-              <TextInput
-                placeholder="Numero de licencia"
-                onChangeText={(name) => setName(name)}
-              />
-              <TextInput
-                placeholder="Patente"
-                onChangeText={(name) => setName(name)}
-              />
-              <Pressable
-                style={modalStyles.regButton}
-                onPress={() => submitDriverData()}
-              >
-                <Text style={modalStyles.textButton}>Sign Up</Text>
-              </Pressable>
+              <View style={[modalStyles.flex_modal]}>
+                <TextInput
+                  style={[modalStyles.modal_input]}
+                  placeholder="Modelo de auto"
+                  onChangeText={(name) => setName(name)}
+                />
+                <TextInput
+                  style={[modalStyles.modal_input]}
+                  placeholder="Numero de licencia"
+                  onChangeText={(name) => setName(name)}
+                />
+                <TextInput
+                  style={[modalStyles.modal_input]}
+                  placeholder="Patente"
+                  onChangeText={(name) => setName(name)}
+                />
+                <Pressable
+                  style={modalStyles.modal_button}
+                  onPress={() => submitDriverData()}
+                >
+                  <Text style={LandingStyles.textButton}>Confirm</Text>
+                </Pressable>
+              </View>
             </View>
           )
           : (
@@ -122,6 +127,11 @@ export default function RegisterModal({ ...props }) {
                 >
                   <Text style={LandingStyles.textButton}>Sign Up</Text>
                 </Pressable>
+                <Text
+                  style={modalStyles.error_modal}
+                >
+                  {errorMessage}
+                </Text>
               </View>
             </View>
           )}

@@ -5,20 +5,23 @@ import { post } from "../../utils/requests";
 import { LandingStyles, modalStyles } from "../styles";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Entypo } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default function LoginModal({ navigation, id, ...props }) {
+export default function LoginModal({ ...props }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const onSignIn = async () => {
-    //FIXME Hacer el request cuando el exista el endpoint de log
-    await SecureStore.setItemAsync("token", "1234");
-    navigation.navigate("Home", { id });
-    /*return get(`http:/127.0.0.1:5001/users/${id}`)
-      .then(({ data: { token } }) => SecureStore.setItemAsync("token", token))
-      .then(() => {
-        navigation.navigate("Home");
-      });*/
+    return post(`http://127.0.0.1:5000/login`, {
+      email,
+      password,
+    })
+      .then(({ data: { id, token } }) => {
+        AsyncStorage.setItem("token", token);
+        AsyncStorage.setItem("id", id);
+        props.handler();
+      }).catch((e) => setErrorMessage(e.response.data.message));
   };
 
   return (
@@ -35,7 +38,7 @@ export default function LoginModal({ navigation, id, ...props }) {
           <View style={[modalStyles.flex_modal]}>
             <TextInput
               style={[modalStyles.modal_input]}
-              placeholder="email"
+              placeholder="Email"
               placeholderTextColor="#343437"
               onChangeText={(email) => setEmail(email)}
             />
@@ -52,6 +55,11 @@ export default function LoginModal({ navigation, id, ...props }) {
             >
               <Text style={LandingStyles.textButton}>Login</Text>
             </Pressable>
+            <Text
+              style={modalStyles.error_modal}
+            >
+              {errorMessage}
+            </Text>
           </View>
         </View>
       </View>

@@ -17,6 +17,11 @@ export default function Landing({ navigation }) {
     setModalLoginVisible(!modalLoginVisible);
   };
 
+  const handleLogin = () => {
+    setModalLoginVisible(!modalLoginVisible);
+    navigation.navigate("Home");
+  };
+
   return (
     <View style={[LandingStyles.land_container]}>
       <RegisterModal
@@ -24,7 +29,11 @@ export default function Landing({ navigation }) {
         toggle={toggleRegisterModal}
       >
       </RegisterModal>
-      <LoginModal visible={modalLoginVisible} toggle={toggleLoginModal}>
+      <LoginModal
+        visible={modalLoginVisible}
+        toggle={toggleLoginModal}
+        handler={handleLogin}
+      >
       </LoginModal>
       <View style={[LandingStyles.logo]}>
         <Image

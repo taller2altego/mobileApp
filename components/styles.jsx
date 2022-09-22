@@ -69,6 +69,8 @@ const modalStyles = StyleSheet.create({
   modal_view: {
     height: "75%",
     backgroundColor: PRIMARY_BLUE,
+    borderTopRightRadius: 80,
+    overflow: "hidden",
   },
   modal_container: {
     flex: 1,
@@ -114,6 +116,13 @@ const modalStyles = StyleSheet.create({
     alignSelf: "center",
     fontSize: "1.2rem",
     fontFamily: "poppins",
+    backgroundColor: PRIMARY_BLUE,
+    borderColor: SECONDARY_BLUE,
+    textAlign: "center",
+  },
+  error_modal: {
+    textAlign: "center",
+    color: "#C73E1D",
   },
 });
 
@@ -123,7 +132,7 @@ const Profilestyles = StyleSheet.create({
     fontFamily: "poppins-bold",
   },
   profile_container: {
-    flex: 0.5,
+    flex: 1,
   },
   profile_text_container: {
     flex: 1,
@@ -136,9 +145,17 @@ const Profilestyles = StyleSheet.create({
   },
   profile_input: {
     fontSize: "1.5rem",
-    textAlign: "justify",
     marginLeft: 50,
     width: 250,
+    borderWidth: 1,
+    borderColor: "#343437",
+    borderRadius: 10,
+    height: 50,
+    paddingLeft: 10,
+    marginLeft: 30,
+    marginRight: 30,
+    outlineStyle: "none",
+    fontFamily: "poppins",
   },
   edit_profile_button: {
     flex: 1,

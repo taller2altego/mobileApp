@@ -1,22 +1,30 @@
 import React, { useEffect, useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-
-import { get } from "../../utils/requests";
+import * as SecureStore from "expo-secure-store";
+import { get, patch } from "../../utils/requests";
 import { Profilestyles } from "../styles";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default function Home({ navigation, id }) {
+export default function Home({ navigation }) {
   const Tab = createBottomTabNavigator();
   const [userData, setUserData] = useState({});
 
-  // FIXME reemplazar esto por request para obtener informacion de usuario
   useEffect(() => {
-    setUserData({
-      "nombre": "nacho",
-      "apellido": "avecilla",
-      "telefono": 123,
-      "email": "test",
-    });
+    (async () => {
+      const id = await AsyncStorage.getItem("id");
+      const token = await AsyncStorage.getItem("token");
+      get(`http://localhost:5000/users/${id}`, token).then(
+        ({ data: { name, lastname, phoneNumber, email } }) => {
+          setUserData({
+            nombre: name,
+            apellido: lastname,
+            telefono: phoneNumber,
+            email: email,
+          });
+        },
+      );
+    })();
   }, []);
 
   function HomeTab() {
@@ -34,8 +42,21 @@ export default function Home({ navigation, id }) {
     const [emailText, setEmailText] = useState(userData.email);
     const [isEditing, setIsEditing] = useState(false);
 
-    const handleUpdate = () => {
-      //TODO hacer request para actualizar los datos
+    const handleUpdate = async () => {
+      const id = await AsyncStorage.getItem("id");
+      const token = await AsyncStorage.getItem("token");
+      patch(`http://127.0.0.1:5000/users/${id}`, token, {
+        name: nameText,
+        lastname: lastnameText,
+        phoneNumber: Number(phoneText),
+      }).then(() => {
+        setUserData({
+          nombre: nameText,
+          apellido: lastnameText,
+          telefono: Number(phoneText),
+        });
+      });
+      setIsEditing(false);
     };
 
     return (
@@ -68,7 +89,7 @@ export default function Home({ navigation, id }) {
             style={Profilestyles.profile_input}
             value={emailText}
             onChangeText={setEmailText}
-            editable={isEditing}
+            editable={false}
           />
         </View>
         <View style={Profilestyles.edit_profile_button}>
