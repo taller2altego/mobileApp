@@ -16,6 +16,11 @@ export default function Landing({ navigation }) {
     setModalLoginVisible(!modalLoginVisible);
   };
 
+  const handleLogin = () => {
+    setModalLoginVisible(!modalLoginVisible);
+    navigation.navigate("Home");
+  };
+
   return (
     <View style={[LandingStyles.land_container]}>
       <RegisterModal
