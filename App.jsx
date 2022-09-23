@@ -8,6 +8,7 @@ import LandingScreen from "./components/auth/landing";
 import RegisterModal from "./components/auth/register";
 import LoginModal from "./components/auth/login";
 import HomeScreen from "./components/main/home";
+import DriverScreen from "./components/auth/driver";
 
 const Stack = createStackNavigator();
 
@@ -33,6 +34,11 @@ export default function App(props) {
         <Stack.Screen
           name="Home"
           component={HomeScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Driver"
+          component={DriverScreen}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

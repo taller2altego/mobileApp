@@ -54,6 +54,7 @@ export default function Home({ navigation }) {
           nombre: nameText,
           apellido: lastnameText,
           telefono: Number(phoneText),
+          email: emailText,
         });
       });
       setIsEditing(false);

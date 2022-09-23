@@ -9,6 +9,15 @@ export default function Landing({ navigation }) {
   const [modalRegisterVisible, setModalRegisterVisible] = useState(false);
   const [modalLoginVisible, setModalLoginVisible] = useState(false);
 
+  const handleRegister = (isDriver) => {
+    setModalRegisterVisible(!modalRegisterVisible);
+    if (isDriver == "true") {
+      navigation.navigate("Driver")
+    } else{
+      navigation.navigate("Home");
+    }
+  };
+
   const toggleRegisterModal = () => {
     setModalRegisterVisible(!modalRegisterVisible);
   };
@@ -26,15 +35,14 @@ export default function Landing({ navigation }) {
     <View style={[LandingStyles.land_container]}>
       <RegisterModal
         visible={modalRegisterVisible}
+        handler={handleRegister}
         toggle={toggleRegisterModal}
-      >
-      </RegisterModal>
+      ></RegisterModal>
       <LoginModal
         visible={modalLoginVisible}
         toggle={toggleLoginModal}
         handler={handleLogin}
-      >
-      </LoginModal>
+      ></LoginModal>
       <View style={[LandingStyles.logo]}>
         <Image
           style={LandingStyles.tinyLogo}
