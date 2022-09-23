@@ -6,6 +6,8 @@ import { Picker } from "@react-native-picker/picker";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Entypo } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useDispatch } from "react-redux";
+import { setUserData } from "../../redux/actions/UpdateUserData";
 
 export default function RegisterModal({ ...props }) {
   const [email, setEmail] = useState("");
@@ -15,6 +17,7 @@ export default function RegisterModal({ ...props }) {
   const [lastname, setLastName] = useState("");
   const [isDriver, setIsDriver] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const dispatch = useDispatch();
 
   const onSignUp = () => {
     return post("http://127.0.0.1:5000/users", {
@@ -32,7 +35,8 @@ export default function RegisterModal({ ...props }) {
           .then(({ data: { id, token } }) => {
             AsyncStorage.setItem("token", token);
             AsyncStorage.setItem("id", id);
-            props.handler(isDriver);
+            dispatch(setUserData(), { name, lastname, email, phoneNumber });
+            dispatch(setIsDriver(), { isDriver: isDriver });
           })
           .catch((e) => setErrorMessage(e.response.data.message));
       })
@@ -51,19 +55,22 @@ export default function RegisterModal({ ...props }) {
               style={[modalStyles.modal_input]}
               placeholder="Nombre"
               placeholderTextColor="#343437"
-              onChangeText={(name) => setName(name)}
+              onChangeText={(name) =>
+                setName(name)}
             />
             <TextInput
               style={[modalStyles.modal_input]}
               placeholder="Apellido"
               placeholderTextColor="#343437"
-              onChangeText={(password) => setLastName(password)}
+              onChangeText={(password) =>
+                setLastName(password)}
             />
             <TextInput
               style={[modalStyles.modal_input]}
               placeholder="Email"
               placeholderTextColor="#343437"
-              onChangeText={(email) => setEmail(email)}
+              onChangeText={(email) =>
+                setEmail(email)}
             />
             <TextInput
               style={[modalStyles.modal_input]}

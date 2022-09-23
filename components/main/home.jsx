@@ -5,27 +5,29 @@ import * as SecureStore from "expo-secure-store";
 import { get, patch } from "../../utils/requests";
 import { Profilestyles } from "../styles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useDispatch } from "react-redux";
 
 export default function Home({ navigation }) {
   const Tab = createBottomTabNavigator();
   const [userData, setUserData] = useState({});
+  const currentUserData = useSelector((store) => store.currentUserData);
 
-  useEffect(() => {
-    (async () => {
-      const id = await AsyncStorage.getItem("id");
-      const token = await AsyncStorage.getItem("token");
-      get(`http://localhost:5000/users/${id}`, token).then(
-        ({ data: { name, lastname, phoneNumber, email } }) => {
-          setUserData({
-            nombre: name,
-            apellido: lastname,
-            telefono: phoneNumber,
-            email: email,
-          });
-        },
-      );
-    })();
-  }, []);
+  // useEffect(() => {
+  //   (async () => {
+  //     const id = await AsyncStorage.getItem("id");
+  //     const token = await AsyncStorage.getItem("token");
+  //     get(`http://localhost:5000/users/${id}`, token).then(
+  //       ({ data: { name, lastname, phoneNumber, email } }) => {
+  //         setUserData({
+  //           nombre: name,
+  //           apellido: lastname,
+  //           telefono: phoneNumber,
+  //           email: email,
+  //         });
+  //       },
+  //     );
+  //   })();
+  // }, []);
 
   function HomeTab() {
     return (
@@ -64,31 +66,31 @@ export default function Home({ navigation }) {
       <View style={Profilestyles.profile_container}>
         <View style={Profilestyles.profile_text_container}>
           <Text style={Profilestyles.profile_text}>
-            Bienvenido {userData.nombre}
+            Bienvenido {currentUserData.nombre}
           </Text>
         </View>
         <View style={Profilestyles.profile_inputs}>
           <TextInput
             style={Profilestyles.profile_input}
-            value={nameText}
+            value={currentUserData.name}
             onChangeText={setNameText}
             editable={isEditing}
           />
           <TextInput
             style={Profilestyles.profile_input}
-            value={lastnameText}
+            value={currentUserData.lastname}
             onChangeText={setLastnameText}
             editable={isEditing}
           />
           <TextInput
             style={Profilestyles.profile_input}
-            value={phoneText}
+            value={currentUserData.phoneNumber}
             onChangeText={setPhoneText}
             editable={isEditing}
           />
           <TextInput
             style={Profilestyles.profile_input}
-            value={emailText}
+            value={currentUserData.email}
             onChangeText={setEmailText}
             editable={false}
           />
