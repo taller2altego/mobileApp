@@ -7,12 +7,13 @@ import LoginModal from "./login";
 export default function Landing({ navigation }) {
   const [modalRegisterVisible, setModalRegisterVisible] = useState(false);
   const [modalLoginVisible, setModalLoginVisible] = useState(false);
+  const currentUserData = useSelector((store) => store.currentUserData);
 
-  const handleRegister = (isDriver) => {
+  const handleRegister = () => {
     setModalRegisterVisible(!modalRegisterVisible);
-    if (isDriver == "true") {
-      navigation.navigate("Driver")
-    } else{
+    if (currentUserData.isDriver == "true") {
+      navigation.navigate("Driver");
+    } else {
       navigation.navigate("Home");
     }
   };

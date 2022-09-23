@@ -67,25 +67,25 @@ export default function Home({ navigation }) {
         <View style={Profilestyles.profile_inputs}>
           <TextInput
             style={Profilestyles.profile_input}
-            value={nameText}
+            value={currentUserData.name}
             onChangeText={setNameText}
             editable={isEditing}
           />
           <TextInput
             style={Profilestyles.profile_input}
-            value={lastnameText}
+            value={currentUserData.lastname}
             onChangeText={setLastnameText}
             editable={isEditing}
           />
           <TextInput
             style={Profilestyles.profile_input}
-            value={phoneText}
+            value={currentUserData.phoneNumber}
             onChangeText={setPhoneText}
             editable={isEditing}
           />
           <TextInput
             style={Profilestyles.profile_input}
-            value={emailText}
+            value={currentUserData.email}
             onChangeText={setEmailText}
             editable={false}
           />
