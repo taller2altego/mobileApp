@@ -1,9 +1,7 @@
 import React, { useState } from "react";
-import { Button, Modal, Pressable, Text, TextInput, View } from "react-native";
-import * as SecureStore from "expo-secure-store";
+import {Modal, Pressable, Text, TextInput, View } from "react-native";
 import { post } from "../../utils/requests";
 import { LandingStyles, modalStyles } from "../styles";
-import Ionicons from "@expo/vector-icons/Ionicons";
 import { Entypo } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -20,7 +18,8 @@ export default function LoginModal({ ...props }) {
       .then(({ data: { id, token } }) => {
         AsyncStorage.setItem("token", token);
         AsyncStorage.setItem("id", id);
-        props.handler();
+        props.toggle();
+        props.navigation.navigate("Home");
       }).catch((e) => setErrorMessage(e.response.data.message));
   };
 

@@ -15,25 +15,25 @@ const initialState = {
   isDriver: "false",
 };
 
-const modifyUserDataReducer = (state = initialState, action, payload) => {
+const modifyUserDataReducer = (state = initialState, action) => {
   switch (action.type) {
     case SET_NAME:
-      return { ...state, name: payload.name };
+      return { ...state, name: action.payload.name };
     case SET_EMAIL:
-      return { ...state, email: payload.email };
+      return { ...state, email: action.payload.email };
     case SET_LASTNAME:
-      return { ...state, lastname: payload.lastname };
+      return { ...state, lastname: action.payload.lastname };
     case SET_PHONENUMBER:
-      return { ...state, email: payload.phoneNumber };
+      return { ...state, phoneNumber: action.payload.phoneNumber };
     case SET_IS_DRIVER:
-      return { ...state, email: payload.isDriver };
+      return { ...state, isDriver: action.payload.isDriver };
     case SET_USER_DATA:
       return {
         ...state,
-        name: payload.name,
-        lastname: payload.lastname,
-        email: payload.email,
-        phoneNumber: payload.phoneNumber,
+        name: action.payload.name,
+        lastname: action.payload.lastname,
+        email: action.payload.email,
+        phoneNumber: action.payload.phoneNumber,
       };
     default:
       return state;

@@ -5,26 +5,26 @@ export const SET_PHONENUMBER = "SET_PHONENUMBER";
 export const SET_IS_DRIVER = "SET_IS_DRIVER";
 export const SET_USER_DATA = "SET_USER_DATA";
 
-export const setName = () => {
-  return { type: SET_NAME };
+export const setName = (payload) => {
+  return { type: SET_NAME, payload };
 };
 
-export const setLastname = () => {
-  return { type: SET_LASTNAME };
+export const setLastname = (payload) => {
+  return { type: SET_LASTNAME, payload };
 };
 
-export const setEmail = () => {
-  return { type: SET_EMAIL };
+export const setEmail = (payload) => {
+  return { type: SET_EMAIL, payload };
 };
 
-export const setPhonenumber = () => {
-  return { type: SET_PHONENUMBER };
+export const setPhonenumber = (payload) => {
+  return { type: SET_PHONENUMBER, payload };
 };
 
-export const setIsDriver = () => {
-  return { type: SET_IS_DRIVER };
+export const setIsDriver = (payload) => {
+  return { type: SET_IS_DRIVER, payload };
 };
 
-export const setUserData = () => {
-  return { type: SET_USER_DATA };
+export const setUserData = (payload) => {
+  return { type: SET_USER_DATA, payload };
 };

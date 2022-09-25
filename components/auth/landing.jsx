@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import { Image, Modal, Pressable, Text, View } from "react-native";
-import { useSelector } from "react-redux";
-
+import { Image, Pressable, Text, View } from "react-native";
 import { LandingStyles } from "../styles";
 import RegisterModal from "./register";
 import LoginModal from "./login";
@@ -9,16 +7,6 @@ import LoginModal from "./login";
 export default function Landing({ navigation }) {
   const [modalRegisterVisible, setModalRegisterVisible] = useState(false);
   const [modalLoginVisible, setModalLoginVisible] = useState(false);
-  const currentUserData = useSelector((store) => store.currentUserData);
-
-  const handleRegister = () => {
-    setModalRegisterVisible(!modalRegisterVisible);
-    if (currentUserData.isDriver == "true") {
-      navigation.navigate("Driver");
-    } else {
-      navigation.navigate("Home");
-    }
-  };
 
   const toggleRegisterModal = () => {
     setModalRegisterVisible(!modalRegisterVisible);
@@ -28,23 +16,18 @@ export default function Landing({ navigation }) {
     setModalLoginVisible(!modalLoginVisible);
   };
 
-  const handleLogin = () => {
-    setModalLoginVisible(!modalLoginVisible);
-    navigation.navigate("Home");
-  };
-
   return (
     <View style={[LandingStyles.land_container]}>
       <RegisterModal
         visible={modalRegisterVisible}
-        handler={handleRegister}
         toggle={toggleRegisterModal}
+        navigation={navigation}
       >
       </RegisterModal>
       <LoginModal
         visible={modalLoginVisible}
         toggle={toggleLoginModal}
-        handler={handleLogin}
+        navigation={navigation}
       >
       </LoginModal>
       <View style={[LandingStyles.logo]}>

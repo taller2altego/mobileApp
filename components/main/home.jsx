@@ -1,33 +1,26 @@
 import React, { useEffect, useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import * as SecureStore from "expo-secure-store";
 import { get, patch } from "../../utils/requests";
 import { Profilestyles } from "../styles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setUserData } from "../../redux/actions/UpdateUserData";
 
 export default function Home({ navigation }) {
   const Tab = createBottomTabNavigator();
-  const [userData, setUserData] = useState({});
-  const currentUserData = useSelector((store) => store.currentUserData);
+  const dispatch = useDispatch();
 
-  // useEffect(() => {
-  //   (async () => {
-  //     const id = await AsyncStorage.getItem("id");
-  //     const token = await AsyncStorage.getItem("token");
-  //     get(`http://localhost:5000/users/${id}`, token).then(
-  //       ({ data: { name, lastname, phoneNumber, email } }) => {
-  //         setUserData({
-  //           nombre: name,
-  //           apellido: lastname,
-  //           telefono: phoneNumber,
-  //           email: email,
-  //         });
-  //       },
-  //     );
-  //   })();
-  // }, []);
+  useEffect(() => {
+    (async () => {
+      const id = await AsyncStorage.getItem("id");
+      const token = await AsyncStorage.getItem("token");
+      get(`http://localhost:5000/users/${id}`, token).then(
+        ({ data: { name, lastname, email, phoneNumber } }) =>
+          dispatch(setUserData({ name, lastname, email, phoneNumber })),
+      );
+    })();
+  }, []);
 
   function HomeTab() {
     return (
@@ -38,10 +31,12 @@ export default function Home({ navigation }) {
   }
 
   function ProfileTab() {
-    const [nameText, setNameText] = useState(userData.nombre);
-    const [lastnameText, setLastnameText] = useState(userData.apellido);
-    const [phoneText, setPhoneText] = useState(userData.telefono);
-    const [emailText, setEmailText] = useState(userData.email);
+    const currentUserData = useSelector((store) => store.updateUser);
+    const dispatch = useDispatch();
+    const [nameText, setNameText] = useState(currentUserData.name);
+    const [lastnameText, setLastnameText] = useState(currentUserData.lastname);
+    const [phoneText, setPhoneText] = useState(currentUserData.phoneNumber);
+    const [emailText, setEmailText] = useState(currentUserData.email);
     const [isEditing, setIsEditing] = useState(false);
 
     const handleUpdate = async () => {
@@ -52,12 +47,12 @@ export default function Home({ navigation }) {
         lastname: lastnameText,
         phoneNumber: Number(phoneText),
       }).then(() => {
-        setUserData({
-          nombre: nameText,
-          apellido: lastnameText,
-          telefono: Number(phoneText),
+        dispatch(setUserData({
+          name: nameText,
+          lastname: lastnameText,
+          phoneNumber: Number(phoneText),
           email: emailText,
-        });
+        }));
       });
       setIsEditing(false);
     };
@@ -66,31 +61,31 @@ export default function Home({ navigation }) {
       <View style={Profilestyles.profile_container}>
         <View style={Profilestyles.profile_text_container}>
           <Text style={Profilestyles.profile_text}>
-            Bienvenido {currentUserData.nombre}
+            Bienvenido {currentUserData.name}
           </Text>
         </View>
         <View style={Profilestyles.profile_inputs}>
           <TextInput
             style={Profilestyles.profile_input}
-            value={currentUserData.name}
+            value={nameText}
             onChangeText={setNameText}
             editable={isEditing}
           />
           <TextInput
             style={Profilestyles.profile_input}
-            value={currentUserData.lastname}
+            value={lastnameText}
             onChangeText={setLastnameText}
             editable={isEditing}
           />
           <TextInput
             style={Profilestyles.profile_input}
-            value={currentUserData.phoneNumber}
+            value={phoneText}
             onChangeText={setPhoneText}
             editable={isEditing}
           />
           <TextInput
             style={Profilestyles.profile_input}
-            value={currentUserData.email}
+            value={emailText}
             onChangeText={setEmailText}
             editable={false}
           />

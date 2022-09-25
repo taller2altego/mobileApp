@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { Button, Modal, Pressable, Text, TextInput, View } from "react-native";
+import React, { useState } from "react";
+import { Modal, Pressable, Text, TextInput, View } from "react-native";
 import { post } from "../../utils/requests";
 import { LandingStyles, modalStyles } from "../styles";
 import { Picker } from "@react-native-picker/picker";
-import Ionicons from "@expo/vector-icons/Ionicons";
 import { Entypo } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch } from "react-redux";
-import { setUserData } from "../../redux/actions/UpdateUserData";
+import { setIsDriver, setUserData } from "../../redux/actions/UpdateUserData";
 
 export default function RegisterModal({ ...props }) {
   const [email, setEmail] = useState("");
@@ -15,7 +14,7 @@ export default function RegisterModal({ ...props }) {
   const [phone, setPhone] = useState("");
   const [name, setName] = useState("");
   const [lastname, setLastName] = useState("");
-  const [isDriver, setIsDriver] = useState(false);
+  const [driverSelected, setDriverSelected] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const dispatch = useDispatch();
 
@@ -35,12 +34,18 @@ export default function RegisterModal({ ...props }) {
           .then(({ data: { id, token } }) => {
             AsyncStorage.setItem("token", token);
             AsyncStorage.setItem("id", id);
-            dispatch(setUserData(), { name, lastname, email, phoneNumber });
-            dispatch(setIsDriver(), { isDriver: isDriver });
+            dispatch(setUserData({ name, lastname, email, phone }));
+            dispatch(setIsDriver({ isDriver: driverSelected }));
+            props.toggle();
+            if (driverSelected == "true") {
+              props.navigation.navigate("Driver");
+            } else {
+              props.navigation.navigate("Home");
+            }
           })
-          .catch((e) => setErrorMessage(e.response.data.message));
+          .catch((error) => setErrorMessage(error.response.data.message));
       })
-      .catch((e) => setErrorMessage(e.response.data.message));
+      .catch((error) => setErrorMessage(error.response.data.message));
   };
 
   return (
@@ -89,8 +94,9 @@ export default function RegisterModal({ ...props }) {
               onChangeText={(password) => setPassword(password)}
             />
             <Picker
-              selectedValue={isDriver}
-              onValueChange={(isDriver, ItemIndex) => setIsDriver(isDriver)}
+              selectedValue={driverSelected}
+              onValueChange={(driverSelected, ItemIndex) =>
+                setDriverSelected(driverSelected)}
               style={[modalStyles.modal_picker]}
             >
               <Picker.Item label="Conductor" value={true} />
