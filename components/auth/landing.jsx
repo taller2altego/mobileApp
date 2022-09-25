@@ -7,16 +7,6 @@ import LoginModal from "./login";
 export default function Landing({ navigation }) {
   const [modalRegisterVisible, setModalRegisterVisible] = useState(false);
   const [modalLoginVisible, setModalLoginVisible] = useState(false);
-  const currentUserData = useSelector((store) => store.currentUserData);
-
-  const handleRegister = () => {
-    setModalRegisterVisible(!modalRegisterVisible);
-    if (currentUserData.isDriver == "true") {
-      navigation.navigate("Driver");
-    } else {
-      navigation.navigate("Home");
-    }
-  };
 
   const toggleRegisterModal = () => {
     setModalRegisterVisible(!modalRegisterVisible);
@@ -26,16 +16,10 @@ export default function Landing({ navigation }) {
     setModalLoginVisible(!modalLoginVisible);
   };
 
-  const handleLogin = () => {
-    setModalLoginVisible(!modalLoginVisible);
-    navigation.navigate("Home");
-  };
-
   return (
     <View style={[LandingStyles.land_container]}>
       <RegisterModal
         visible={modalRegisterVisible}
-        handler={handleRegister}
         toggle={toggleRegisterModal}
         navigation={navigation}
       >
