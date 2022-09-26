@@ -31,7 +31,7 @@ export default function Home({ navigation }) {
   }
 
   function ProfileTab() {
-    const currentUserData = useSelector((store) => store.updateUser);
+    const currentUserData = useSelector((store) => store.userData);
     const dispatch = useDispatch();
     const [nameText, setNameText] = useState(currentUserData.name);
     const [lastnameText, setLastnameText] = useState(currentUserData.lastname);
