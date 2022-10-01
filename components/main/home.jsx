@@ -39,6 +39,14 @@ export default function Home({ navigation }) {
     const [emailText, setEmailText] = useState(currentUserData.email);
     const [isEditing, setIsEditing] = useState(false);
 
+    const handleCancelEdit = () => {
+      setIsEditing(!isEditing);
+      setNameText(currentUserData.name);
+      setLastnameText(currentUserData.lastname);
+      setPhoneText(currentUserData.phoneNumber);
+      setEmailText(currentUserData.email);
+    };
+
     const handleUpdate = async () => {
       const id = await AsyncStorage.getItem("id");
       const token = await AsyncStorage.getItem("token");
@@ -61,7 +69,7 @@ export default function Home({ navigation }) {
       <View style={Profilestyles.profile_container}>
         <View style={Profilestyles.profile_text_container}>
           <Text style={Profilestyles.profile_text}>
-            Bienvenido {currentUserData.name}
+            {currentUserData.name} {currentUserData.lastname}
           </Text>
         </View>
         <View style={Profilestyles.profile_inputs}>
@@ -90,35 +98,42 @@ export default function Home({ navigation }) {
             editable={false}
           />
         </View>
-        <View style={Profilestyles.edit_profile_button}>
+        <View style={Profilestyles.edit_profile}>
           {isEditing
             ? (
-              <Pressable
-                onPress={() => {
-                  handleUpdate();
-                }}
-              >
-                <Text>Guardar Cambios</Text>
-              </Pressable>
+              <View style={Profilestyles.edit_profile_button_container}>
+                <Pressable
+                  onPress={() => {
+                    handleUpdate();
+                  }}
+                  style={Profilestyles.edit_profile_button}
+                >
+                  <Text style={Profilestyles.edit_button_text}>
+                    Guardar Cambios
+                  </Text>
+                </Pressable>
+                <Pressable
+                  onPress={() => {
+                    handleCancelEdit();
+                  }}
+                  style={Profilestyles.edit_profile_button}
+                >
+                  <Text style={Profilestyles.edit_button_text}>Cancelar</Text>
+                </Pressable>
+              </View>
             )
             : (
               <Pressable
                 onPress={() => {
                   setIsEditing(!isEditing);
                 }}
+                style={Profilestyles.edit_profile_button}
               >
-                <Text>Editar Perfil</Text>
+                <Text style={Profilestyles.edit_button_text}>
+                  Editar Perfil
+                </Text>
               </Pressable>
             )}
-          {isEditing && (
-            <Pressable
-              onPress={() => {
-                setIsEditing(!isEditing);
-              }}
-            >
-              <Text>Cancelar</Text>
-            </Pressable>
-          )}
         </View>
       </View>
     );

@@ -6,6 +6,16 @@ const post = (url, body, extraHeaders) => {
   });
 };
 
+const authPost = (url, token, body, extraHeaders) => {
+  return axios.post(url, body, {
+    headers: {
+      ...extraHeaders,
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
+    },
+  });
+};
+
 const get = (url, token, extraHeaders) => {
   return axios.get(url, {
     headers: { ...extraHeaders, "Authorization": `Bearer ${token}` },
@@ -18,4 +28,4 @@ const patch = (url, token, body, extraHeaders) => {
   });
 };
 
-export { get, patch, post };
+export { authPost, get, patch, post };

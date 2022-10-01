@@ -137,6 +137,7 @@ const Profilestyles = StyleSheet.create({
   profile_text_container: {
     flex: 1,
     alignItems: "center",
+    textAlign: "center",
     paddingTop: 30,
   },
   profile_inputs: {
@@ -144,9 +145,9 @@ const Profilestyles = StyleSheet.create({
     justifyContent: "space-evenly",
   },
   profile_input: {
-    fontSize: "1.5rem",
+    fontSize: "1.2rem",
     marginLeft: 50,
-    width: 250,
+    width: 300,
     borderWidth: 1,
     borderColor: "#343437",
     borderRadius: 10,
@@ -157,10 +158,85 @@ const Profilestyles = StyleSheet.create({
     outlineStyle: "none",
     fontFamily: "poppins",
   },
-  edit_profile_button: {
+  edit_profile: {
     flex: 1,
     alignItems: "center",
   },
+  edit_profile_button_container: {
+    flex: 1,
+    alignItems: "center",
+  },
+  edit_profile_button: {
+    borderRadius: "10px",
+    width: 175,
+  },
+  edit_button_text: {
+    textAlign: "center",
+    textJustify: "center",
+    fontFamily: "poppins",
+    paddingBottom: 15,
+    fontSize: "1.2rem",
+  },
 });
 
-export { LandingStyles, modalStyles, Profilestyles };
+const DriverStyles = StyleSheet.create({
+  driver_container: {
+    flex: 1,
+  },
+  driver_text: {
+    flex: 1,
+    marginTop: 20,
+    textAlign: "center",
+  },
+  driver_title: {
+    fontFamily: "poppins-bold",
+    alignSelf: "center",
+    fontSize: "1.5rem",
+  },
+  driver_subtitle: {
+    fontFamily: "poppins",
+    alignSelf: "center",
+    fontSize: "1rem",
+    marginTop: 30,
+  },
+  driver_inputs: {
+    flex: 4,
+    justifyContent: "space-evenly",
+    alignItems: "center",
+  },
+  profile_input: {
+    fontSize: "1rem",
+    marginLeft: 50,
+    width: 250,
+    borderWidth: 1,
+    borderColor: "#343437",
+    borderRadius: 10,
+    height: 40,
+    paddingLeft: 10,
+    marginLeft: 30,
+    marginRight: 30,
+    outlineStyle: "none",
+    fontFamily: "poppins",
+  },
+  confirm_button: {
+    borderRadius: "10px",
+    width: 150,
+    height: 65,
+    alignSelf: "center",
+    borderWidth: 3,
+  },
+  confirm_button_text: {
+    textAlign: "center",
+    textJustify: "center",
+    fontFamily: "poppins",
+    lineHeight: "3.5rem",
+    fontSize: "1.3rem",
+  },
+  error_modal: {
+    textAlign: "center",
+    color: "#C73E1D",
+    marginBottom: 50,
+  },
+});
+
+export { DriverStyles, LandingStyles, modalStyles, Profilestyles };
