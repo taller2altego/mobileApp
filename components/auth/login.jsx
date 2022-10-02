@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Modal, Pressable, Text, TextInput, View } from "react-native";
-import { post } from "../../utils/requests";
+import { postReq } from "../../utils/requests";
 import { LandingStyles, modalStyles } from "../styles";
 import { Entypo } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -11,7 +11,7 @@ export default function LoginModal({ ...props }) {
   const [errorMessage, setErrorMessage] = useState("");
 
   const onSignIn = async () => {
-    return post(`http://127.0.0.1:5000/login`, {
+    return postReq(`http://127.0.0.1:5000/login`, {
       email,
       password,
     })

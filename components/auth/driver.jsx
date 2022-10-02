@@ -3,7 +3,7 @@ import { Pressable } from "react-native";
 import { Text, TextInput, View } from "react-native-web";
 import { useDispatch } from "react-redux";
 import { setDriverData } from "../../redux/actions/UpdateDriverData";
-import { authPost } from "../../utils/requests";
+import { authPostReq } from "../../utils/requests";
 import { DriverStyles } from "../styles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -17,7 +17,7 @@ export default function Driver({ navigation }) {
   const confirmData = async () => {
     const id = await AsyncStorage.getItem("id");
     const token = await AsyncStorage.getItem("token");
-    authPost(`http://127.0.0.1:5000/users/${id}/driver`, token, {
+    authPostReq(`http://127.0.0.1:5000/users/${id}/driver`, token, {
       license,
       model,
       licensePlate,

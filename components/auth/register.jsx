@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Modal, Pressable, Text, TextInput, View } from "react-native";
-import { post } from "../../utils/requests";
+import { postReq } from "../../utils/requests";
 import { LandingStyles, modalStyles } from "../styles";
 import { Picker } from "@react-native-picker/picker";
 import { Entypo } from "@expo/vector-icons";
@@ -19,7 +19,7 @@ export default function RegisterModal({ ...props }) {
   const dispatch = useDispatch();
 
   const onSignUp = () => {
-    return post("http://127.0.0.1:5000/users", {
+    return postReq("http://127.0.0.1:5000/users", {
       name,
       lastname,
       phoneNumber: Number(phone),
@@ -27,7 +27,7 @@ export default function RegisterModal({ ...props }) {
       password,
     })
       .then(() => {
-        post(`http://127.0.0.1:5000/login`, {
+        postReq(`http://127.0.0.1:5000/login`, {
           email,
           password,
         })
@@ -46,11 +46,6 @@ export default function RegisterModal({ ...props }) {
           .catch((error) => setErrorMessage(error.response.data.message));
       })
       .catch((error) => setErrorMessage(error.response.data.message));
-  };
-
-  const submitDriverData = () => {
-    // TODO request para datos de conductor
-    props.toggle();
   };
 
   return (

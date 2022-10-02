@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { get, patch } from "../../utils/requests";
+import { deleteReq, getReq, patchReq } from "../../utils/requests";
 import { Profilestyles } from "../styles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch, useSelector } from "react-redux";
-import { setUserData } from "../../redux/actions/UpdateUserData";
+import { setIsDriver, setUserData } from "../../redux/actions/UpdateUserData";
+import { Modal } from "react-native-web";
+import { setDriverData } from "../../redux/actions/UpdateDriverData";
 
 export default function Home({ navigation }) {
   const Tab = createBottomTabNavigator();
@@ -15,7 +17,7 @@ export default function Home({ navigation }) {
     (async () => {
       const id = await AsyncStorage.getItem("id");
       const token = await AsyncStorage.getItem("token");
-      get(`http://localhost:5000/users/${id}`, token).then(
+      getReq(`http://localhost:5000/users/${id}`, token).then(
         ({ data: { name, lastname, email, phoneNumber } }) =>
           dispatch(setUserData({ name, lastname, email, phoneNumber })),
       );
@@ -38,6 +40,7 @@ export default function Home({ navigation }) {
     const [phoneText, setPhoneText] = useState(currentUserData.phoneNumber);
     const [emailText, setEmailText] = useState(currentUserData.email);
     const [isEditing, setIsEditing] = useState(false);
+    const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
 
     const handleCancelEdit = () => {
       setIsEditing(!isEditing);
@@ -47,10 +50,36 @@ export default function Home({ navigation }) {
       setEmailText(currentUserData.email);
     };
 
+    const handleAccountDelete = async () => {
+      const id = await AsyncStorage.getItem("id");
+      const token = await AsyncStorage.getItem("token");
+      deleteReq(`http://127.0.0.1:5000/users/${id}`, token, {
+        email: currentUserData.email,
+      })
+        .then(() => {
+          dispatch(setUserData({
+            name: "",
+            lastname: "",
+            phoneNumber: "",
+            email: "",
+          }));
+        }).then(() => {
+          if (currentUserData.isDriver == "true") {
+            dispatch(setIsDriver({ isDriver: "false" }));
+            dispatch(setDriverData({
+              license: "",
+              model: "",
+              licensePlate: "",
+            }));
+          }
+          navigation.navigate("Landing");
+        });
+    };
+
     const handleUpdate = async () => {
       const id = await AsyncStorage.getItem("id");
       const token = await AsyncStorage.getItem("token");
-      patch(`http://127.0.0.1:5000/users/${id}`, token, {
+      patchReq(`http://127.0.0.1:5000/users/${id}`, token, {
         name: nameText,
         lastname: lastnameText,
         phoneNumber: Number(phoneText),
@@ -67,6 +96,33 @@ export default function Home({ navigation }) {
 
     return (
       <View style={Profilestyles.profile_container}>
+        <Modal
+          transparent={true}
+          visible={isDeleteModalVisible}
+        >
+          <View style={Profilestyles.delete_account_modal}>
+            <View style={Profilestyles.delete_account_view}>
+              <Text style={Profilestyles.delete_modal_text}>
+                ¿Estas seguro que deseas eliminar tu cuenta?
+              </Text>
+              <Text style={Profilestyles.delete_modal_text_title}>
+                Esta accion es irreversible
+              </Text>
+              <View>
+                <Pressable
+                  onPress={() => handleAccountDelete()}
+                >
+                  <Text style={Profilestyles.delete_modal_text}>Continuar</Text>
+                </Pressable>
+                <Pressable
+                  onPress={() => setIsDeleteModalVisible(!isDeleteModalVisible)}
+                >
+                  <Text style={Profilestyles.delete_modal_text}>Cancelar</Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        </Modal>
         <View style={Profilestyles.profile_text_container}>
           <Text style={Profilestyles.profile_text}>
             {currentUserData.name} {currentUserData.lastname}
@@ -123,16 +179,28 @@ export default function Home({ navigation }) {
               </View>
             )
             : (
-              <Pressable
-                onPress={() => {
-                  setIsEditing(!isEditing);
-                }}
-                style={Profilestyles.edit_profile_button}
-              >
-                <Text style={Profilestyles.edit_button_text}>
-                  Editar Perfil
-                </Text>
-              </Pressable>
+              <View style={Profilestyles.profile_buttons}>
+                <Pressable
+                  onPress={() => {
+                    setIsEditing(!isEditing);
+                  }}
+                  style={Profilestyles.edit_profile_button}
+                >
+                  <Text style={Profilestyles.edit_button_text}>
+                    Editar Perfil
+                  </Text>
+                </Pressable>
+                <Pressable
+                  onPress={() => {
+                    setIsDeleteModalVisible(!isDeleteModalVisible);
+                  }}
+                  style={Profilestyles.edit_profile_button}
+                >
+                  <Text style={Profilestyles.delete_button_text}>
+                    Eliminar Cuenta
+                  </Text>
+                </Pressable>
+              </View>
             )}
         </View>
       </View>

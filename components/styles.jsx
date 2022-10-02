@@ -170,12 +170,42 @@ const Profilestyles = StyleSheet.create({
     borderRadius: "10px",
     width: 175,
   },
+  profile_buttons: {
+    flex: 1,
+    justifyContent: "space-between",
+  },
   edit_button_text: {
     textAlign: "center",
-    textJustify: "center",
     fontFamily: "poppins",
-    paddingBottom: 15,
     fontSize: "1.2rem",
+  },
+  delete_button_text: {
+    textAlign: "center",
+    fontFamily: "poppins",
+    fontSize: "0.7rem",
+    paddingBottom: 5,
+    color: "red",
+  },
+  delete_account_modal: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  delete_account_view: {
+    backgroundColor: "white",
+    borderRadius: 25,
+    height: 150,
+    width: 350,
+    justifyContent: "space-evenly",
+    alignItems: "center",
+  },
+  delete_modal_text_title: {
+    fontFamily: "poppins-bold",
+  },
+  delete_modal_text: {
+    fontFamily: "poppins",
+    marginTop: 10,
   },
 });
 
