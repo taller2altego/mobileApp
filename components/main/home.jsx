@@ -19,7 +19,7 @@ export default function Home({ navigation }) {
       const token = await AsyncStorage.getItem("token");
       getReq(`http://localhost:5000/users/${id}`, token).then(
         ({ data: { name, lastname, email, phoneNumber } }) =>
-          dispatch(setUserData({ name, lastname, email, phoneNumber })),
+          dispatch(setUserData({ name, lastname, email, phoneNumber }))
       );
     })();
   }, []);
@@ -57,23 +57,30 @@ export default function Home({ navigation }) {
         email: currentUserData.email,
       })
         .then(() => {
-          dispatch(setUserData({
-            name: "",
-            lastname: "",
-            phoneNumber: "",
-            email: "",
-          }));
-        }).then(() => {
-          if (currentUserData.isDriver == "true") {
+          dispatch(
+            setUserData({
+              name: "",
+              lastname: "",
+              phoneNumber: "",
+              email: "",
+            })
+          );
+        })
+        .then(async () => {
+          const driverId = await AsyncStorage.getItem("driverId");
+          if (currentUserData.isDriver === "true") {
+            deleteReq(`http://127.0.0.1:5000/users/${id}/driver/${driverId}`);
             dispatch(setIsDriver({ isDriver: "false" }));
-            dispatch(setDriverData({
-              license: "",
-              model: "",
-              licensePlate: "",
-            }));
+            dispatch(
+              setDriverData({
+                license: "",
+                model: "",
+                licensePlate: "",
+              })
+            );
           }
-          navigation.navigate("Landing");
         });
+      navigation.navigate("Landing");
     };
 
     const handleUpdate = async () => {
@@ -84,22 +91,21 @@ export default function Home({ navigation }) {
         lastname: lastnameText,
         phoneNumber: Number(phoneText),
       }).then(() => {
-        dispatch(setUserData({
-          name: nameText,
-          lastname: lastnameText,
-          phoneNumber: Number(phoneText),
-          email: emailText,
-        }));
+        dispatch(
+          setUserData({
+            name: nameText,
+            lastname: lastnameText,
+            phoneNumber: Number(phoneText),
+            email: emailText,
+          })
+        );
       });
       setIsEditing(false);
     };
 
     return (
       <View style={Profilestyles.profile_container}>
-        <Modal
-          transparent={true}
-          visible={isDeleteModalVisible}
-        >
+        <Modal transparent={true} visible={isDeleteModalVisible}>
           <View style={Profilestyles.delete_account_modal}>
             <View style={Profilestyles.delete_account_view}>
               <Text style={Profilestyles.delete_modal_text}>
@@ -109,9 +115,7 @@ export default function Home({ navigation }) {
                 Esta accion es irreversible
               </Text>
               <View>
-                <Pressable
-                  onPress={() => handleAccountDelete()}
-                >
+                <Pressable onPress={() => handleAccountDelete()}>
                   <Text style={Profilestyles.delete_modal_text}>Continuar</Text>
                 </Pressable>
                 <Pressable
@@ -155,53 +159,51 @@ export default function Home({ navigation }) {
           />
         </View>
         <View style={Profilestyles.edit_profile}>
-          {isEditing
-            ? (
-              <View style={Profilestyles.edit_profile_button_container}>
-                <Pressable
-                  onPress={() => {
-                    handleUpdate();
-                  }}
-                  style={Profilestyles.edit_profile_button}
-                >
-                  <Text style={Profilestyles.edit_button_text}>
-                    Guardar Cambios
-                  </Text>
-                </Pressable>
-                <Pressable
-                  onPress={() => {
-                    handleCancelEdit();
-                  }}
-                  style={Profilestyles.edit_profile_button}
-                >
-                  <Text style={Profilestyles.edit_button_text}>Cancelar</Text>
-                </Pressable>
-              </View>
-            )
-            : (
-              <View style={Profilestyles.profile_buttons}>
-                <Pressable
-                  onPress={() => {
-                    setIsEditing(!isEditing);
-                  }}
-                  style={Profilestyles.edit_profile_button}
-                >
-                  <Text style={Profilestyles.edit_button_text}>
-                    Editar Perfil
-                  </Text>
-                </Pressable>
-                <Pressable
-                  onPress={() => {
-                    setIsDeleteModalVisible(!isDeleteModalVisible);
-                  }}
-                  style={Profilestyles.edit_profile_button}
-                >
-                  <Text style={Profilestyles.delete_button_text}>
-                    Eliminar Cuenta
-                  </Text>
-                </Pressable>
-              </View>
-            )}
+          {isEditing ? (
+            <View style={Profilestyles.edit_profile_button_container}>
+              <Pressable
+                onPress={() => {
+                  handleUpdate();
+                }}
+                style={Profilestyles.edit_profile_button}
+              >
+                <Text style={Profilestyles.edit_button_text}>
+                  Guardar Cambios
+                </Text>
+              </Pressable>
+              <Pressable
+                onPress={() => {
+                  handleCancelEdit();
+                }}
+                style={Profilestyles.edit_profile_button}
+              >
+                <Text style={Profilestyles.edit_button_text}>Cancelar</Text>
+              </Pressable>
+            </View>
+          ) : (
+            <View style={Profilestyles.profile_buttons}>
+              <Pressable
+                onPress={() => {
+                  setIsEditing(!isEditing);
+                }}
+                style={Profilestyles.edit_profile_button}
+              >
+                <Text style={Profilestyles.edit_button_text}>
+                  Editar Perfil
+                </Text>
+              </Pressable>
+              <Pressable
+                onPress={() => {
+                  setIsDeleteModalVisible(!isDeleteModalVisible);
+                }}
+                style={Profilestyles.edit_profile_button}
+              >
+                <Text style={Profilestyles.delete_button_text}>
+                  Eliminar Cuenta
+                </Text>
+              </Pressable>
+            </View>
+          )}
         </View>
       </View>
     );

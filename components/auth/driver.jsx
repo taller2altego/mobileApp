@@ -21,16 +21,19 @@ export default function Driver({ navigation }) {
       license,
       model,
       licensePlate,
-    }).then(() => {
-      dispatch(
-        setDriverData({
-          license: license,
-          model: model,
-          licensePlate: licensePlate,
-        }),
-      );
-      navigation.navigate("Home");
-    }).catch((error) => setErrorMessage(error.response.data.message));
+    })
+      .then(({ data: id }) => {
+        AsyncStorage.setItem("driverId", id);
+        dispatch(
+          setDriverData({
+            license: license,
+            model: model,
+            licensePlate: licensePlate,
+          })
+        );
+        navigation.navigate("Home");
+      })
+      .catch((error) => setErrorMessage(error.response.data.message));
   };
 
   return (
