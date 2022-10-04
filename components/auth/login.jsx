@@ -3,7 +3,8 @@ import { Modal, Pressable, Text, TextInput, View } from "react-native";
 import { post } from "../../utils/requests";
 import { LandingStyles, modalStyles } from "../styles";
 import { Entypo } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as SecureStore from 'expo-secure-store';
+
 
 export default function LoginModal({ ...props }) {
   const [email, setEmail] = useState("");
@@ -11,13 +12,13 @@ export default function LoginModal({ ...props }) {
   const [errorMessage, setErrorMessage] = useState("");
 
   const onSignIn = async () => {
-    return post(`http://127.0.0.1:5000/login`, {
+    return post(`http://10.0.2.2:5000/login`, {
       email,
       password,
     })
       .then(({ data: { id, token } }) => {
-        AsyncStorage.setItem("token", token);
-        AsyncStorage.setItem("id", id);
+        SecureStore.setItemAsync("token", token);
+        SecureStore.setItemAsync("id", id);
         props.toggle();
         props.navigation.navigate("Home");
       }).catch((e) => setErrorMessage(e.response.data.message));

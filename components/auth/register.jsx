@@ -4,11 +4,22 @@ import { post } from "../../utils/requests";
 import { LandingStyles, modalStyles } from "../styles";
 import { Picker } from "@react-native-picker/picker";
 import { Entypo } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch } from "react-redux";
 import { setIsDriver, setUserData } from "../../redux/actions/UpdateUserData";
+import AppLoading from 'expo-app-loading';
+import * as SecureStore from 'expo-secure-store';
+import * as Font from "expo-font";
+
+// function to load the font(s)
+const fetchFonts = () => {
+  return Font.loadAsync({
+    "poppins": require("../../assets/fonts/Poppins-Regular.ttf"),
+    "poppins-bold": require("../../assets/fonts/Poppins-Bold.ttf"),
+  });
+};
 
 export default function RegisterModal({ ...props }) {
+  const [dataLoaded, setDataLoaded] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
@@ -18,8 +29,18 @@ export default function RegisterModal({ ...props }) {
   const [errorMessage, setErrorMessage] = useState("");
   const dispatch = useDispatch();
 
+  if (!dataLoaded) {
+    return (
+      <AppLoading
+        startAsync={fetchFonts}
+        onFinish={() => setDataLoaded(true)}
+        onError={console.warn}
+      />
+    );
+  }
+
   const onSignUp = () => {
-    return post("http://127.0.0.1:5000/users", {
+    return post("http://10.0.2.2:5000/users", {
       name,
       lastname,
       phoneNumber: Number(phone),
@@ -27,13 +48,13 @@ export default function RegisterModal({ ...props }) {
       password,
     })
       .then(() => {
-        post(`http://127.0.0.1:5000/login`, {
+        post(`http://10.0.2.2:5000/login`, {
           email,
           password,
         })
           .then(({ data: { id, token } }) => {
-            AsyncStorage.setItem("token", token);
-            AsyncStorage.setItem("id", id);
+            SecureStore.setItemAsync("token", token);
+            SecureStore.setItemAsync("id", id);
             dispatch(setUserData({ name, lastname, email, phone }));
             dispatch(setIsDriver({ isDriver: driverSelected }));
             props.toggle();
@@ -43,9 +64,9 @@ export default function RegisterModal({ ...props }) {
               props.navigation.navigate("Home");
             }
           })
-          .catch((error) => setErrorMessage(error.response.data.message));
+          .catch((error) => setErrorMessage(JSON.stringify(error.response)));
       })
-      .catch((error) => setErrorMessage(error.response.data.message));
+      .catch((error) => setErrorMessage(JSON.stringify(error.response)));
   };
 
   const submitDriverData = () => {
@@ -62,7 +83,7 @@ export default function RegisterModal({ ...props }) {
           </Pressable>
           <View style={[modalStyles.flex_modal]}>
             <TextInput
-              style={[modalStyles.modal_input]}
+              style={[modalStyles.modal_input, {fontFamily: "poppins"}]}
               placeholder="Nombre"
               placeholderTextColor="#343437"
               onChangeText={(name) =>

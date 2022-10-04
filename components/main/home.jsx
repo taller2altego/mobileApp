@@ -1,11 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { get, patch } from "../../utils/requests";
 import { Profilestyles } from "../styles";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserData } from "../../redux/actions/UpdateUserData";
+import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
+import { Homestyles } from "../styles";
+import * as SecureStore from 'expo-secure-store';
+import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+import MapViewDirections from "react-native-maps-directions";
 
 export default function Home({ navigation }) {
   const Tab = createBottomTabNavigator();
@@ -13,9 +17,9 @@ export default function Home({ navigation }) {
 
   useEffect(() => {
     (async () => {
-      const id = await AsyncStorage.getItem("id");
-      const token = await AsyncStorage.getItem("token");
-      get(`http://localhost:5000/users/${id}`, token).then(
+      const id = await SecureStore.getItemAsync("id");
+      const token = await SecureStore.getItemAsync("token");
+      get(`http://10.0.2.2:5000/users/${id}`, token).then(
         ({ data: { name, lastname, email, phoneNumber } }) =>
           dispatch(setUserData({ name, lastname, email, phoneNumber })),
       );
@@ -23,9 +27,77 @@ export default function Home({ navigation }) {
   }, []);
 
   function HomeTab() {
+    const mapRef = useRef(null);
+    const [origin, setOrigin] = useState("");
+    const [destination, setDestination] = useState("");
+    const edgePadding = {
+      top: 10,
+      right: 10,
+      bottom: 10,
+      left: 10,
+    }
+
+    const INITIAL_POSITION = {
+      latitude: -34.6035,
+      longitude: -58.4611,
+      latitudeDelta: 0.1,
+      longitudeDelta: 0.1,
+    }
+
+    const zoomIn = () => {
+      if (origin && destination) {
+        mapRef.current.fitToCoordinates([origin, destination], {edgePadding})
+      }
+    }
+
+    const moveTo = async (position) => {
+      const camera = await mapRef.current.getCamera();
+      if (camera) {
+        camera.center = position;
+        mapRef.current.animateCamera(camera, {duration: 1000});
+      }
+    };
+
+    const handleLocation = (details, flag) => {
+      const set = flag === "origin" ? setOrigin : setDestination;
+      const position = {latitude: details.geometry.location.lat, longitude: details.geometry.location.lng};
+      set(position);
+      moveTo(position);
+    };
+
     return (
-      <View>
-        <Text>Home</Text>
+      <View style={{flex: 1, alignItems: "center", justifyContent: "center"}}>
+        <MapView ref={mapRef} style={Homestyles.map} provider={PROVIDER_GOOGLE} initialRegion={INITIAL_POSITION}>
+          {origin && <Marker coordinate={origin}/>}
+          {destination && <Marker coordinate={destination}/>}
+          {origin && destination && <MapViewDirections apikey="" origin={origin} destination={destination} strokeColor="black" strokeWidth={5}/>}
+        </MapView>
+        <View style={Homestyles.searchContainer}>
+        <GooglePlacesAutocomplete
+          styles={{ textInput: Homestyles.searchInput}}
+          placeholder='Punto de partida'
+          fetchDetails
+          onPress={(data, details) => {
+            handleLocation(details, "origin");
+          }}
+          query={{
+            key: '',
+            language: 'en',
+          }}
+        />
+        <GooglePlacesAutocomplete
+          styles={{ textInput: Homestyles.searchInput}}
+          placeholder='Punto de llegada'
+          fetchDetails
+          onPress={(data, details) => {
+            handleLocation(details, "destination");
+          }}
+          query={{
+            key: '',
+            language: 'en',
+          }}
+        />
+        </View>
       </View>
     );
   }
@@ -48,9 +120,9 @@ export default function Home({ navigation }) {
     };
 
     const handleUpdate = async () => {
-      const id = await AsyncStorage.getItem("id");
-      const token = await AsyncStorage.getItem("token");
-      patch(`http://127.0.0.1:5000/users/${id}`, token, {
+      const id = await SecureStore.getItemAsync("id");
+      const token = await SecureStore.getItemAsync("token");
+      patch(`http://10.0.2.2:5000/users/${id}`, token, {
         name: nameText,
         lastname: lastnameText,
         phoneNumber: Number(phoneText),

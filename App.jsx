@@ -1,8 +1,8 @@
 import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import LandingScreen from "./components/auth/landing";
 import RegisterModal from "./components/auth/register";
@@ -12,13 +12,13 @@ import DriverScreen from "./components/auth/driver";
 import store from "./redux/store/store";
 import { Provider } from "react-redux";
 
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 
 export default function App(props) {
   return (
     <Provider store={store}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Landing">
+        <Stack.Navigator initialRouteName="Home">
           <Stack.Screen
             name="Landing"
             component={LandingScreen}
