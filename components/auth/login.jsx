@@ -3,8 +3,7 @@ import { Modal, Pressable, Text, TextInput, View } from "react-native";
 import { post } from "../../utils/requests";
 import { LandingStyles, modalStyles } from "../styles";
 import { Entypo } from "@expo/vector-icons";
-import * as SecureStore from 'expo-secure-store';
-
+import * as SecureStore from "expo-secure-store";
 
 export default function LoginModal({ ...props }) {
   const [email, setEmail] = useState("");
@@ -21,29 +20,26 @@ export default function LoginModal({ ...props }) {
         SecureStore.setItemAsync("id", id);
         props.toggle();
         props.navigation.navigate("Home");
-      }).catch((e) => setErrorMessage(e.response.data.message));
+      })
+      .catch((e) => setErrorMessage(e.response.data.message));
   };
 
   return (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={props.visible}
-    >
-      <View style={modalStyles.modal_extern_view}>
-        <View style={[modalStyles.modal_view]}>
+    <Modal animationType="slide" transparent={true} visible={props.visible}>
+      <View style={[modalStyles.modal_extern_view, { fontFamily: "poppins" }]}>
+        <View style={[modalStyles.modal_view, { fontFamily: "poppins" }]}>
           <Pressable onPress={props.toggle}>
             <Entypo name="cross" size={24} color="black" />
           </Pressable>
           <View style={[modalStyles.flex_modal]}>
             <TextInput
-              style={[modalStyles.modal_input]}
+              style={[modalStyles.modal_input, { fontFamily: "poppins" }]}
               placeholder="Email"
               placeholderTextColor="#343437"
               onChangeText={(email) => setEmail(email)}
             />
             <TextInput
-              style={[modalStyles.modal_input]}
+              style={[modalStyles.modal_input, { fontFamily: "poppins" }]}
               placeholder="Contraseña"
               placeholderTextColor="#343437"
               secureTextEntry={true}
@@ -53,13 +49,13 @@ export default function LoginModal({ ...props }) {
               style={modalStyles.modal_button}
               onPress={() => onSignIn()}
             >
-              <Text style={LandingStyles.textButton}>Login</Text>
+              <Text
+                style={[LandingStyles.textButton, { fontFamily: "poppins" }]}
+              >
+                Login
+              </Text>
             </Pressable>
-            <Text
-              style={modalStyles.error_modal}
-            >
-              {errorMessage}
-            </Text>
+            <Text style={modalStyles.error_modal}>{errorMessage}</Text>
           </View>
         </View>
       </View>

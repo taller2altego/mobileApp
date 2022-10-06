@@ -19,7 +19,7 @@ const LandingStyles = StyleSheet.create({
     textAlign: "center",
     textJustify: "center",
     color: "white",
-    lineHeight: 60,
+    lineHeight: 65,
     fontSize: 20,
   },
   tinyLogo: {
@@ -223,8 +223,8 @@ const DriverStyles = StyleSheet.create({
 
 const Homestyles = StyleSheet.create({
   map: {
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height,
+    width: Dimensions.get("window").width,
+    height: Dimensions.get("window").height,
   },
   searchContainer: {
     position: "absolute",
@@ -232,7 +232,7 @@ const Homestyles = StyleSheet.create({
     backgroundColor: "white",
     shadowColor: "black",
     shadowOpacity: 0.5,
-    shadowOffset: {width: 2, height: 2},
+    shadowOffset: { width: 2, height: 2 },
     shadowRadius: 4,
     elevation: 4,
     padding: 8,
@@ -242,7 +242,7 @@ const Homestyles = StyleSheet.create({
   searchInput: {
     borderColor: "#888",
     borderWidth: 1,
-  }
+  },
 });
 
 export { DriverStyles, LandingStyles, modalStyles, Profilestyles, Homestyles };

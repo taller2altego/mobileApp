@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Modal, Pressable, Text, TextInput, View } from "react-native";
 import { post } from "../../utils/requests";
 import { LandingStyles, modalStyles } from "../styles";
@@ -6,20 +6,10 @@ import { Picker } from "@react-native-picker/picker";
 import { Entypo } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";
 import { setIsDriver, setUserData } from "../../redux/actions/UpdateUserData";
-import AppLoading from 'expo-app-loading';
-import * as SecureStore from 'expo-secure-store';
-import * as Font from "expo-font";
-
-// function to load the font(s)
-const fetchFonts = () => {
-  return Font.loadAsync({
-    "poppins": require("../../assets/fonts/Poppins-Regular.ttf"),
-    "poppins-bold": require("../../assets/fonts/Poppins-Bold.ttf"),
-  });
-};
+import * as SplashScreen from "expo-splash-screen";
+import * as SecureStore from "expo-secure-store";
 
 export default function RegisterModal({ ...props }) {
-  const [dataLoaded, setDataLoaded] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
@@ -28,16 +18,6 @@ export default function RegisterModal({ ...props }) {
   const [driverSelected, setDriverSelected] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const dispatch = useDispatch();
-
-  if (!dataLoaded) {
-    return (
-      <AppLoading
-        startAsync={fetchFonts}
-        onFinish={() => setDataLoaded(true)}
-        onError={console.warn}
-      />
-    );
-  }
 
   const onSignUp = () => {
     return post("http://10.0.2.2:5000/users", {
@@ -64,9 +44,13 @@ export default function RegisterModal({ ...props }) {
               props.navigation.navigate("Home");
             }
           })
-          .catch((error) => setErrorMessage(JSON.stringify(error.response)));
+          .catch((error) =>
+            setErrorMessage(JSON.stringify(error.response.data.message))
+          );
       })
-      .catch((error) => setErrorMessage(JSON.stringify(error.response)));
+      .catch((error) =>
+        setErrorMessage(JSON.stringify(error.response.data.message))
+      );
   };
 
   const submitDriverData = () => {
@@ -83,28 +67,25 @@ export default function RegisterModal({ ...props }) {
           </Pressable>
           <View style={[modalStyles.flex_modal]}>
             <TextInput
-              style={[modalStyles.modal_input, {fontFamily: "poppins"}]}
+              style={[modalStyles.modal_input, { fontFamily: "poppins" }]}
               placeholder="Nombre"
               placeholderTextColor="#343437"
-              onChangeText={(name) =>
-                setName(name)}
+              onChangeText={(name) => setName(name)}
             />
             <TextInput
-              style={[modalStyles.modal_input]}
+              style={[modalStyles.modal_input, { fontFamily: "poppins" }]}
               placeholder="Apellido"
               placeholderTextColor="#343437"
-              onChangeText={(password) =>
-                setLastName(password)}
+              onChangeText={(password) => setLastName(password)}
             />
             <TextInput
-              style={[modalStyles.modal_input]}
+              style={[modalStyles.modal_input, { fontFamily: "poppins" }]}
               placeholder="Email"
               placeholderTextColor="#343437"
-              onChangeText={(email) =>
-                setEmail(email)}
+              onChangeText={(email) => setEmail(email)}
             />
             <TextInput
-              style={[modalStyles.modal_input]}
+              style={[modalStyles.modal_input, { fontFamily: "poppins" }]}
               placeholder="Telefono"
               placeholderTextColor="#343437"
               keyboardType="numeric"
@@ -113,7 +94,7 @@ export default function RegisterModal({ ...props }) {
               }}
             />
             <TextInput
-              style={[modalStyles.modal_input]}
+              style={[modalStyles.modal_input, { fontFamily: "poppins" }]}
               placeholder="Contraseña"
               placeholderTextColor="#343437"
               secureTextEntry={true}
@@ -122,8 +103,9 @@ export default function RegisterModal({ ...props }) {
             <Picker
               selectedValue={driverSelected}
               onValueChange={(driverSelected, ItemIndex) =>
-                setDriverSelected(driverSelected)}
-              style={[modalStyles.modal_picker]}
+                setDriverSelected(driverSelected)
+              }
+              style={[modalStyles.modal_picker, { fontFamily: "poppins" }]}
             >
               <Picker.Item label="Conductor" value={true} />
               <Picker.Item label="Pasajero" value={false} />
@@ -132,9 +114,15 @@ export default function RegisterModal({ ...props }) {
               style={modalStyles.modal_button}
               onPress={() => onSignUp()}
             >
-              <Text style={LandingStyles.textButton}>Sign Up</Text>
+              <Text
+                style={[LandingStyles.textButton, { fontFamily: "poppins" }]}
+              >
+                Sign Up
+              </Text>
             </Pressable>
-            <Text style={modalStyles.error_modal}>{errorMessage}</Text>
+            <Text style={[modalStyles.error_modal, { fontFamily: "poppins" }]}>
+              {errorMessage}
+            </Text>
           </View>
         </View>
       </View>

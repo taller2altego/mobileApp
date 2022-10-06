@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Image, Pressable, Text, View } from "react-native";
 import { LandingStyles } from "../styles";
 import RegisterModal from "./register";
 import LoginModal from "./login";
+import * as Font from "expo-font";
 
 export default function Landing({ navigation }) {
   const [modalRegisterVisible, setModalRegisterVisible] = useState(false);
@@ -16,20 +17,32 @@ export default function Landing({ navigation }) {
     setModalLoginVisible(!modalLoginVisible);
   };
 
+  useEffect(() => {
+    async function prepare() {
+      try {
+        await Font.loadAsync({
+          poppins: require("../../assets/fonts/Poppins-Regular.ttf"),
+          "poppins-bold": require("../../assets/fonts/Poppins-Bold.ttf"),
+        });
+      } catch (e) {
+        console.warn(e);
+      }
+    }
+    prepare();
+  }, []);
+
   return (
     <View style={[LandingStyles.land_container]}>
       <RegisterModal
         visible={modalRegisterVisible}
         toggle={toggleRegisterModal}
         navigation={navigation}
-      >
-      </RegisterModal>
+      ></RegisterModal>
       <LoginModal
         visible={modalLoginVisible}
         toggle={toggleLoginModal}
         navigation={navigation}
-      >
-      </LoginModal>
+      ></LoginModal>
       <View style={[LandingStyles.logo]}>
         <Image
           style={LandingStyles.tinyLogo}
@@ -39,10 +52,12 @@ export default function Landing({ navigation }) {
         />
       </View>
       <View style={[LandingStyles.land_text_container]}>
-        <Text style={[LandingStyles.land_text]}>Bienvenido</Text>
+        <Text style={[LandingStyles.land_text, { fontFamily: "poppins-bold" }]}>
+          Bienvenido
+        </Text>
       </View>
       <View style={[LandingStyles.land_text_container]}>
-        <Text style={[LandingStyles.land_sub_text]}>
+        <Text style={[LandingStyles.land_sub_text, { fontFamily: "poppins" }]}>
           Por favor, inicia sesion con tu cuenta o registrate para seguir
           utilizando Fiuber
         </Text>
@@ -52,14 +67,18 @@ export default function Landing({ navigation }) {
           style={LandingStyles.regButton}
           onPress={() => setModalRegisterVisible(!modalRegisterVisible)}
         >
-          <Text style={LandingStyles.textButton}>Sign Up</Text>
+          <Text style={[LandingStyles.textButton, { fontFamily: "poppins" }]}>
+            Sign Up
+          </Text>
         </Pressable>
         <Pressable
           style={LandingStyles.regButton}
           title="Login"
           onPress={() => setModalLoginVisible(!modalLoginVisible)}
         >
-          <Text style={LandingStyles.textButton}>Login</Text>
+          <Text style={[LandingStyles.textButton, { fontFamily: "poppins" }]}>
+            Login
+          </Text>
         </Pressable>
       </View>
     </View>
