@@ -8,15 +8,29 @@ import { useDispatch, useSelector } from "react-redux";
 
 const API_KEY = "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ";
 
+const edgePadding = {
+  top: 100,
+  right: 100,
+  bottom: 100,
+  left: 100,
+};
+const INITIAL_POSITION = {
+  latitude: -34.6035,
+  longitude: -58.4611,
+  latitudeDelta: 0.1,
+  longitudeDelta: 0.1,
+};
+
 export default function ConfirmationTravel() {
   const currentTravelData = useSelector((store) => store.travelDetailsData);
   const origin = currentTravelData.origin;
   const destination = currentTravelData.destination;
   const mapRef = useRef(null);
 
-  const zoom = () => {
+  const zoomOnDirections = () => {
     mapRef.current.fitToSuppliedMarkers(["originMark", "destMark"], {
-      edgePadding,
+      animated: true,
+      edgePadding: edgePadding,
     });
   };
 
@@ -26,7 +40,7 @@ export default function ConfirmationTravel() {
         ref={mapRef}
         style={Homestyles.map}
         provider={PROVIDER_GOOGLE}
-        onMapReady={() => zoom()}
+        onMapLoaded={() => zoomOnDirections()}
         initialRegion={INITIAL_POSITION}
       >
         {origin && <Marker coordinate={origin} identifier="originMark" />}
@@ -46,16 +60,3 @@ export default function ConfirmationTravel() {
     </View>
   );
 }
-
-const edgePadding = {
-  top: 10,
-  right: 10,
-  bottom: 10,
-  left: 10,
-};
-const INITIAL_POSITION = {
-  latitude: -34.6035,
-  longitude: -58.4611,
-  latitudeDelta: 0.1,
-  longitudeDelta: 0.1,
-};
