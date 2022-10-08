@@ -1,13 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Image, Pressable, Text, View } from "react-native";
 import { LandingStyles } from "../styles";
 import RegisterModal from "./register";
 import LoginModal from "./login";
-import * as Font from "expo-font";
+import { useFonts } from "expo-font";
+import * as SplashScreen from "expo-splash-screen";
 
 export default function Landing({ navigation }) {
   const [modalRegisterVisible, setModalRegisterVisible] = useState(false);
   const [modalLoginVisible, setModalLoginVisible] = useState(false);
+  const [fontsLoaded] = useFonts({
+    poppins: require("../../assets/fonts/Poppins-Regular.ttf"),
+    "poppins-bold": require("../../assets/fonts/Poppins-Bold.ttf"),
+  });
 
   const toggleRegisterModal = () => {
     setModalRegisterVisible(!modalRegisterVisible);
@@ -19,20 +24,23 @@ export default function Landing({ navigation }) {
 
   useEffect(() => {
     async function prepare() {
-      try {
-        await Font.loadAsync({
-          poppins: require("../../assets/fonts/Poppins-Regular.ttf"),
-          "poppins-bold": require("../../assets/fonts/Poppins-Bold.ttf"),
-        });
-      } catch (e) {
-        console.warn(e);
-      }
+      await SplashScreen.preventAutoHideAsync();
     }
     prepare();
   }, []);
 
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
   return (
-    <View style={[LandingStyles.land_container]}>
+    <View style={[LandingStyles.land_container]} onLayout={onLayoutRootView}>
       <RegisterModal
         visible={modalRegisterVisible}
         toggle={toggleRegisterModal}
