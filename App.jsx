@@ -11,6 +11,7 @@ import HomeScreen from "./components/main/home";
 import DriverScreen from "./components/auth/driver";
 import store from "./redux/store/store";
 import { Provider } from "react-redux";
+import TravelConfirmationModal from "./components/main/travelConfirmation";
 
 const Stack = createNativeStackNavigator();
 
@@ -32,6 +33,11 @@ export default function App(props) {
           <Stack.Screen
             name="Login"
             component={LoginModal}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="TravelConfirmation"
+            component={TravelConfirmationModal}
             options={{ headerShown: false }}
           />
           <Stack.Screen

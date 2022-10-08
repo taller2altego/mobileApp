@@ -13,15 +13,18 @@ export default function LoginModal({ ...props }) {
   const onSignIn = async () => {
     return post(`http://10.0.2.2:5000/login`, {
       email,
-      password,
+      password
     })
-      .then(({ data: { id, token } }) => {
-        SecureStore.setItemAsync("token", token);
-        SecureStore.setItemAsync("id", id);
+      .then(async ({ data: { id, token } }) => {
+        await SecureStore.setItemAsync("token", token);
+        await SecureStore.setItemAsync("id", id.toString());
         props.toggle();
         props.navigation.navigate("Home");
       })
-      .catch((e) => setErrorMessage(e.response.data.message));
+      .catch(e => {
+        const errMessage = e.response && e.response.data && e.response.data || e.message;
+        setErrorMessage(errMessage);
+      });
   };
 
   return (

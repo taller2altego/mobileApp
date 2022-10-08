@@ -227,7 +227,6 @@ const Homestyles = StyleSheet.create({
     height: Dimensions.get("window").height,
   },
   searchContainer: {
-    position: "absolute",
     width: "90%",
     backgroundColor: "white",
     shadowColor: "black",
@@ -237,7 +236,7 @@ const Homestyles = StyleSheet.create({
     elevation: 4,
     padding: 8,
     borderRadius: 8,
-    top: 35,
+    top: 35
   },
   searchInput: {
     borderColor: "#888",
