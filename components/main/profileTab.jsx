@@ -2,12 +2,11 @@ import React, { useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import * as SecureStore from "expo-secure-store";
-
-import { patch } from "../../utils/requests";
+import { patch, authPost } from "../../utils/requests";
 import { setUserData } from "../../redux/actions/UpdateUserData";
 import { Profilestyles } from "../styles";
 
-export default function ProfileTab() {
+export default function ProfileTab({ navigation }) {
   const currentUserData = useSelector((store) => store.userData);
   const dispatch = useDispatch();
   const [nameText, setNameText] = useState(currentUserData.name);
@@ -15,6 +14,20 @@ export default function ProfileTab() {
   const [phoneText, setPhoneText] = useState(currentUserData.phoneNumber);
   const [emailText, setEmailText] = useState(currentUserData.email);
   const [isEditing, setIsEditing] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const logOut = async ( navigation ) => {
+    const token = await SecureStore.getItemAsync("token");
+    return authPost("http://10.0.2.2:5000/logout", token)
+      .then(async () => {
+        await SecureStore.deleteItemAsync("token");
+        navigation.navigate("Landing");
+      })
+      .catch(e => {
+        const errMessage = e.response && e.response.data && e.response.data || e.message;
+        setErrorMessage(errMessage);
+      });
+  };
 
   const handleCancelEdit = () => {
     setIsEditing(!isEditing);
@@ -109,6 +122,14 @@ export default function ProfileTab() {
             <Text style={Profilestyles.edit_button_text}>Editar Perfil</Text>
           </Pressable>
         )}
+        <Pressable
+          onPress={() =>
+            logOut(navigation)
+          }
+          style={Profilestyles.edit_profile_button}
+        >
+          <Text style={Profilestyles.edit_button_text}>Cerrar sesión</Text>
+        </Pressable>
       </View>
     </View>
   );
