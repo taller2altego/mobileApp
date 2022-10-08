@@ -1,61 +1,56 @@
-import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, } from "react-native";
-import { MaterialIcons } from '@expo/vector-icons';
+import React, { useState } from "react";
 
-export default function TravelItem(props) {
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import moment from "moment";
 
-    const { travel } = props;
-    console.log(travel)
-    return (
-        <View style={styles.container}>
-            <View>
-                <Text>{travel.price}</Text>
-            </View>           
-        </View>
-    );
+export default function TravelItem({
+  item,
+  onPress,
+  backgroundColor,
+  textColor,
+}) {
+  const months = {
+    January: "Enero",
+    February: "Febrero",
+    March: "Marzo",
+    April: "Abril",
+    May: "Mayo",
+    June: "Junio",
+    July: "Julio",
+    August: "Agosto",
+    September: "Septiembre",
+    October: "Octubre",
+    November: "Noviembre",
+    December: "Diciembre",
+  };
+
+  const a = moment(item.date);
+  const ampm = a.minutes() > 12 ? "PM" : "AM";
+  const minutes = a.format("mm");
+  const hours = a.format("HH");
+  const month = a.format("MMMM");
+  const day = a.day();
+
+  return (
+    <TouchableOpacity style={[styles.item, backgroundColor]} onPress={onPress}>
+      <Text style={[styles.title, textColor]}>{`${item.destination}`}</Text>
+      <Text style={[styles.subtitle, textColor]}>{`$${item.price}`}</Text>
+      <Text
+        style={[styles.subtitle, textColor]}
+      >{`${day} ${months[month]} - ${hours}:${minutes} ${ampm}`}</Text>
+    </TouchableOpacity>
+  );
 }
-/* {/* <Text style={styles.task}>{travel.source}</Text>
-                <Text style={styles.task}>{travel.destination}</Text> }
-<TouchableOpacity onPress={() => props.deleteTask()}>
-                    <MaterialIcons style={styles.delete} name="delete" size={18} color='#fff' />
-                </TouchableOpacity>
-*/
 
 const styles = StyleSheet.create({
-    container: {
-        flexDirection: 'row',
-        marginHorizontal: 20,
-    },
-    indexContainer: {
-        backgroundColor: '#3E3364',
-        borderRadius: 12,
-        marginRight: 10,
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: 50,
-        height: 50,
-    },
-    index: {
-        color: '#fff',
-        fontSize: 20,
-    },
-    taskContainer: {
-        backgroundColor: '#3E3364',
-        borderRadius: 12,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        flex: 1,
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-        minHeight: 50,
-    },
-    task: {
-        color: '#fff',
-        width: '90%',
-        fontSize: 16,
-    },
-    delete: {
-        marginLeft: 10,
-    },
+  item: {
+    padding: 20,
+    marginVertical: 4,
+  },
+  title: {
+    fontSize: 26,
+  },
+  subtitle: {
+    fontSize: 14,
+  },
 });
