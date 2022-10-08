@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { Homestyles } from "../styles";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
@@ -6,44 +6,19 @@ import MapViewDirections from "react-native-maps-directions";
 import { View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
-
 const API_KEY = "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ";
 
 export default function ConfirmationTravel() {
-  const currentUserData = useSelector((store) => store.travelDetailsData);
+  const currentTravelData = useSelector((store) => store.travelDetailsData);
+  const origin = currentTravelData.origin;
+  const destination = currentTravelData.destination;
   const mapRef = useRef(null);
-  const [origin, setOrigin] = useState("");
-  const [destination, setDestination] = useState("");
 
   const zoom = () => {
-    if (origin && destination) {
-      mapRef.current.fitToCoordinates([origin, destination], { edgePadding });
-    }
+    mapRef.current.fitToSuppliedMarkers(["originMark", "destMark"], {
+      edgePadding,
+    });
   };
-
-  const moveTo = async (position) => {
-    const camera = await mapRef.current.getCamera();
-    if (camera) {
-      camera.center = position;
-      mapRef.current.animateCamera(camera, { duration: 1000 });
-    }
-  };
-
-  const handleLocation = (details) => {
-    const position = {
-      latitude: details.geometry.location.lat,
-      longitude: details.geometry.location.lng,
-    };
-
-    moveTo(position);
-    zoom();
-  };
-
-  setOrigin(currentUserData.srcDetails);
-  handleLocation(currentUserData.srcDetails);
-  setDestination(currentUserData.destDetails);
-  handleLocation(currentUserData.destDetails);
-
 
   return (
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
@@ -51,10 +26,13 @@ export default function ConfirmationTravel() {
         ref={mapRef}
         style={Homestyles.map}
         provider={PROVIDER_GOOGLE}
+        onMapReady={() => zoom()}
         initialRegion={INITIAL_POSITION}
       >
-        {origin && <Marker coordinate={origin} />}
-        {destination && <Marker coordinate={destination} />}
+        {origin && <Marker coordinate={origin} identifier="originMark" />}
+        {destination && (
+          <Marker coordinate={destination} identifier="destMark" />
+        )}
         {origin && destination && (
           <MapViewDirections
             apikey={API_KEY}
@@ -75,7 +53,6 @@ const edgePadding = {
   bottom: 10,
   left: 10,
 };
-
 const INITIAL_POSITION = {
   latitude: -34.6035,
   longitude: -58.4611,

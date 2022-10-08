@@ -1,11 +1,13 @@
-import { SET_DETAILS } from "../actions/UpdateTravelDetails";
+import { SET_DESTINATION, SET_ORIGIN } from "../actions/UpdateTravelDetails";
 
-const initialState = { srcDetails: "", destDetails: "" };
+const initialState = { origin: {}, destination: {} };
 
 const modifyTravelDetailsReducer = (state = initialState, action) => {
   switch (action.type) {
-    case SET_DETAILS:
-      return { ...state, srcDetails: action.details.srcDetails, destDetails: action.details.destDetails };
+    case SET_ORIGIN:
+      return { ...state, origin: action.payload.origin };
+    case SET_DESTINATION:
+      return { ...state, destination: action.payload.destination };
     default:
       return state;
   }

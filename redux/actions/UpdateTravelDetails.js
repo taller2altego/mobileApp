@@ -1,6 +1,10 @@
-export const SET_DETAILS = "SET_DETAILS";
+export const SET_ORIGIN = "SET_ORIGIN";
+export const SET_DESTINATION = "SET_DESTINATION";
 
-export const setDetails = (srcDetails, destDetails) => {
-  const details = { srcDetails, destDetails };
-  return { type: SET_DETAILS, details };
-}
+export const setOrigin = (payload) => {
+  return { type: SET_ORIGIN, payload };
+};
+
+export const setDestination = (payload) => {
+  return { type: SET_DESTINATION, payload };
+};
