@@ -10,7 +10,7 @@ export default function Landing({ navigation }) {
   const [modalRegisterVisible, setModalRegisterVisible] = useState(false);
   const [modalLoginVisible, setModalLoginVisible] = useState(false);
   const [fontsLoaded] = useFonts({
-    poppins: require("../../assets/fonts/Poppins-Regular.ttf"),
+    "poppins": require("../../assets/fonts/Poppins-Regular.ttf"),
     "poppins-bold": require("../../assets/fonts/Poppins-Bold.ttf"),
   });
 
