@@ -4,10 +4,13 @@ import { Homestyles } from "../styles";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import MapViewDirections from "react-native-maps-directions";
 import { View } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+
 
 const API_KEY = "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ";
 
-export default function HomeTab() {
+export default function ConfirmationTravel() {
+  const currentUserData = useSelector((store) => store.travelDetailsData);
   const mapRef = useRef(null);
   const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
@@ -26,18 +29,21 @@ export default function HomeTab() {
     }
   };
 
-  const handleLocation = (details, flag) => {
-    const set = flag === "origin" ? setOrigin : setDestination;
+  const handleLocation = (details) => {
     const position = {
       latitude: details.geometry.location.lat,
       longitude: details.geometry.location.lng,
     };
-    set(position);
+
     moveTo(position);
-    if (origin && destination) {
-      zoom();
-    }
+    zoom();
   };
+
+  setOrigin(currentUserData.srcDetails);
+  handleLocation(currentUserData.srcDetails);
+  setDestination(currentUserData.destDetails);
+  handleLocation(currentUserData.destDetails);
+
 
   return (
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
@@ -59,32 +65,6 @@ export default function HomeTab() {
           />
         )}
       </MapView>
-      <View style={Homestyles.searchContainer}>
-        <GooglePlacesAutocomplete
-          styles={{ textInput: Homestyles.searchInput }}
-          placeholder="Punto de partida"
-          fetchDetails
-          onPress={(data, details) => {
-            handleLocation(details, "origin");
-          }}
-          query={{
-            key: API_KEY,
-            language: "en",
-          }}
-        />
-        <GooglePlacesAutocomplete
-          styles={{ textInput: Homestyles.searchInput }}
-          placeholder="Punto de llegada"
-          fetchDetails
-          onPress={(data, details) => {
-            handleLocation(details, "destination");
-          }}
-          query={{
-            key: API_KEY,
-            language: "en",
-          }}
-        />
-      </View>
     </View>
   );
 }
