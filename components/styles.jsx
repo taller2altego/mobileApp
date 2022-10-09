@@ -223,8 +223,9 @@ const DriverStyles = StyleSheet.create({
 
 const Homestyles = StyleSheet.create({
   map: {
+    top: 0,
     width: Dimensions.get("window").width,
-    height: Dimensions.get("window").height,
+    height: (80 * Dimensions.get("window").height) / 100,
   },
   searchContainer: {
     width: "90%",
@@ -236,7 +237,7 @@ const Homestyles = StyleSheet.create({
     elevation: 4,
     padding: 8,
     borderRadius: 8,
-    top: 35
+    top: 35,
   },
   searchInput: {
     borderColor: "#888",
