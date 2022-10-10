@@ -19,39 +19,36 @@ export default function RegisterModal({ ...props }) {
   const dispatch = useDispatch();
 
   const onSignUp = () => {
-    const signUpBody = {
-      name,
-      lastname,
-      phoneNumber: Number(phone),
-      email,
-      password,
-    };
-
-    const loginBody = { email, password };
-
-    const loginFunction = post(`http://10.0.2.2:5000/login`, loginBody)
-      .then(({ data: { id, token } }) => {
-        SecureStore.setItemAsync("token", token);
-        SecureStore.setItemAsync("id", id);
-        dispatch(setUserData({ name, lastname, email, phone }));
-        dispatch(setIsDriver({ isDriver: driverSelected }));
-        props.toggle();
-        if (driverSelected == "true") {
-          props.navigation.navigate("Driver");
-        } else {
-          props.navigation.navigate("Home");
-        }
+    return post("http://10.0.2.2:5000/users", 
+      {
+        name,
+        lastname,
+        phoneNumber: Number(phone),
+        email,
+        password,
       })
-      .catch((error) =>
-        setErrorMessage(JSON.stringify(error.response.data.message))
-      );
-
-    return post("http://10.0.2.2:5000/users", signUpBody)
-      .then(() => loginFunction)
-      .catch((error) =>
-        setErrorMessage(JSON.stringify(error.response.data.message))
-      );
-  };
+        .then(() => {
+          post(`http://10.0.2.2:5000/login`, {
+            email,  
+            password,
+          })
+            .then(({ data: { id, token } }) => {
+              SecureStore.setItemAsync("token", token);
+              SecureStore.setItemAsync("id", id);
+              dispatch(setUserData({ name, lastname, email, phone }));
+              dispatch(setIsDriver({ isDriver: driverSelected }));
+              props.toggle();
+              if (driverSelected == "true") {
+                props.navigation.navigate("Driver");
+              } else {
+                props.navigation.navigate("Home");
+              }
+            })
+            .catch((error) =>
+              setErrorMessage(JSON.stringify(error.response.data.message))
+            );
+          });
+    };
 
   const submitDriverData = () => {
     // TODO request para datos de conductor
