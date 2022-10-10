@@ -23,7 +23,7 @@ const INITIAL_POSITION = {
   longitudeDelta: 0.1,
 };
 
-export default function ConfirmationTravel() {
+export default function ConfirmationTravel({ navigation }) {
   const currentTravelData = useSelector((store) => store.travelDetailsData);
   const [distance, setDistance] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -34,6 +34,10 @@ export default function ConfirmationTravel() {
     poppins: require("../../assets/fonts/Poppins-Regular.ttf"),
     "poppins-bold": require("../../assets/fonts/Poppins-Bold.ttf"),
   });
+
+  const onDriverSearch = () => {
+    navigation.navigate("DriverSearch");
+  };
 
   const updateTripProps = (args) => {
     if (args) {
@@ -103,7 +107,7 @@ export default function ConfirmationTravel() {
           </Text>
         </View>
       </View>
-      <Pressable style={MapStyles.confirmTripButton}>
+      <Pressable style={MapStyles.confirmTripButton} onPress={() => onDriverSearch()} >
         <Text
           style={{
             fontFamily: "poppins-bold",
@@ -115,6 +119,6 @@ export default function ConfirmationTravel() {
           Iniciar Viaje
         </Text>
       </Pressable>
-    </View>
+    </View >
   );
 }

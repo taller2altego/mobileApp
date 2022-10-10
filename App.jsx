@@ -12,6 +12,8 @@ import DriverScreen from "./components/auth/driver";
 import store from "./redux/store/store";
 import { Provider } from "react-redux";
 import ConfirmationTravel from "./components/main/ConfirmationTravel";
+import DriverSearch from "./components/main/DriverSearch";
+
 
 const Stack = createNativeStackNavigator();
 
@@ -38,6 +40,11 @@ export default function App(props) {
           <Stack.Screen
             name="ConfirmationTravel"
             component={ConfirmationTravel}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="DriverSearch"
+            component={DriverSearch}
             options={{ headerShown: false }}
           />
           <Stack.Screen
