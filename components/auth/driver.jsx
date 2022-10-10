@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Pressable } from "react-native";
 import { Text, TextInput, View } from "react-native-web";
 import { useDispatch } from "react-redux";
 import { setDriverData } from "../../redux/actions/UpdateDriverData";
 import { authPost } from "../../utils/requests";
 import { DriverStyles } from "../styles";
-import * as SecureStore from 'expo-secure-store';
+import * as SecureStore from "expo-secure-store";
 
 export default function Driver({ navigation }) {
   const [license, setLicense] = useState("");
@@ -21,16 +21,18 @@ export default function Driver({ navigation }) {
       license,
       model,
       licensePlate,
-    }).then(() => {
-      dispatch(
-        setDriverData({
-          license: license,
-          model: model,
-          licensePlate: licensePlate,
-        }),
-      );
-      navigation.navigate("Home");
-    }).catch((error) => setErrorMessage(error.response.data.message));
+    })
+      .then(() => {
+        dispatch(
+          setDriverData({
+            license: license,
+            model: model,
+            licensePlate: licensePlate,
+          })
+        );
+        navigation.navigate("Home");
+      })
+      .catch((error) => setErrorMessage(error.response.data.message));
   };
 
   return (

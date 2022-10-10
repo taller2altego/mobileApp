@@ -5,17 +5,13 @@ import {
   Button,
   StyleSheet,
   Text,
-  TouchableOpacity,
   ScrollView,
 } from "react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 
 import { Homestyles } from "../styles";
 const API_KEY = "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ";
 import TravelItem from "./TravelItem";
-
-import MapViewDirections from "react-native-maps-directions";
 import { useDispatch } from "react-redux";
 import {
   setDestination,
@@ -54,7 +50,6 @@ const DATA = [
 ];
 
 export default function HomeTab({ navigation }) {
-  // const mapRef = useRef(null);
   const [srcDetails, setSrcDetails] = useState("");
   const [destDetails, setDestDetails] = useState("");
 

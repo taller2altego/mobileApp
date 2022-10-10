@@ -6,7 +6,6 @@ import { Picker } from "@react-native-picker/picker";
 import { Entypo } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";
 import { setIsDriver, setUserData } from "../../redux/actions/UpdateUserData";
-import * as SplashScreen from "expo-splash-screen";
 import * as SecureStore from "expo-secure-store";
 
 export default function RegisterModal({ ...props }) {
@@ -20,7 +19,6 @@ export default function RegisterModal({ ...props }) {
   const dispatch = useDispatch();
 
   const onSignUp = () => {
-
     const signUpBody = {
       name,
       lastname,
@@ -50,7 +48,9 @@ export default function RegisterModal({ ...props }) {
 
     return post("http://10.0.2.2:5000/users", signUpBody)
       .then(() => loginFunction)
-      .catch((error) => setErrorMessage(JSON.stringify(error.response.data.message)));
+      .catch((error) =>
+        setErrorMessage(JSON.stringify(error.response.data.message))
+      );
   };
 
   const submitDriverData = () => {
