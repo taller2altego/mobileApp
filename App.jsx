@@ -1,8 +1,8 @@
 import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import LandingScreen from "./components/auth/landing";
 import RegisterModal from "./components/auth/register";
@@ -11,8 +11,9 @@ import HomeScreen from "./components/main/home";
 import DriverScreen from "./components/auth/driver";
 import store from "./redux/store/store";
 import { Provider } from "react-redux";
+import ConfirmationTravel from "./components/main/ConfirmationTravel";
 
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 
 export default function App(props) {
   return (
@@ -32,6 +33,11 @@ export default function App(props) {
           <Stack.Screen
             name="Login"
             component={LoginModal}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="ConfirmationTravel"
+            component={ConfirmationTravel}
             options={{ headerShown: false }}
           />
           <Stack.Screen

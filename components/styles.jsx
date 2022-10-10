@@ -1,13 +1,7 @@
-import { StyleSheet } from "react-native";
-import * as Font from "expo-font";
+import { StyleSheet, Dimensions } from "react-native";
 
 const PRIMARY_BLUE = "#1d9bc2";
 const SECONDARY_BLUE = "#0b0e12";
-
-Font.loadAsync({
-  "poppins": require("../assets/fonts/Poppins-Regular.ttf"),
-  "poppins-bold": require("../assets/fonts/Poppins-Bold.ttf"),
-});
 
 const LandingStyles = StyleSheet.create({
   land_container: {
@@ -17,7 +11,7 @@ const LandingStyles = StyleSheet.create({
   },
   regButton: {
     backgroundColor: PRIMARY_BLUE,
-    borderRadius: "10px",
+    borderRadius: 10,
     width: 175,
     height: 65,
   },
@@ -25,9 +19,8 @@ const LandingStyles = StyleSheet.create({
     textAlign: "center",
     textJustify: "center",
     color: "white",
-    fontFamily: "poppins",
-    lineHeight: "4rem",
-    fontSize: "1.3rem",
+    lineHeight: 65,
+    fontSize: 20,
   },
   tinyLogo: {
     width: 150,
@@ -46,9 +39,8 @@ const LandingStyles = StyleSheet.create({
     justifyContent: "center",
   },
   land_text: {
-    fontFamily: "poppins-bold",
     color: PRIMARY_BLUE,
-    fontSize: "3rem",
+    fontSize: 45,
   },
   land_buttons_container: {
     flex: 1.5,
@@ -60,8 +52,7 @@ const LandingStyles = StyleSheet.create({
     textAlign: "center",
     textJustify: "center",
     color: "white",
-    fontFamily: "poppins",
-    fontSize: "1.1rem",
+    fontSize: 18,
   },
 });
 
@@ -91,7 +82,7 @@ const modalStyles = StyleSheet.create({
   },
   modal_button: {
     backgroundColor: PRIMARY_BLUE,
-    borderRadius: "10px",
+    borderRadius: 10,
     width: 150,
     height: 65,
     alignSelf: "center",
@@ -104,18 +95,16 @@ const modalStyles = StyleSheet.create({
     borderRadius: 10,
     height: 50,
     paddingLeft: 10,
-    fontSize: "1.3rem",
+    fontSize: 15,
     textAlign: "justify",
     marginLeft: 30,
     marginRight: 30,
     outlineStyle: "none",
-    fontFamily: "poppins",
   },
   modal_picker: {
     width: 300,
     alignSelf: "center",
-    fontSize: "1.2rem",
-    fontFamily: "poppins",
+    fontSize: 15,
     backgroundColor: PRIMARY_BLUE,
     borderColor: SECONDARY_BLUE,
     textAlign: "center",
@@ -128,8 +117,7 @@ const modalStyles = StyleSheet.create({
 
 const Profilestyles = StyleSheet.create({
   profile_text: {
-    fontSize: "2rem",
-    fontFamily: "poppins-bold",
+    fontSize: 15,
   },
   profile_container: {
     flex: 1,
@@ -145,7 +133,7 @@ const Profilestyles = StyleSheet.create({
     justifyContent: "space-evenly",
   },
   profile_input: {
-    fontSize: "1.2rem",
+    fontSize: 15,
     marginLeft: 50,
     width: 300,
     borderWidth: 1,
@@ -156,7 +144,6 @@ const Profilestyles = StyleSheet.create({
     marginLeft: 30,
     marginRight: 30,
     outlineStyle: "none",
-    fontFamily: "poppins",
   },
   edit_profile: {
     flex: 1,
@@ -167,15 +154,14 @@ const Profilestyles = StyleSheet.create({
     alignItems: "center",
   },
   edit_profile_button: {
-    borderRadius: "10px",
+    borderRadius: 10,
     width: 175,
   },
   edit_button_text: {
     textAlign: "center",
     textJustify: "center",
-    fontFamily: "poppins",
     paddingBottom: 15,
-    fontSize: "1.2rem",
+    fontSize: 15,
   },
 });
 
@@ -189,14 +175,12 @@ const DriverStyles = StyleSheet.create({
     textAlign: "center",
   },
   driver_title: {
-    fontFamily: "poppins-bold",
     alignSelf: "center",
-    fontSize: "1.5rem",
+    fontSize: 15,
   },
   driver_subtitle: {
-    fontFamily: "poppins",
     alignSelf: "center",
-    fontSize: "1rem",
+    fontSize: 10,
     marginTop: 30,
   },
   driver_inputs: {
@@ -205,7 +189,7 @@ const DriverStyles = StyleSheet.create({
     alignItems: "center",
   },
   profile_input: {
-    fontSize: "1rem",
+    fontSize: 10,
     marginLeft: 50,
     width: 250,
     borderWidth: 1,
@@ -216,10 +200,9 @@ const DriverStyles = StyleSheet.create({
     marginLeft: 30,
     marginRight: 30,
     outlineStyle: "none",
-    fontFamily: "poppins",
   },
   confirm_button: {
-    borderRadius: "10px",
+    borderRadius: 10,
     width: 150,
     height: 65,
     alignSelf: "center",
@@ -228,9 +211,8 @@ const DriverStyles = StyleSheet.create({
   confirm_button_text: {
     textAlign: "center",
     textJustify: "center",
-    fontFamily: "poppins",
     lineHeight: "3.5rem",
-    fontSize: "1.3rem",
+    fontSize: 15,
   },
   error_modal: {
     textAlign: "center",
@@ -239,4 +221,65 @@ const DriverStyles = StyleSheet.create({
   },
 });
 
-export { DriverStyles, LandingStyles, modalStyles, Profilestyles };
+const Homestyles = StyleSheet.create({
+  searchContainer: {
+    width: "90%",
+    backgroundColor: "white",
+    shadowColor: "black",
+    shadowOpacity: 0.5,
+    shadowOffset: { width: 2, height: 2 },
+    shadowRadius: 4,
+    elevation: 4,
+    padding: 8,
+    borderRadius: 8,
+    top: 35,
+  },
+  searchInput: {
+    borderColor: "#888",
+    borderWidth: 1,
+  },
+});
+
+const MapStyles = StyleSheet.create({
+  map: {
+    top: 0,
+    width: Dimensions.get("window").width,
+    height: (80 * Dimensions.get("window").height) / 100,
+  },
+  searchContainer: {
+    width: "90%",
+    backgroundColor: "white",
+    shadowColor: "black",
+    shadowOpacity: 0.5,
+    shadowOffset: { width: 2, height: 2 },
+    shadowRadius: 4,
+    elevation: 4,
+    padding: 8,
+    borderRadius: 8,
+    top: 35,
+  },
+  searchInput: {
+    borderColor: "#888",
+    borderWidth: 1,
+  },
+  tripInfoContainer: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#e4e4e4",
+    borderBottomColor: "black",
+  },
+  carImage: { height: 100, width: 110 },
+  confirmTripButton: {
+    alignSelf: "center",
+    height: 40,
+    width: 200,
+    backgroundColor: "black",
+    marginBottom: 10,
+    marginTop: 10,
+    borderRadius: 15,
+  },
+});
+
+export { DriverStyles, LandingStyles, modalStyles, Profilestyles, Homestyles };
