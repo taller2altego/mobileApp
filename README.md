@@ -1,6 +1,6 @@
 # Mobile App
 
-## Requerimientos
+## R equerimientos
 - [Nix](https://nix.dev/tutorials/install-nix)
 
 ## Como correrlo en emulador
