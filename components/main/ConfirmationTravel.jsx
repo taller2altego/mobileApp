@@ -27,6 +27,7 @@ export default function ConfirmationTravel({ navigation }) {
   const currentTravelData = useSelector((store) => store.travelDetailsData);
   const [distance, setDistance] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [modalWaitingVisible, setModalWaitingVisible] = useState(false);
   const origin = currentTravelData.origin;
   const destination = currentTravelData.destination;
   const mapRef = useRef(null);
@@ -38,6 +39,11 @@ export default function ConfirmationTravel({ navigation }) {
   const onDriverSearch = () => {
     navigation.navigate("DriverSearch");
   };
+
+  const toggleWaitingModal = () => {
+    setModalWaitingVisible(!modalWaitingVisible);
+  };
+
 
   const updateTripProps = (args) => {
     if (args) {
@@ -107,7 +113,7 @@ export default function ConfirmationTravel({ navigation }) {
           </Text>
         </View>
       </View>
-      <Pressable style={MapStyles.confirmTripButton} onPress={() => onDriverSearch()} >
+      <Pressable style={MapStyles.confirmTripButton} onPress={() => setModalWaitingVisible(!modalWaitingVisible)} >
         <Text
           style={{
             fontFamily: "poppins-bold",
