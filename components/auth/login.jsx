@@ -12,8 +12,8 @@ export default function LoginModal({ ...props }) {
 
   const onSignIn = async () => {
     return post(`http://10.0.2.2:5000/login`, {
-      email: 'n@g.com',
-      password: '1234'
+      email: 'F@f',
+      password: '1'
     })
       .then(async ({ data: { id, token } }) => {
         await SecureStore.setItemAsync("token", token);
@@ -38,7 +38,7 @@ export default function LoginModal({ ...props }) {
             <TextInput
               style={[modalStyles.modal_input, { fontFamily: "poppins" }]}
               placeholder="Email"
-              value="n@g.com"
+              value="F@f"
               placeholderTextColor="#343437"
               onChangeText={(email) => setEmail(email)}
             />
@@ -46,7 +46,7 @@ export default function LoginModal({ ...props }) {
               style={[modalStyles.modal_input, { fontFamily: "poppins" }]}
               placeholder="Contraseña"
               placeholderTextColor="#343437"
-              value="1234"
+              value="1"
               secureTextEntry={true}
               onChangeText={(password) => setPassword(password)}
             />

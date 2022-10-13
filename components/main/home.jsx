@@ -7,6 +7,7 @@ import { setUserData } from "../../redux/actions/UpdateUserData";
 import * as SecureStore from "expo-secure-store";
 import HomeTab from "./homeTab";
 import ProfileTab from "./profileTab";
+import ProfileVisualization from "./profileVisualization";
 
 export default function Home({ navigation }) {
   const Tab = createBottomTabNavigator();
@@ -33,10 +34,18 @@ export default function Home({ navigation }) {
       <Tab.Screen
         name="Perfil"
         component={ProfileTab}
-        options={ ({ navigation }) => ({
+        options={({ navigation }) => ({
           headerShown: false
         })
-      }
+        }
+      />
+      <Tab.Screen
+        name="Buscar"
+        component={ProfileVisualization}
+        options={({ navigation }) => ({
+          headerShown: false
+        })
+        }
       />
     </Tab.Navigator>
   );

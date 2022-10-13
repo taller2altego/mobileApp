@@ -6,7 +6,7 @@ import MapViewDirections from "react-native-maps-directions";
 import { View, Text, Pressable, Image } from "react-native";
 import { useSelector } from "react-redux";
 import { useFonts } from "expo-font";
-import MyLoader from "./ContentLoader";
+// import MyLoader from "./ContentLoader";
 
 export default function DriverSearch() {
   // const currentTravelData = useSelector((store) => store.travelDetailsData);
