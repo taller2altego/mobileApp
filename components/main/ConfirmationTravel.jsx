@@ -4,6 +4,7 @@ import { MapStyles } from "../styles";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import MapViewDirections from "react-native-maps-directions";
 import { View, Text, Pressable, Image } from "react-native";
+import WaitingModal from "./Waiting";
 import { useSelector } from "react-redux";
 import { useFonts } from "expo-font";
 
