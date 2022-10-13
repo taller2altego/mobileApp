@@ -65,6 +65,11 @@ export default function ConfirmationTravel({ navigation }) {
 
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
+      <WaitingModal
+        visible={modalWaitingVisible}
+        toggle={toggleWaitingModal}
+        navigation={navigation}
+      ></WaitingModal>
       <MapView
         ref={mapRef}
         style={MapStyles.map}
