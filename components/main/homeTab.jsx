@@ -8,6 +8,7 @@ import {
   ScrollView,
 } from "react-native";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+import { getWithQuerys } from "../../utils/requests";
 
 import { Homestyles } from "../styles";
 const API_KEY = "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ";
@@ -18,41 +19,41 @@ import {
   setOrigin,
 } from "../../redux/actions/UpdateTravelDetails";
 
-const DATA = [
-  {
-    id: 1,
-    price: 1500,
-    source: "Calle siempre viva 123",
-    destination: "asd 1234",
-    date: "2022-08-01T03:01",
-  },
-  {
-    id: 2,
-    price: 1500,
-    source: "Calle siempre viva 123",
-    destination: "gfd 1234",
-    date: "2022-08-01T13:00",
-  },
-  {
-    id: 3,
-    price: 1500,
-    source: "Calle siempre viva 123",
-    destination: "nbvc 1234",
-    date: "2022-06-01T20:00",
-  },
-  {
-    id: 4,
-    price: 1500,
-    source: "Calle siempre viva 123",
-    destination: "23q4 1234",
-    date: "2022-05-01T20:00",
-  },
-];
+// const DATA = [
+//   {
+//     id: 1,
+//     price: 1500,
+//     source: "Calle siempre viva 123",
+//     destination: "asd 1234",
+//     date: "2022-08-01T03:01",
+//   },
+//   {
+//     id: 2,
+//     price: 1500,
+//     source: "Calle siempre viva 123",
+//     destination: "gfd 1234",
+//     date: "2022-08-01T13:00",
+//   },
+//   {
+//     id: 3,
+//     price: 1500,
+//     source: "Calle siempre viva 123",
+//     destination: "nbvc 1234",
+//     date: "2022-06-01T20:00",
+//   },
+//   {
+//     id: 4,
+//     price: 1500,
+//     source: "Calle siempre viva 123",
+//     destination: "23q4 1234",
+//     date: "2022-05-01T20:00",
+//   },
+// ];
 
 export default function HomeTab({ navigation }) {
   const [srcDetails, setSrcDetails] = useState("");
   const [destDetails, setDestDetails] = useState("");
-
+  const [data_travels, setData] = useState({});
   const [selectedId, setSelectedId] = useState(null);
   const dispatch = useDispatch();
 
@@ -66,6 +67,24 @@ export default function HomeTab({ navigation }) {
       />
     );
   }
+
+  useEffect(() => {
+    (async () => {
+      const id = await SecureStore.getItemAsync("id");
+      const token = await SecureStore.getItemAsync("token");
+      const params = {
+          page: 1,
+          offset: 4
+      };
+
+      await getWithQuerys(`http://10.0.2.2:5000/travels/${id}`, params, token)
+        .then(
+          ({ data: { data } }) => {
+            setData(data);
+          }
+        );
+    })();
+  }, []);
 
   const onConfirmationTravel = () => {
     dispatch(setOrigin({ origin: srcDetails }));
@@ -92,7 +111,7 @@ export default function HomeTab({ navigation }) {
           <View style={{ flex: 3 }}>
             {/* {DATA.map(travel => renderItem({ travel }))} */}
             <FlatList
-              data={DATA}
+              data={data_travels}
               renderItem={renderItem}
               keyExtractor={(item) => item.id}
               extraData={selectedId}
