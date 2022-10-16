@@ -22,6 +22,12 @@ const get = (url, token, extraHeaders) => {
   });
 };
 
+const getWithQuerys = (url, params, token, extraHeaders) => {
+  return axios.get(url, params, {
+    headers: { ...extraHeaders, "Authorization": `Bearer ${token}` },
+  });
+};
+
 const patch = (url, token, body, extraHeaders) => {
   return axios.patch(url, body, {
     headers: {
@@ -32,4 +38,4 @@ const patch = (url, token, body, extraHeaders) => {
   });
 };
 
-export { authPost, get, patch, post };
+export { authPost, get, getWithQuerys, patch, post };
