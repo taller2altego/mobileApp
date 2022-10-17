@@ -2,11 +2,13 @@ import { useRef, useState } from "react";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { MapStyles } from "../styles";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+import * as SecureStore from "expo-secure-store";
 import MapViewDirections from "react-native-maps-directions";
 import { View, Text, Pressable, Image } from "react-native";
 import WaitingModal from "./Waiting";
 import { useSelector } from "react-redux";
 import { useFonts } from "expo-font";
+import { authPost } from "../../utils/requests";
 
 const API_KEY = "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ";
 const PRICE_PER_KM = 100;
@@ -28,6 +30,7 @@ export default function ConfirmationTravel({ navigation }) {
   const currentTravelData = useSelector((store) => store.travelDetailsData);
   const [distance, setDistance] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [price, setPrice] = useState(0);
   const [modalWaitingVisible, setModalWaitingVisible] = useState(false);
   const origin = currentTravelData.origin;
   const destination = currentTravelData.destination;
@@ -45,11 +48,11 @@ export default function ConfirmationTravel({ navigation }) {
     setModalWaitingVisible(!modalWaitingVisible);
   };
 
-
   const updateTripProps = (args) => {
     if (args) {
       setDistance(args.distance.toFixed(2));
       setDuration(Math.ceil(args.duration));
+      setPrice(distance * PRICE_PER_KM);
     }
   };
 
@@ -58,6 +61,24 @@ export default function ConfirmationTravel({ navigation }) {
       animated: true,
       edgePadding: edgePadding,
     });
+  };
+  
+  const createTravel = async () => {
+    const id = await SecureStore.getItemAsync("id");
+    const token = await SecureStore.getItemAsync("token");
+    const body = {
+      userId: id,
+      price: price,
+      source: origin,
+      destination: destination,
+      date: new Date().toISOString()
+    };
+    return authPost(`http://10.0.2.2:5000/travels`, token, body)
+      .then(
+        () => {
+          setModalWaitingVisible(!modalWaitingVisible);
+        }
+      );
   };
 
   if (!fontsLoaded) {
@@ -119,7 +140,7 @@ export default function ConfirmationTravel({ navigation }) {
           </Text>
         </View>
       </View>
-      <Pressable style={MapStyles.confirmTripButton} onPress={() => setModalWaitingVisible(!modalWaitingVisible)} >
+      <Pressable style={MapStyles.confirmTripButton} onPress={() => createTravel()} >
         <Text
           style={{
             fontFamily: "poppins-bold",

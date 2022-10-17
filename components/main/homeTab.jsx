@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   FlatList,
@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import { getWithQuerys } from "../../utils/requests";
-
+import * as SecureStore from "expo-secure-store";
 import { Homestyles } from "../styles";
 const API_KEY = "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ";
 import TravelItem from "./TravelItem";
@@ -80,6 +80,8 @@ export default function HomeTab({ navigation }) {
       await getWithQuerys(`http://10.0.2.2:5000/travels/${id}`, params, token)
         .then(
           ({ data: { data } }) => {
+            console.log("DATA");
+            console.log(data);
             setData(data);
           }
         );
@@ -149,7 +151,6 @@ export default function HomeTab({ navigation }) {
                 language: "en",
               }}
             />
-
             <Button
               title="Confirmar viaje"
               color="#696c6e"

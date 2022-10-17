@@ -51,3 +51,11 @@ make start
 ```
 
 Luego seleccionar la opcion _open web_
+
+
+Para generar el APK (se almacena en android/app/build/outputs/apk-release.apk):
+
+```
+cd android
+./gradlew assembleRelease
+```
