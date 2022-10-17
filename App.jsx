@@ -9,10 +9,11 @@ import RegisterModal from "./components/auth/register";
 import LoginModal from "./components/auth/login";
 import HomeScreen from "./components/main/home";
 import DriverScreen from "./components/auth/driver";
+import TravelInProgress from "./components/travel/TravelInProgress"
 import store from "./redux/store/store";
 import { Provider } from "react-redux";
-import ConfirmationTravel from "./components/main/ConfirmationTravel";
-import DriverSearch from "./components/main/DriverSearch";
+import ConfirmationTravel from "./components/travel/ConfirmationTravel";
+import DriverSearch from "./components/travel/DriverSearch";
 
 
 const Stack = createNativeStackNavigator();
@@ -55,6 +56,11 @@ export default function App(props) {
           <Stack.Screen
             name="Driver"
             component={DriverScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="TravelInProgress"
+            component={TravelInProgress}
             options={{ headerShown: false }}
           />
         </Stack.Navigator>

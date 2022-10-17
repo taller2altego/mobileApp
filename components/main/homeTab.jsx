@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   FlatList,
@@ -12,7 +12,8 @@ import { getWithQuerys } from "../../utils/requests";
 
 import { Homestyles } from "../styles";
 const API_KEY = "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ";
-import TravelItem from "./TravelItem";
+import * as SecureStore from "expo-secure-store";
+import TravelItem from "../travel/TravelItem";
 import { useDispatch } from "react-redux";
 import {
   setDestination,
@@ -80,9 +81,16 @@ export default function HomeTab({ navigation }) {
       await getWithQuerys(`http://10.0.2.2:5000/travels/${id}`, params, token)
         .then(
           ({ data: { data } }) => {
+            console.log("DATA");
+            console.log("DATA");
+            console.log(data);
             setData(data);
           }
-        );
+        )
+        .catch(err => {
+          console.log(err);
+          console.log('aca falla');
+        });
     })();
   }, []);
 
