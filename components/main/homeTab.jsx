@@ -56,12 +56,17 @@ export default function HomeTab({ navigation }) {
   const [selectedId, setSelectedId] = useState(null);
   const dispatch = useDispatch();
 
+  const handleSelectedTrip = (item) => {
+    setSelectedId(item.id);
+    navigation.navigate("TripDetails");
+  }
+
   function renderItem({ item }) {
     const backgroundColor = item.id === selectedId ? "#f2f2f200" : "white";
     return (
       <TravelItem
         item={item}
-        onPress={() => setSelectedId(item.id)}
+        onPress={() => handleSelectedTrip(item)}
         backgroundColor={{ backgroundColor }}
       />
     );

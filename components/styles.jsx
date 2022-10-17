@@ -282,4 +282,8 @@ const MapStyles = StyleSheet.create({
   },
 });
 
-export { DriverStyles, LandingStyles, modalStyles, Profilestyles, Homestyles };
+const tripDetailsStyles = StyleSheet.create({
+  
+});
+
+export { DriverStyles, LandingStyles, modalStyles, Profilestyles, Homestyles, MapStyles };

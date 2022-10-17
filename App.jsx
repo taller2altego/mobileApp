@@ -9,6 +9,7 @@ import RegisterModal from "./components/auth/register";
 import LoginModal from "./components/auth/login";
 import HomeScreen from "./components/main/home";
 import DriverScreen from "./components/auth/driver";
+import TripDetailsScreen from "./components/main/TripDetails";
 import store from "./redux/store/store";
 import { Provider } from "react-redux";
 import ConfirmationTravel from "./components/main/ConfirmationTravel";
@@ -39,6 +40,10 @@ export default function App(props) {
             name="ConfirmationTravel"
             component={ConfirmationTravel}
             options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="TripDetails"
+            component={TripDetailsScreen}
           />
           <Stack.Screen
             name="Home"
