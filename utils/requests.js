@@ -23,7 +23,8 @@ const get = (url, token, extraHeaders) => {
 };
 
 const getWithQuerys = (url, params, token, extraHeaders) => {
-  return axios.get(url, params, {
+  return axios.get(url, {
+    params,
     headers: { ...extraHeaders, "Authorization": `Bearer ${token}` },
   });
 };
