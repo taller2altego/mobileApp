@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
-import { MapStyles } from "../styles";
+import { MapStyles, TravelStyles } from "../styles";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import * as SecureStore from "expo-secure-store";
 import MapViewDirections from "react-native-maps-directions";
@@ -62,8 +62,8 @@ export default function ConfirmationTravel({ navigation }) {
       edgePadding: edgePadding,
     });
   };
-  
-  const createTravel = async () => {
+
+  const createTravel = async (navigation) => {
     const id = await SecureStore.getItemAsync("id");
     const token = await SecureStore.getItemAsync("token");
     const body = {
@@ -77,8 +77,19 @@ export default function ConfirmationTravel({ navigation }) {
       .then(
         () => {
           setModalWaitingVisible(!modalWaitingVisible);
+          findDriver(navigation);
         }
       );
+  };
+
+  const sleep = (milliseconds) => {
+    return new Promise(resolve => setTimeout(resolve, milliseconds))
+  }
+
+  const findDriver = async (navigation) => {
+    // buscando conductor hasta encontrarlo, cuando lo encuentra navega
+    await sleep(300);
+    navigation.navigate("TravelInProgress");
   };
 
   if (!fontsLoaded) {
@@ -140,18 +151,37 @@ export default function ConfirmationTravel({ navigation }) {
           </Text>
         </View>
       </View>
-      <Pressable style={MapStyles.confirmTripButton} onPress={() => createTravel()} >
-        <Text
-          style={{
-            fontFamily: "poppins-bold",
-            color: "white",
-            textAlign: "center",
-            lineHeight: 38,
-          }}
-        >
-          Iniciar Viaje
-        </Text>
-      </Pressable>
+      <View style={TravelStyles.travelContainer}>
+        <View style={TravelStyles.buttonContainer}>
+          <Pressable style={MapStyles.confirmTripButton} onPress={() => navigation.navigate("Home")}>
+            <Text
+              style={{
+                fontFamily: "poppins-bold",
+                color: "white",
+                textAlign: "center",
+                lineHeight: 38,
+              }}
+            >
+              Volver atras
+            </Text>
+          </Pressable>
+        </View>
+        <View style={TravelStyles.buttonContainer}>
+          <Pressable style={MapStyles.confirmTripButton} onPress={() => createTravel(navigation)} >
+            <Text
+              style={{
+                fontFamily: "poppins-bold",
+                color: "white",
+                textAlign: "center",
+                lineHeight: 38,
+              }}
+            >
+              Iniciar Viaje
+            </Text>
+          </Pressable>
+        </View>
+      </View >
+
     </View >
   );
 }
