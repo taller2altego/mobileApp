@@ -32,6 +32,7 @@ export default function ConfirmationTravel({ navigation }) {
   const [duration, setDuration] = useState(0);
   const [price, setPrice] = useState(0);
   const [modalWaitingVisible, setModalWaitingVisible] = useState(false);
+  const [travelId, setTravelId] = useState("");
   const origin = currentTravelData.origin;
   const destination = currentTravelData.destination;
   const mapRef = useRef(null);
@@ -75,9 +76,9 @@ export default function ConfirmationTravel({ navigation }) {
     };
     return authPost(`http://10.0.2.2:5000/travels`, token, body)
       .then(
-        () => {
+        ( res ) => {
+          setTravelId(res.data._id)
           setModalWaitingVisible(!modalWaitingVisible);
-          findDriver(navigation);
         }
       );
   };
@@ -86,11 +87,6 @@ export default function ConfirmationTravel({ navigation }) {
     return new Promise(resolve => setTimeout(resolve, milliseconds))
   }
 
-  const findDriver = async (navigation) => {
-    // buscando conductor hasta encontrarlo, cuando lo encuentra navega
-    await sleep(300);
-    navigation.navigate("TravelInProgress");
-  };
 
   if (!fontsLoaded) {
     return null;
@@ -101,6 +97,7 @@ export default function ConfirmationTravel({ navigation }) {
       <WaitingModal
         visible={modalWaitingVisible}
         toggle={toggleWaitingModal}
+        driverId={travelId}
         navigation={navigation}
       ></WaitingModal>
       <MapView
