@@ -16,8 +16,9 @@ const authPost = (url, token, body, extraHeaders) => {
   });
 };
 
-const get = (url, token, extraHeaders) => {
+const get = (url, token, extraHeaders, params) => {
   return axios.get(url, {
+    params,
     headers: { ...extraHeaders, "Authorization": `Bearer ${token}` },
   });
 };

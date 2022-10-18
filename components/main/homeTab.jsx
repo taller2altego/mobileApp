@@ -12,7 +12,6 @@ import { getWithQuerys } from "../../utils/requests";
 import * as SecureStore from "expo-secure-store";
 import { Homestyles } from "../styles";
 const API_KEY = "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ";
-import * as SecureStore from "expo-secure-store";
 import TravelItem from "../travel/TravelItem";
 import { useDispatch } from "react-redux";
 import {
@@ -78,7 +77,7 @@ export default function HomeTab({ navigation }) {
           offset: 4
       };
 
-      await getWithQuerys(`http://10.0.2.2:5000/travels/${id}`, params, token)
+      await gett(`http://10.0.2.2:5000/travels/${id}`, token, {}, params)
         .then(
           ({ data: { data } }) => {
             console.log("DATA");
