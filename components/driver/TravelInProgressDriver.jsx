@@ -1,14 +1,11 @@
 import { useRef, useState } from "react";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { MapStyles, TravelStyles } from "../styles";
-import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
-import * as SecureStore from "expo-secure-store";
 import MapViewDirections from "react-native-maps-directions";
 import { View, Text, Pressable, Image } from "react-native";
-import WaitingModal from "./Waiting";
 import { useSelector } from "react-redux";
 import { useFonts } from "expo-font";
-import { authPost } from "../../utils/requests";
+import { get } from "../../utils/requests";
 
 const API_KEY = "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ";
 const PRICE_PER_KM = 100;
@@ -26,34 +23,46 @@ const INITIAL_POSITION = {
   longitudeDelta: 0.1,
 };
 
-export default function ConfirmationTravel({ navigation }) {
+export default function TravelInProgressDriver({ navigation }) {
   const currentTravelData = useSelector((store) => store.travelDetailsData);
   const [distance, setDistance] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [price, setPrice] = useState(0);
+  const [driver, setDriver] = useState("Raul Gomez");
   const [modalWaitingVisible, setModalWaitingVisible] = useState(false);
-  const [travelId, setTravelId] = useState("");
   const origin = currentTravelData.origin;
   const destination = currentTravelData.destination;
+
+  // origen -- actual conductor hasta llegar a la casa del chabon
+  // destino -- casa del chabon
+
+  // origen actual posicion del conductor con el chabon, inicial en domicilio del chabon
+  // destino -- travel.destination
+
+  // const driverId = await SecureStore.getItemAsync("id");
+  // const token = await SecureStore.getItemAsync("token");
+  // get()
+
+  const cancelTravel = (navigation) => {
+    // request para eliminar el driver del tralel
+    // limpiar inputs de destino y origen en main 
+    navigation.navigate("Home");
+  };
+
   const mapRef = useRef(null);
   const [fontsLoaded] = useFonts({
     poppins: require("../../assets/fonts/Poppins-Regular.ttf"),
     "poppins-bold": require("../../assets/fonts/Poppins-Bold.ttf"),
   });
 
-  const onDriverSearch = () => {
-    navigation.navigate("DriverSearch");
-  };
+  // const onDriverSearch = () => {
+  //   navigation.navigate("DriverSearch");
+  // };
 
-  const toggleWaitingModal = () => {
-    setModalWaitingVisible(!modalWaitingVisible);
-  };
 
   const updateTripProps = (args) => {
     if (args) {
       setDistance(args.distance.toFixed(2));
       setDuration(Math.ceil(args.duration));
-      setPrice(distance * PRICE_PER_KM);
     }
   };
 
@@ -64,42 +73,12 @@ export default function ConfirmationTravel({ navigation }) {
     });
   };
 
-  const createTravel = async (navigation) => {
-    const id = await SecureStore.getItemAsync("id");
-    const token = await SecureStore.getItemAsync("token");
-    const body = {
-      userId: id,
-      price: price,
-      source: origin,
-      destination: destination,
-      date: new Date().toISOString()
-    };
-    return authPost(`http://10.0.2.2:5000/travels`, token, body)
-      .then(
-        ( res ) => {
-          setTravelId(res.data._id)
-          setModalWaitingVisible(!modalWaitingVisible);
-        }
-      );
-  };
-
-  const sleep = (milliseconds) => {
-    return new Promise(resolve => setTimeout(resolve, milliseconds))
-  }
-
-
   if (!fontsLoaded) {
     return null;
   }
 
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
-      <WaitingModal
-        visible={modalWaitingVisible}
-        toggle={toggleWaitingModal}
-        driverId={travelId}
-        navigation={navigation}
-      ></WaitingModal>
       <MapView
         ref={mapRef}
         style={MapStyles.map}
@@ -126,31 +105,27 @@ export default function ConfirmationTravel({ navigation }) {
       </MapView>
       <View style={MapStyles.tripInfoContainer}>
         <View style={{ paddingLeft: 35 }}>
-          <Image
-            style={MapStyles.carImage}
-            source={{
-              uri: "https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,w_896,h_504/f_auto,q_auto/products/carousel/UberX.png",
-            }}
-          />
         </View>
+        <Image
+          style={MapStyles.carImage}
+          source={{
+            uri: "https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,w_896,h_504/f_auto,q_auto/products/carousel/UberX.png",
+          }}
+        />
         <View style={{ paddingRight: 20 }}>
           <Text style={{ fontFamily: "poppins", fontSize: 15 }}>
             {" "}
-            {duration} min{" "}
+            Cliente: {driver}
           </Text>
           <Text style={{ fontFamily: "poppins", fontSize: 15 }}>
             {" "}
             {distance} km
           </Text>
-          <Text style={{ fontFamily: "poppins", fontSize: 15 }}>
-            {" "}
-            {distance * PRICE_PER_KM} ARS (est.)
-          </Text>
         </View>
       </View>
       <View style={TravelStyles.travelContainer}>
         <View style={TravelStyles.buttonContainer}>
-          <Pressable style={MapStyles.confirmTripButton} onPress={() => navigation.navigate("Home")}>
+          <Pressable style={MapStyles.confirmTripButton} onPress={() => cancelTravel(navigation)}>
             <Text
               style={{
                 fontFamily: "poppins-bold",
@@ -159,12 +134,12 @@ export default function ConfirmationTravel({ navigation }) {
                 lineHeight: 38,
               }}
             >
-              Volver atras
+              Cancelar viaje
             </Text>
           </Pressable>
         </View>
         <View style={TravelStyles.buttonContainer}>
-          <Pressable style={MapStyles.confirmTripButton} onPress={() => createTravel(navigation)} >
+          <Pressable style={MapStyles.confirmTripButton} onPress={() => navigation.navigate("ProfileVisualization")}>
             <Text
               style={{
                 fontFamily: "poppins-bold",
@@ -173,12 +148,12 @@ export default function ConfirmationTravel({ navigation }) {
                 lineHeight: 38,
               }}
             >
-              Iniciar Viaje
+              Visualizar Cliente
             </Text>
           </Pressable>
         </View>
-      </View >
 
+      </View>
     </View >
   );
 }

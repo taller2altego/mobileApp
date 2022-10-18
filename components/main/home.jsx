@@ -33,10 +33,10 @@ export default function Home({ navigation }) {
       <Tab.Screen
         name="Perfil"
         component={ProfileTab}
-        options={ ({ navigation }) => ({
+        options={({ navigation }) => ({
           headerShown: false
         })
-      }
+        }
       />
     </Tab.Navigator>
   );

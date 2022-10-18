@@ -10,6 +10,8 @@ import LoginModal from "./components/auth/login";
 import HomeScreen from "./components/main/home";
 import DriverScreen from "./components/auth/driver";
 import TravelInProgress from "./components/travel/TravelInProgress"
+import TravelSearch from "./components/driver/TravelSearch"
+import ProfileVisualization from "./components/main/profileVisualization"
 import store from "./redux/store/store";
 import { Provider } from "react-redux";
 import ConfirmationTravel from "./components/travel/ConfirmationTravel";
@@ -61,6 +63,16 @@ export default function App(props) {
           <Stack.Screen
             name="TravelInProgress"
             component={TravelInProgress}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="ProfileVisualization"
+            component={ProfileVisualization}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="TravelSearch"
+            component={TravelSearch}
             options={{ headerShown: false }}
           />
         </Stack.Navigator>

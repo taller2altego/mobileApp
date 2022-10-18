@@ -2,25 +2,19 @@ import React, { useState, useEffect, useCallback } from "react";
 import { ActivityIndicator, Modal, Text, View } from "react-native";
 import { get } from "../../utils/requests";
 import { LandingStyles, modalStyles } from "../styles";
+import { get } from "../../utils/requests";
 
 export default function WaitingDriverModal({ ...props }) {
   const [seconds, setSeconds] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(async () => {
-      const id = await SecureStore.getItemAsync("id");
       const token = await SecureStore.getItemAsync("token");
-      await get(`http://10.0.2.2:5000/travels/${id}`, token)
-        .then(
-          ({ data: { data } }) => {
-            console.log("DATA");
-            console.log(data);
-            setData(data);
+      await get(`http://10.0.2.2:5000/travels/${props.travelId}/driver`)
+        .then(({ data }) => {
+          if (data.driverId) {
+            // cambiar vista           
           }
-        )
-        .catch(err => {
-          console.log(err);
-          console.log('aca falla');
         });
     }, 10000);
     return () => clearInterval(interval);
