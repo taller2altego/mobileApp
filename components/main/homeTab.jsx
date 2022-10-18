@@ -51,10 +51,12 @@ import {
 // ];
 
 export default function HomeTab({ navigation }) {
+  const currentUserData = useSelector((store) => store.userData);
   const [srcDetails, setSrcDetails] = useState("");
   const [destDetails, setDestDetails] = useState("");
   const [data_travels, setData] = useState({});
   const [selectedId, setSelectedId] = useState(null);
+  const [isDriver, setIsDriver] = useState(currentUserData.isDriver);
   const dispatch = useDispatch();
 
   function renderItem({ item }) {
@@ -73,8 +75,8 @@ export default function HomeTab({ navigation }) {
       const id = await SecureStore.getItemAsync("id");
       const token = await SecureStore.getItemAsync("token");
       const params = {
-          page: 1,
-          offset: 4
+        page: 1,
+        offset: 4
       };
 
       await getWithQuerys(`http://10.0.2.2:5000/travels/${id}`, params, token)
@@ -153,6 +155,20 @@ export default function HomeTab({ navigation }) {
                 language: "en",
               }}
             />
+            {isDriver && (
+              <View style={Profilestyles.edit_profile_button_container}>
+                <Pressable
+                  onPress={() => {
+                    navigation.navigate("TravelSearch");
+                  }}
+                  style={Profilestyles.edit_profile_button}
+                >
+                  <Text style={Profilestyles.edit_button_text}>
+                    Iniciar trabajo
+                  </Text>
+                </Pressable>
+              </View>
+            )}
             <Button
               title="Confirmar viaje"
               color="#696c6e"
