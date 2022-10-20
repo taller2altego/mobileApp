@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from "react";
 import { ActivityIndicator, Modal, Text, View } from "react-native";
 import { get } from "../../utils/requests";
 import { LandingStyles, modalStyles } from "../styles";
-import { get } from "../../utils/requests";
 
 export default function WaitingDriverModal({ ...props }) {
   const [seconds, setSeconds] = useState(0);

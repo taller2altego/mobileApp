@@ -28,6 +28,8 @@ export default function TravelInProgress({ navigation }) {
   const [distance, setDistance] = useState(0);
   const [duration, setDuration] = useState(0);
   const [driver, setDriver] = useState("Raul Gomez");
+  // cambiar el default
+  const [driverPos, setDriverPos] = useState("currentTravelData.destination")
   const [modalWaitingVisible, setModalWaitingVisible] = useState(false);
   const origin = currentTravelData.origin;
   const destination = currentTravelData.destination;
@@ -38,9 +40,23 @@ export default function TravelInProgress({ navigation }) {
   // origen actual posicion del conductor con el chabon, inicial en domicilio del chabon
   // destino -- travel.destination
 
-  // const driverId = await SecureStore.getItemAsync("id");
-  // const token = await SecureStore.getItemAsync("token");
-  // get()
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      const token = await SecureStore.getItemAsync("token");
+      await get(`http://10.0.2.2:5000/travels/${props.travelId}/driver`, token)
+        .then((data) => {
+            const position = {
+              latitud: data.currentDriverPosition.latitud,
+              longitud: data.currentDriverPosition.latitud
+            }
+            setDriverPos(position);
+            if (position.latitud == destination.latitud && position.longitud == destination.longitud){
+              navigation.navigate('TravelInProgress');
+            }
+        });
+    }, 10000);
+    return () => clearInterval(interval);
+  }, []);
 
   const cancelTravel = (navigation) => {
     // request para eliminar el viaje en el travel
@@ -124,6 +140,20 @@ export default function TravelInProgress({ navigation }) {
         </View>
       </View>
       <View style={TravelStyles.travelContainer}>
+        <View style={TravelStyles.buttonContainer}>
+          <Pressable style={MapStyles.confirmTripButton} onPress={() => cancelTravel(navigation)}>
+            <Text
+              style={{
+                fontFamily: "poppins-bold",
+                color: "white",
+                textAlign: "center",
+                lineHeight: 38,
+              }}
+            >
+              Cancelar viaje
+            </Text>
+          </Pressable>
+        </View>
         <View style={TravelStyles.buttonContainer}>
           <Pressable style={MapStyles.confirmTripButton} onPress={() => navigation.navigate("ProfileVisualization")}>
             <Text

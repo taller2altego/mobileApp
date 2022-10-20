@@ -6,17 +6,18 @@ import {
   StyleSheet,
   Text,
   ScrollView,
+  Pressable
 } from "react-native";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
-import { getWithQuerys } from "../../utils/requests";
-import { Homestyles } from "../styles";
+import { Homestyles, Profilestyles } from "../styles";
 const API_KEY = "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ";
 import TravelItem from "../travel/TravelItem";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   setDestination,
   setOrigin,
 } from "../../redux/actions/UpdateTravelDetails";
+import { get } from "../../utils/requests";
 
 // const DATA = [
 //   {
@@ -78,7 +79,7 @@ export default function HomeTab({ navigation }) {
         offset: 4
       };
 
-      await gett(`http://10.0.2.2:5000/travels/${id}`, token, {}, params)
+      await get(`http://10.0.2.2:5000/travels/${id}`, token, {}, params)
         .then(
           ({ data: { data } }) => {
             setData(data);
