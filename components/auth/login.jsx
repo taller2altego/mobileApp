@@ -10,19 +10,21 @@ export default function LoginModal({ ...props }) {
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const onSignIn = async () => {
+  const onSignIn = () => {
     return post(`http://10.0.2.2:5000/login`, {
       email: 'Aa@aa.com',
       password: '1234'
     })
-      .then(async ({ data: { id, token } }) => {
+      .then(async (info) => {
+        console.log(info);
+        const { data: { id, token } } = info;
         await SecureStore.setItemAsync("token", token);
         await SecureStore.setItemAsync("id", id.toString());
         props.toggle();
         props.navigation.navigate("Home");
       })
       .catch(e => {
-        const errMessage = e.response && e.response.data && e.response.data || e.message;
+        const errMessage = e.response && e.response.data && e.response.data.message || e.message;
         setErrorMessage(errMessage);
       });
   };
