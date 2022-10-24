@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { MapStyles, TravelStyles } from "../styles";
 import MapViewDirections from "react-native-maps-directions";
@@ -6,6 +6,7 @@ import { View, Text, Pressable, Image } from "react-native";
 import { useSelector } from "react-redux";
 import { useFonts } from "expo-font";
 import { get } from "../../utils/requests";
+import * as SecureStore from "expo-secure-store";
 
 const API_KEY = "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ";
 const PRICE_PER_KM = 100;
@@ -23,13 +24,13 @@ const INITIAL_POSITION = {
   longitudeDelta: 0.1,
 };
 
-export default function TravelInProgress({ navigation }) {
+export default function DriverIncoming({ navigation }) {
   const currentTravelData = useSelector((store) => store.travelDetailsData);
   const [distance, setDistance] = useState(0);
   const [duration, setDuration] = useState(0);
   const [driver, setDriver] = useState("Raul Gomez");
   // cambiar el default
-  const [driverPos, setDriverPos] = useState("currentTravelData.destination")
+  const [driverPos, setDriverPos] = useState("currentTravelData.destination");
   const [modalWaitingVisible, setModalWaitingVisible] = useState(false);
   const origin = currentTravelData.origin;
   const destination = currentTravelData.destination;
@@ -43,24 +44,29 @@ export default function TravelInProgress({ navigation }) {
   useEffect(() => {
     const interval = setInterval(async () => {
       const token = await SecureStore.getItemAsync("token");
-      await get(`http://10.0.2.2:5000/travels/${props.travelId}/driver`, token)
-        .then((data) => {
-            const position = {
-              latitud: data.currentDriverPosition.latitud,
-              longitud: data.currentDriverPosition.latitud
-            }
-            setDriverPos(position);
-            if (position.latitud == destination.latitud && position.longitud == destination.longitud){
-              navigation.navigate('TravelInProgress');
-            }
-        });
+      await get(
+        `http://10.0.2.2:5000/travels/${props.travelId}/driver`,
+        token
+      ).then((data) => {
+        const position = {
+          latitud: data.currentDriverPosition.latitud,
+          longitud: data.currentDriverPosition.latitud,
+        };
+        setDriverPos(position);
+        if (
+          position.latitud == destination.latitud &&
+          position.longitud == destination.longitud
+        ) {
+          navigation.navigate("TravelInProgress");
+        }
+      });
     }, 10000);
     return () => clearInterval(interval);
   }, []);
 
   const cancelTravel = (navigation) => {
     // request para eliminar el viaje en el travel
-    // limpiar inputs de destino y origen en main 
+    // limpiar inputs de destino y origen en main
     navigation.navigate("Home");
   };
 
@@ -73,7 +79,6 @@ export default function TravelInProgress({ navigation }) {
   // const onDriverSearch = () => {
   //   navigation.navigate("DriverSearch");
   // };
-
 
   const updateTripProps = (args) => {
     if (args) {
@@ -117,11 +122,10 @@ export default function TravelInProgress({ navigation }) {
             strokeWidth={5}
             onReady={updateTripProps}
           />
-          )}
+        )}
       </MapView>
       <View style={MapStyles.tripInfoContainer}>
-        <View style={{ paddingLeft: 35 }}>
-        </View>
+        <View style={{ paddingLeft: 35 }}></View>
         <Image
           style={MapStyles.carImage}
           source={{
@@ -141,7 +145,10 @@ export default function TravelInProgress({ navigation }) {
       </View>
       <View style={TravelStyles.travelContainer}>
         <View style={TravelStyles.buttonContainer}>
-          <Pressable style={MapStyles.confirmTripButton} onPress={() => cancelTravel(navigation)}>
+          <Pressable
+            style={MapStyles.confirmTripButton}
+            onPress={() => cancelTravel(navigation)}
+          >
             <Text
               style={{
                 fontFamily: "poppins-bold",
@@ -155,7 +162,10 @@ export default function TravelInProgress({ navigation }) {
           </Pressable>
         </View>
         <View style={TravelStyles.buttonContainer}>
-          <Pressable style={MapStyles.confirmTripButton} onPress={() => navigation.navigate("ProfileVisualization")}>
+          <Pressable
+            style={MapStyles.confirmTripButton}
+            onPress={() => navigation.navigate("ProfileVisualization")}
+          >
             <Text
               style={{
                 fontFamily: "poppins-bold",
@@ -168,8 +178,7 @@ export default function TravelInProgress({ navigation }) {
             </Text>
           </Pressable>
         </View>
-
       </View>
-    </View >
+    </View>
   );
 }

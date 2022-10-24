@@ -72,21 +72,17 @@ export default function ConfirmationTravel({ navigation }) {
       price: price,
       source: origin,
       destination: destination,
-      date: new Date().toISOString()
+      date: new Date().toISOString(),
     };
-    return authPost(`http://10.0.2.2:5000/travels`, token, body)
-      .then(
-        ( res ) => {
-          setTravelId(res.data._id)
-          setModalWaitingVisible(!modalWaitingVisible);
-        }
-      );
+    return authPost(`http://10.0.2.2:5000/travels`, token, body).then((res) => {
+      setTravelId(res.data._id);
+      setModalWaitingVisible(!modalWaitingVisible);
+    });
   };
 
   const sleep = (milliseconds) => {
-    return new Promise(resolve => setTimeout(resolve, milliseconds))
-  }
-
+    return new Promise((resolve) => setTimeout(resolve, milliseconds));
+  };
 
   if (!fontsLoaded) {
     return null;
@@ -150,7 +146,10 @@ export default function ConfirmationTravel({ navigation }) {
       </View>
       <View style={TravelStyles.travelContainer}>
         <View style={TravelStyles.buttonContainer}>
-          <Pressable style={MapStyles.confirmTripButton} onPress={() => navigation.navigate("Home")}>
+          <Pressable
+            style={MapStyles.confirmTripButton}
+            onPress={() => navigation.navigate("Home")}
+          >
             <Text
               style={{
                 fontFamily: "poppins-bold",
@@ -164,7 +163,10 @@ export default function ConfirmationTravel({ navigation }) {
           </Pressable>
         </View>
         <View style={TravelStyles.buttonContainer}>
-          <Pressable style={MapStyles.confirmTripButton} onPress={() => createTravel(navigation)} >
+          <Pressable
+            style={MapStyles.confirmTripButton}
+            onPress={() => createTravel(navigation)}
+          >
             <Text
               style={{
                 fontFamily: "poppins-bold",
@@ -177,8 +179,7 @@ export default function ConfirmationTravel({ navigation }) {
             </Text>
           </Pressable>
         </View>
-      </View >
-
-    </View >
+      </View>
+    </View>
   );
 }

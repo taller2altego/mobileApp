@@ -6,6 +6,7 @@ import { View, Text, Pressable, Image } from "react-native";
 import { useSelector } from "react-redux";
 import { useFonts } from "expo-font";
 import { get } from "../../utils/requests";
+import * as SecureStore from "expo-secure-store";
 
 const API_KEY = "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ";
 const PRICE_PER_KM = 100;
@@ -44,7 +45,7 @@ export default function TravelInProgress({ navigation }) {
 
   const cancelTravel = (navigation) => {
     // request para eliminar el viaje en el travel
-    // limpiar inputs de destino y origen en main 
+    // limpiar inputs de destino y origen en main
     navigation.navigate("Home");
   };
 
@@ -57,7 +58,6 @@ export default function TravelInProgress({ navigation }) {
   // const onDriverSearch = () => {
   //   navigation.navigate("DriverSearch");
   // };
-
 
   const updateTripProps = (args) => {
     if (args) {
@@ -101,11 +101,10 @@ export default function TravelInProgress({ navigation }) {
             strokeWidth={5}
             onReady={updateTripProps}
           />
-          )}
+        )}
       </MapView>
       <View style={MapStyles.tripInfoContainer}>
-        <View style={{ paddingLeft: 35 }}>
-        </View>
+        <View style={{ paddingLeft: 35 }}></View>
         <Image
           style={MapStyles.carImage}
           source={{
@@ -125,7 +124,10 @@ export default function TravelInProgress({ navigation }) {
       </View>
       <View style={TravelStyles.travelContainer}>
         <View style={TravelStyles.buttonContainer}>
-          <Pressable style={MapStyles.confirmTripButton} onPress={() => navigation.navigate("ProfileVisualization")}>
+          <Pressable
+            style={MapStyles.confirmTripButton}
+            onPress={() => navigation.navigate("ProfileVisualization")}
+          >
             <Text
               style={{
                 fontFamily: "poppins-bold",
@@ -138,8 +140,7 @@ export default function TravelInProgress({ navigation }) {
             </Text>
           </Pressable>
         </View>
-
       </View>
-    </View >
+    </View>
   );
 }

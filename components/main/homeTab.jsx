@@ -6,7 +6,7 @@ import {
   StyleSheet,
   Text,
   ScrollView,
-  Pressable
+  Pressable,
 } from "react-native";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import { Homestyles, Profilestyles } from "../styles";
@@ -18,6 +18,7 @@ import {
   setOrigin,
 } from "../../redux/actions/UpdateTravelDetails";
 import { get } from "../../utils/requests";
+import * as SecureStore from "expo-secure-store";
 
 // const DATA = [
 //   {
@@ -76,18 +77,16 @@ export default function HomeTab({ navigation }) {
       const token = await SecureStore.getItemAsync("token");
       const params = {
         page: 1,
-        offset: 4
+        offset: 4,
       };
 
       await get(`http://10.0.2.2:5000/travels/${id}`, token, {}, params)
-        .then(
-          ({ data: { data } }) => {
-            setData(data);
-          }
-        )
-        .catch(err => {
+        .then(({ data: { data } }) => {
+          setData(data);
+        })
+        .catch((err) => {
           console.log(err);
-          console.log('aca falla');
+          console.log("aca falla");
         });
     })();
   }, []);

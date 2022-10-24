@@ -6,6 +6,7 @@ import { View, Text, Pressable, Image } from "react-native";
 import { useSelector } from "react-redux";
 import { useFonts } from "expo-font";
 import { get } from "../../utils/requests";
+import * as SecureStore from "expo-secure-store";
 
 const API_KEY = "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ";
 const PRICE_PER_KM = 100;
@@ -44,7 +45,7 @@ export default function TravelInProgressDriver({ navigation }) {
 
   const cancelTravel = (navigation) => {
     // request para eliminar el driver del tralel
-    // limpiar inputs de destino y origen en main 
+    // limpiar inputs de destino y origen en main
     navigation.navigate("Home");
   };
 
@@ -57,7 +58,6 @@ export default function TravelInProgressDriver({ navigation }) {
   // const onDriverSearch = () => {
   //   navigation.navigate("DriverSearch");
   // };
-
 
   const updateTripProps = (args) => {
     if (args) {
@@ -104,8 +104,7 @@ export default function TravelInProgressDriver({ navigation }) {
         )}
       </MapView>
       <View style={MapStyles.tripInfoContainer}>
-        <View style={{ paddingLeft: 35 }}>
-        </View>
+        <View style={{ paddingLeft: 35 }}></View>
         <Image
           style={MapStyles.carImage}
           source={{
@@ -125,7 +124,10 @@ export default function TravelInProgressDriver({ navigation }) {
       </View>
       <View style={TravelStyles.travelContainer}>
         <View style={TravelStyles.buttonContainer}>
-          <Pressable style={MapStyles.confirmTripButton} onPress={() => cancelTravel(navigation)}>
+          <Pressable
+            style={MapStyles.confirmTripButton}
+            onPress={() => cancelTravel(navigation)}
+          >
             <Text
               style={{
                 fontFamily: "poppins-bold",
@@ -139,7 +141,10 @@ export default function TravelInProgressDriver({ navigation }) {
           </Pressable>
         </View>
         <View style={TravelStyles.buttonContainer}>
-          <Pressable style={MapStyles.confirmTripButton} onPress={() => navigation.navigate("ProfileVisualization")}>
+          <Pressable
+            style={MapStyles.confirmTripButton}
+            onPress={() => navigation.navigate("ProfileVisualization")}
+          >
             <Text
               style={{
                 fontFamily: "poppins-bold",
@@ -152,8 +157,7 @@ export default function TravelInProgressDriver({ navigation }) {
             </Text>
           </Pressable>
         </View>
-
       </View>
-    </View >
+    </View>
   );
 }
