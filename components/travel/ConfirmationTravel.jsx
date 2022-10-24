@@ -6,9 +6,10 @@ import * as SecureStore from "expo-secure-store";
 import MapViewDirections from "react-native-maps-directions";
 import { View, Text, Pressable, Image } from "react-native";
 import WaitingModal from "./Waiting";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useFonts } from "expo-font";
 import { authPost } from "../../utils/requests";
+import { setNewTravel } from "../../redux/actions/UpdateCurrentTravel";
 
 const API_KEY = "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ";
 const PRICE_PER_KM = 100;
@@ -27,27 +28,24 @@ const INITIAL_POSITION = {
 };
 
 export default function ConfirmationTravel({ navigation }) {
+  // redux
   const currentTravelData = useSelector((store) => store.travelDetailsData);
+  const origin = currentTravelData.origin;
+  const destination = currentTravelData.destination;
+
+  const dispatch = useDispatch();
+
+  // states
   const [distance, setDistance] = useState(0);
   const [duration, setDuration] = useState(0);
   const [price, setPrice] = useState(0);
   const [modalWaitingVisible, setModalWaitingVisible] = useState(false);
-  const [travelId, setTravelId] = useState("");
-  const origin = currentTravelData.origin;
-  const destination = currentTravelData.destination;
+
   const mapRef = useRef(null);
   const [fontsLoaded] = useFonts({
     poppins: require("../../assets/fonts/Poppins-Regular.ttf"),
     "poppins-bold": require("../../assets/fonts/Poppins-Bold.ttf"),
   });
-
-  const onDriverSearch = () => {
-    navigation.navigate("DriverSearch");
-  };
-
-  const toggleWaitingModal = () => {
-    setModalWaitingVisible(!modalWaitingVisible);
-  };
 
   const updateTripProps = (args) => {
     if (args) {
@@ -74,14 +72,12 @@ export default function ConfirmationTravel({ navigation }) {
       destination: destination,
       date: new Date().toISOString(),
     };
-    return authPost(`http://10.0.2.2:5000/travels`, token, body).then((res) => {
-      setTravelId(res.data._id);
-      setModalWaitingVisible(!modalWaitingVisible);
-    });
-  };
 
-  const sleep = (milliseconds) => {
-    return new Promise((resolve) => setTimeout(resolve, milliseconds));
+    return authPost(`http://10.0.2.2:5000/travels`, token, body)
+      .then(({ data }) => {
+        dispatch(setNewTravel({ _id: data.data._id }));
+        setModalWaitingVisible(!modalWaitingVisible);
+      });
   };
 
   if (!fontsLoaded) {
@@ -90,12 +86,7 @@ export default function ConfirmationTravel({ navigation }) {
 
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
-      <WaitingModal
-        visible={modalWaitingVisible}
-        toggle={toggleWaitingModal}
-        driverId={travelId}
-        navigation={navigation}
-      ></WaitingModal>
+      {modalWaitingVisible && <WaitingModal navigation={navigation}></WaitingModal>}
       <MapView
         ref={mapRef}
         style={MapStyles.map}

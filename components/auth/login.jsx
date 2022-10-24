@@ -12,7 +12,7 @@ export default function LoginModal({ ...props }) {
 
   const onSignIn = () => {
     return post(`http://10.0.2.2:5000/login`, {
-      email: 'Aa@aa.com',
+      email: 'n@s.com',
       password: '1234'
     })
       .then(async (info) => {
@@ -40,7 +40,7 @@ export default function LoginModal({ ...props }) {
             <TextInput
               style={[modalStyles.modal_input, { fontFamily: "poppins" }]}
               placeholder="Email"
-              value="Aa@aa.com"
+              value="n@s.com"
               placeholderTextColor="#343437"
               onChangeText={(email) => setEmail(email)}
             />

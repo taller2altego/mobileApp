@@ -9,47 +9,18 @@ import {
   Pressable,
 } from "react-native";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
-import { Homestyles, Profilestyles } from "../styles";
-const API_KEY = "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ";
-import TravelItem from "../travel/TravelItem";
 import { useDispatch, useSelector } from "react-redux";
+import * as SecureStore from "expo-secure-store";
+
+import { Homestyles, Profilestyles } from "../styles";
+import TravelItem from "../travel/TravelItem";
 import {
   setDestination,
   setOrigin,
 } from "../../redux/actions/UpdateTravelDetails";
 import { get } from "../../utils/requests";
-import * as SecureStore from "expo-secure-store";
 
-// const DATA = [
-//   {
-//     id: 1,
-//     price: 1500,
-//     source: "Calle siempre viva 123",
-//     destination: "asd 1234",
-//     date: "2022-08-01T03:01",
-//   },
-//   {
-//     id: 2,
-//     price: 1500,
-//     source: "Calle siempre viva 123",
-//     destination: "gfd 1234",
-//     date: "2022-08-01T13:00",
-//   },
-//   {
-//     id: 3,
-//     price: 1500,
-//     source: "Calle siempre viva 123",
-//     destination: "nbvc 1234",
-//     date: "2022-06-01T20:00",
-//   },
-//   {
-//     id: 4,
-//     price: 1500,
-//     source: "Calle siempre viva 123",
-//     destination: "23q4 1234",
-//     date: "2022-05-01T20:00",
-//   },
-// ];
+const API_KEY = "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ";
 
 export default function HomeTab({ navigation }) {
   const currentUserData = useSelector((store) => store.userData);
@@ -83,10 +54,6 @@ export default function HomeTab({ navigation }) {
       await get(`http://10.0.2.2:5000/travels/${id}`, token, {}, params)
         .then(({ data: { data } }) => {
           setData(data);
-        })
-        .catch((err) => {
-          console.log(err);
-          console.log("aca falla");
         });
     })();
   }, []);
@@ -114,7 +81,6 @@ export default function HomeTab({ navigation }) {
           <View style={[{ flex: 0.2 }]}></View>
 
           <View style={{ flex: 3 }}>
-            {/* {DATA.map(travel => renderItem({ travel }))} */}
             <FlatList
               data={data_travels}
               renderItem={renderItem}

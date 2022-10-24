@@ -1,36 +1,35 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useEffect } from "react";
 import { ActivityIndicator, Modal, Text, View } from "react-native";
-import { get } from "../../utils/requests";
-import { LandingStyles, modalStyles } from "../styles";
 import * as SecureStore from "expo-secure-store";
-import { Pressable, Image } from "react-native";
+import { Pressable } from "react-native";
+import { useSelector, useDispatch } from "react-redux";
 
-export default function WaitingDriverModal({ ...props }) {
-  const [seconds, setSeconds] = useState(0);
+// modules
+import { get } from "../../utils/requests";
+import { setDriverId } from "../../redux/actions/UpdateCurrentTravel";
+import { modalStyles } from "../styles";
 
-  // useEffect(() => {
-  //   const interval = setInterval(async () => {
-  //     const token = await SecureStore.getItemAsync("token");
-  //     await get(`http://10.0.2.2:5000/travels/${props.travelId}/driver`)
-  //       .then(({ data }) => {
-  //         if (data.driverId) {
-  //           // cambiar vista
-  //         }
-  //       })
-  //       .catch(() => {
-  //         console.log("No se pudo hacer la request");
-  //       });
-  //   }, 10000);
-  //   return () => clearInterval(interval);
-  // }, []);
+export default function WaitingDriverModal({ navigation, ...props }) {
 
-  const sleep = (milliseconds) => {
-    return new Promise((resolve) => setTimeout(resolve, milliseconds));
-  };
+  // redux
+  const currentTravelData = useSelector((store) => store.currentTravel);
+  const id = currentTravelData._id;
+  const dispatch = useDispatch();
 
-  useEffect(async () => {
-    await sleep(3000);
-    props.navigation.navigate("DriverIncoming");
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      const token = await SecureStore.getItemAsync("token");
+
+      await get(`http://10.0.2.2:5000/travels/${id}/driver`, token)
+        .then(({ data }) => {
+          if (data.data.driverId) {
+            dispatch(setDriverId({ driverId: data.data.driverId }));
+            navigation.navigate("DriverIncoming");
+            clearInterval(interval);
+          }
+        });
+
+    }, 10000);
   }, []);
 
   return (
@@ -50,20 +49,6 @@ export default function WaitingDriverModal({ ...props }) {
                 Buscando conductor para su viaje
               </Text>
             </View>
-            <Pressable
-              onPress={() => props.navigation.navigate("ConfirmationTravel")}
-            >
-              <Text
-                style={{
-                  fontFamily: "poppins-bold",
-                  color: "white",
-                  textAlign: "center",
-                  lineHeight: 38,
-                }}
-              >
-                Volver atras
-              </Text>
-            </Pressable>
             <ActivityIndicator size={80} color="#000000" />
           </View>
         </View>

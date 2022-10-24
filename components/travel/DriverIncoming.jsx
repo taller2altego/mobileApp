@@ -17,6 +17,7 @@ const edgePadding = {
   bottom: 100,
   left: 100,
 };
+
 const INITIAL_POSITION = {
   latitude: -34.6035,
   longitude: -58.4611,
@@ -25,60 +26,70 @@ const INITIAL_POSITION = {
 };
 
 export default function DriverIncoming({ navigation }) {
-  const currentTravelData = useSelector((store) => store.travelDetailsData);
+  // redux
+  const travelDetailsData = useSelector((store) => store.travelDetailsData);
+  const origin = travelDetailsData.origin;
+  const destination = travelDetailsData.destination;
+
+  const currentTravelData = useSelector((store) => store.currentTravel);
+  const travelId = currentTravelData._id;
+  const driverId = currentTravelData.driverId;
+
+  // states
+  const [currentOrigin, setCurrentOrigin] = useState(origin);
   const [distance, setDistance] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [driver, setDriver] = useState("Raul Gomez");
-  // cambiar el default
-  const [driverPos, setDriverPos] = useState("currentTravelData.destination");
-  const [modalWaitingVisible, setModalWaitingVisible] = useState(false);
-  const origin = currentTravelData.origin;
-  const destination = currentTravelData.destination;
+  const [interval, setRequestInterval] = useState(null);
+  const [driver, setDriver] = useState("");
 
-  // origen -- actual conductor hasta llegar a la casa del chabon
-  // destino -- casa del chabon
-
-  // origen actual posicion del conductor con el chabon, inicial en domicilio del chabon
-  // destino -- travel.destination
+  const mapRef = useRef(null);
 
   useEffect(() => {
-    const interval = setInterval(async () => {
+    (async () => {
       const token = await SecureStore.getItemAsync("token");
-      await get(
-        `http://10.0.2.2:5000/travels/${props.travelId}/driver`,
-        token
-      ).then((data) => {
-        const position = {
-          latitud: data.currentDriverPosition.latitud,
-          longitud: data.currentDriverPosition.latitud,
-        };
-        setDriverPos(position);
-        if (
-          position.latitud == destination.latitud &&
-          position.longitud == destination.longitud
-        ) {
-          navigation.navigate("TravelInProgress");
-        }
-      });
-    }, 10000);
-    return () => clearInterval(interval);
+      return get(`http://10.0.2.2:5000/users/${driverId}`, token)
+        .then(({ data }) => {
+          const { name, lastname } = data;
+          const fullname = `${name} ${lastname}`;
+          setDriver(fullname);
+        })
+        .catch(err => {
+          console.log(err);
+          return err;
+        });
+    })();
+  }, []);
+
+  useEffect(() => {
+    setRequestInterval(setInterval(async () => {
+      const token = await SecureStore.getItemAsync("token");
+
+      await get(`http://10.0.2.2:5000/travels/${travelId}/driver`, token)
+        .then(({ data }) => {
+          console.log(data.data)
+          const position = data.data.currentDriverPosition;
+          setCurrentOrigin(position);
+
+          // TODO: seguro la posicion final, no sea igual... calcular un aproximado
+          const isSameLat = position.latitude == destination.latitude;
+          const isSameLong = position.longitude == destination.longitude;
+          if (isSameLat && isSameLong) {
+            navigation.navigate("TravelInProgress");
+            clearInterval(interval);
+          }
+        });
+    }, 10000));
   }, []);
 
   const cancelTravel = (navigation) => {
-    // request para eliminar el viaje en el travel
-    // limpiar inputs de destino y origen en main
+    clearInterval(interval);
     navigation.navigate("Home");
   };
 
-  const mapRef = useRef(null);
   const [fontsLoaded] = useFonts({
     poppins: require("../../assets/fonts/Poppins-Regular.ttf"),
     "poppins-bold": require("../../assets/fonts/Poppins-Bold.ttf"),
   });
-
-  // const onDriverSearch = () => {
-  //   navigation.navigate("DriverSearch");
-  // };
 
   const updateTripProps = (args) => {
     if (args) {
@@ -104,15 +115,12 @@ export default function DriverIncoming({ navigation }) {
         ref={mapRef}
         style={MapStyles.map}
         provider={PROVIDER_GOOGLE}
-        onMapLoaded={() => {
-          zoomOnDirections();
-        }}
+        onMapLoaded={() => { zoomOnDirections(); }}
         initialRegion={INITIAL_POSITION}
       >
         {origin && <Marker coordinate={origin} identifier="originMark" />}
-        {destination && (
-          <Marker coordinate={destination} identifier="destMark" />
-        )}
+        {destination && <Marker coordinate={destination} identifier="destMark" />}
+        {currentOrigin && <Marker coordinate={currentOrigin} identifier="s" />}
         {origin && destination && (
           <MapViewDirections
             apikey={API_KEY}
@@ -140,6 +148,10 @@ export default function DriverIncoming({ navigation }) {
           <Text style={{ fontFamily: "poppins", fontSize: 15 }}>
             {" "}
             {distance} km
+          </Text>
+          <Text style={{ fontFamily: "poppins", fontSize: 15 }}>
+            {" "}
+            {duration} min{" "}
           </Text>
         </View>
       </View>

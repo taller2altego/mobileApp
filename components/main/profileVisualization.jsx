@@ -1,17 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { Pressable, Text, View } from "react-native";
 import * as SecureStore from "expo-secure-store";
+import { useSelector } from "react-redux";
 import { get } from "../../utils/requests";
 import { Profilestyles } from "../styles";
 import HomeTab from "./homeTab";
 
 export default function VisualizationTab({ navigation }) {
+  //states
   const [name, setName] = useState();
   const [lastname, setLastName] = useState();
   const [email, setEmail] = useState();
   const [phoneNumber, setPhoneNumber] = useState();
   const [numberOfScores, setNumberOfScores] = useState();
   const [averageScore, setAverageScore] = useState();
+  // actual driver
+  const currentTravelData = useSelector((store) => store.currentTravel);
+  const id = currentTravelData.driverId;
 
   useEffect(() => {
     (async () => {
