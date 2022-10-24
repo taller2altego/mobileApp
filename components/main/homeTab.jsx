@@ -28,7 +28,6 @@ export default function HomeTab({ navigation }) {
   const [destDetails, setDestDetails] = useState("");
   const [data_travels, setData] = useState({});
   const [selectedId, setSelectedId] = useState(null);
-  const [isDriver, setIsDriver] = useState(currentUserData.isDriver);
   const dispatch = useDispatch();
 
   function renderItem({ item }) {
@@ -120,7 +119,7 @@ export default function HomeTab({ navigation }) {
                 language: "en",
               }}
             />
-            {isDriver && (
+            {currentUserData.isDriver && (
               <View style={Profilestyles.edit_profile_button_container}>
                 <Pressable
                   onPress={() => {
