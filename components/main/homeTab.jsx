@@ -19,8 +19,7 @@ import {
   setOrigin,
 } from "../../redux/actions/UpdateTravelDetails";
 import { get } from "../../utils/requests";
-
-const API_KEY = "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ";
+import Config from "react-native-config";
 
 export default function HomeTab({ navigation }) {
   const currentUserData = useSelector((store) => store.userData);
@@ -30,6 +29,7 @@ export default function HomeTab({ navigation }) {
   const [selectedId, setSelectedId] = useState(null);
   const [isDriver, setIsDriver] = useState(currentUserData.isDriver);
   const dispatch = useDispatch();
+  console.log(Config.GOOGLE_API_KEY)
 
   function renderItem({ item }) {
     const backgroundColor = item.id === selectedId ? "#f2f2f200" : "white";
@@ -51,7 +51,7 @@ export default function HomeTab({ navigation }) {
         offset: 4,
       };
 
-      await get(`http://10.0.2.2:5000/travels/${id}`, token, {}, params)
+      await get(`${Config.URL_DEV}/travels/${id}`, token, {}, params)
         .then(({ data: { data } }) => {
           setData(data);
         });
@@ -101,7 +101,7 @@ export default function HomeTab({ navigation }) {
                 });
               }}
               query={{
-                key: API_KEY,
+                key: Config.GOOGLE_API_KEY,
                 language: "en",
               }}
             />
@@ -116,7 +116,7 @@ export default function HomeTab({ navigation }) {
                 });
               }}
               query={{
-                key: API_KEY,
+                key: Config.GOOGLE_API_KEY,
                 language: "en",
               }}
             />

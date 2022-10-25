@@ -7,6 +7,7 @@ import { Entypo } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";
 import { setIsDriver, setUserData } from "../../redux/actions/UpdateUserData";
 import * as SecureStore from "expo-secure-store";
+import Config from "react-native-config";
 
 export default function RegisterModal({ ...props }) {
   const [email, setEmail] = useState("");
@@ -29,8 +30,8 @@ export default function RegisterModal({ ...props }) {
 
     const loginBody = { email, password };
 
-    return post("http://10.0.2.2:5000/users", signUpBody)
-    .then(post(`http://10.0.2.2:5000/login`, loginBody))
+    return post(`${Config.URL_DEV}/users`, signUpBody)
+    .then(post(`${Config.URL_DEV}/login`, loginBody))
     .then(({ data: { id, token } }) => {
       SecureStore.setItemAsync("token", token);
       SecureStore.setItemAsync("id", id);

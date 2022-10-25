@@ -4,6 +4,7 @@ import { post } from "../../utils/requests";
 import { LandingStyles, modalStyles } from "../styles";
 import { Entypo } from "@expo/vector-icons";
 import * as SecureStore from "expo-secure-store";
+import Config from "react-native-config";
 
 export default function LoginModal({ ...props }) {
   const [email, setEmail] = useState("");
@@ -11,7 +12,7 @@ export default function LoginModal({ ...props }) {
   const [errorMessage, setErrorMessage] = useState("");
 
   const onSignIn = () => {
-    return post(`http://10.0.2.2:5000/login`, {
+    return post(`${Config.URL_DEV}/login`, {
       email: 'n@s.com',
       password: '1234'
     })

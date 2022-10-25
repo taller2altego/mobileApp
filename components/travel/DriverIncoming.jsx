@@ -7,8 +7,8 @@ import { useSelector } from "react-redux";
 import { useFonts } from "expo-font";
 import { get } from "../../utils/requests";
 import * as SecureStore from "expo-secure-store";
+import Config from "react-native-config";
 
-const API_KEY = "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ";
 const PRICE_PER_KM = 100;
 
 const edgePadding = {
@@ -47,7 +47,7 @@ export default function DriverIncoming({ navigation }) {
   useEffect(() => {
     (async () => {
       const token = await SecureStore.getItemAsync("token");
-      return get(`http://10.0.2.2:5000/users/${driverId}`, token)
+      return get(`${Config.URL_DEV}/users/${driverId}`, token)
         .then(({ data }) => {
           const { name, lastname } = data;
           const fullname = `${name} ${lastname}`;
@@ -64,7 +64,7 @@ export default function DriverIncoming({ navigation }) {
     setRequestInterval(setInterval(async () => {
       const token = await SecureStore.getItemAsync("token");
 
-      await get(`http://10.0.2.2:5000/travels/${travelId}/driver`, token)
+      await get(`${Config.URL_DEV}/travels/${travelId}/driver`, token)
         .then(({ data }) => {
           console.log(data.data)
           const position = data.data.currentDriverPosition;
@@ -123,7 +123,7 @@ export default function DriverIncoming({ navigation }) {
         {currentOrigin && <Marker coordinate={currentOrigin} identifier="s" />}
         {origin && destination && (
           <MapViewDirections
-            apikey={API_KEY}
+            apikey={Config.GOOGLE_API_KEY}
             origin={origin}
             destination={destination}
             strokeColor="black"

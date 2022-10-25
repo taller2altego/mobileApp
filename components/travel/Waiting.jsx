@@ -3,6 +3,7 @@ import { ActivityIndicator, Modal, Text, View } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import { Pressable } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
+import Config from "react-native-config";
 
 // modules
 import { get } from "../../utils/requests";
@@ -20,7 +21,7 @@ export default function WaitingDriverModal({ navigation, ...props }) {
     const interval = setInterval(async () => {
       const token = await SecureStore.getItemAsync("token");
 
-      await get(`http://10.0.2.2:5000/travels/${id}/driver`, token)
+      await get(`${Config.URL_DEV}/travels/${id}/driver`, token)
         .then(({ data }) => {
           if (data.data.driverId) {
             dispatch(setDriverId({ driverId: data.data.driverId }));

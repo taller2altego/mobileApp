@@ -3,6 +3,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { get } from "../../utils/requests";
 import { useDispatch } from "react-redux";
 import { setUserData } from "../../redux/actions/UpdateUserData";
+import Config from "react-native-config";
 
 import * as SecureStore from "expo-secure-store";
 import HomeTab from "./homeTab";
@@ -16,7 +17,7 @@ export default function Home({ navigation }) {
     (async () => {
       const id = await SecureStore.getItemAsync("id");
       const token = await SecureStore.getItemAsync("token");
-      get(`http://10.0.2.2:5000/users/${id}`, token).then(
+      get(`${Config.URL_DEV}/users/${id}`, token).then(
         ({ data: { name, lastname, email, phoneNumber } }) =>
           dispatch(setUserData({ name, lastname, email, phoneNumber }))
       );

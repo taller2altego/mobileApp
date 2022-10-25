@@ -10,8 +10,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useFonts } from "expo-font";
 import { authPost } from "../../utils/requests";
 import { setNewTravel } from "../../redux/actions/UpdateCurrentTravel";
+import Config from "react-native-config";
 
-const API_KEY = "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ";
 const PRICE_PER_KM = 100;
 
 const edgePadding = {
@@ -73,7 +73,7 @@ export default function ConfirmationTravel({ navigation }) {
       date: new Date().toISOString(),
     };
 
-    return authPost(`http://10.0.2.2:5000/travels`, token, body)
+    return authPost(`${Config.URL_DEV}/travels`, token, body)
       .then(({ data }) => {
         dispatch(setNewTravel({ _id: data.data._id }));
         setModalWaitingVisible(!modalWaitingVisible);
@@ -102,7 +102,7 @@ export default function ConfirmationTravel({ navigation }) {
         )}
         {origin && destination && (
           <MapViewDirections
-            apikey={API_KEY}
+            apikey={Config.GOOGLE_API_KEY}
             origin={origin}
             destination={destination}
             strokeColor="black"

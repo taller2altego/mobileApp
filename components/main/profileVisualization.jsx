@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import { get } from "../../utils/requests";
 import { Profilestyles } from "../styles";
 import HomeTab from "./homeTab";
+import Config from "react-native-config";
 
 export default function VisualizationTab({ navigation }) {
   //states
@@ -22,7 +23,7 @@ export default function VisualizationTab({ navigation }) {
     (async () => {
       const id = 2;
       const token = await SecureStore.getItemAsync("token");
-      await get(`http://10.0.2.2:5000/users/${id}`, token).then(
+      await get(`${Config.URL_DEV}users/${id}`, token).then(
         ({ data: { name, lastname, email, phoneNumber, score } }) => {
           setName(name);
           setLastName(lastname);

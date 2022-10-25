@@ -6,6 +6,7 @@ import { setDriverData } from "../../redux/actions/UpdateDriverData";
 import { authPost } from "../../utils/requests";
 import { DriverStyles } from "../styles";
 import * as SecureStore from "expo-secure-store";
+import Config from "react-native-config";
 
 export default function Driver({ navigation }) {
   const [license, setLicense] = useState("");
@@ -17,7 +18,7 @@ export default function Driver({ navigation }) {
   const confirmData = async () => {
     const id = await SecureStore.getItemAsync("id");
     const token = await SecureStore.getItemAsync("token");
-    authPost(`http://10.0.2.2:5000/users/${id}/driver`, token, {
+    authPost(`${Config.URL_DEV}/users/${id}/driver`, token, {
       license,
       model,
       licensePlate,

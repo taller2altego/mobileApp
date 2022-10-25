@@ -7,8 +7,8 @@ import { useSelector } from "react-redux";
 import { useFonts } from "expo-font";
 import { get } from "../../utils/requests";
 import * as SecureStore from "expo-secure-store";
+import Config from "react-native-config";
 
-const API_KEY = "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ";
 const PRICE_PER_KM = 100;
 
 const edgePadding = {
@@ -94,7 +94,7 @@ export default function TravelInProgress({ navigation }) {
         )}
         {origin && destination && (
           <MapViewDirections
-            apikey={API_KEY}
+            apikey={Config.GOOGLE_API_KEY}
             origin={origin}
             destination={destination}
             strokeColor="black"
