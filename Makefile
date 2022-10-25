@@ -17,4 +17,4 @@ init:
 	npm install
 	
 start:
-	npx expo start
+	npm run android

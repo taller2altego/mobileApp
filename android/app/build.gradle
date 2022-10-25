@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
 
 import com.android.build.OutputFile
 import org.apache.tools.ant.taskdefs.condition.Os
@@ -300,6 +301,7 @@ dependencies {
 
     //noinspection GradleDynamicVersion
     implementation 'com.facebook.react:react-native:+'  // From node_modules
+    implementation project(':react-native-config')
 
     def isGifEnabled = (findProperty('expo.gif.enabled') ?: '') == 'true'
     def isWebpEnabled = (findProperty('expo.webp.enabled') ?: '') == 'true'
@@ -373,6 +375,8 @@ task copyDownloadableDepsToLibs(type: Copy) {
 
 apply from: new File(['node', '--print', "require.resolve('@react-native-community/cli-platform-android/package.json')"].execute(null, rootDir).text.trim(), '../native_modules.gradle')
 applyNativeModulesAppBuildGradle(project)
+// 2nd line, add a new apply:
+
 
 def isNewArchitectureEnabled() {
     // To opt-in for the New Architecture, you can either:

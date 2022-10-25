@@ -1,11 +1,17 @@
 {
   "expo": {
-    "name": "app",
-    "slug": "app",
+    "name": "fiuber",
+    "slug": "fiuber",
     "version": "1.0.0",
     "assetBundlePatterns": [
       "**/*"
-    ]
+    ],
+    "android": {
+      "package": "com.altego.fiuber"
+    },
+    "ios": {
+      "bundleIdentifier": "com.altego.fiuber"
+    }
   },
-  "name": "app"
+  "name": "fiuber"
 }
