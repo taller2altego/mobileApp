@@ -1,48 +1,49 @@
 import { getItemAsync } from "expo-secure-store";
 import { useEffect, useState } from "react";
-import { View, Text, ActivityIndicator } from "react-native";
+import { View, Text, ActivityIndicator, Pressable } from "react-native";
 import TravelFindedModal from "./TravelFindedModal";
 import * as Location from 'expo-location';
 
 // modules
+import { LandingStyles, modalStyles } from "../styles";
 import { get } from "../../utils/requests";
 
-export default function TravelSearch() {
+export default function TravelSearch({ navigation }) {
   const [modalTravelFindedVisible, setModalTravelFindedVisible] = useState(false);
   const [isSearching, setIsSearching] = useState(true);
-  const [currentLatitude, setCurrentLatitude] = useState(0);
-  const [currentLongitude, setCurrentLongitude] = useState(0);
+  const [currentLocation, setCurrentLocation] = useState({ location: undefined, reload: false });
 
   useEffect(() => {
     (async () => {
+      console.log('init');
       const { status } = await Location.requestForegroundPermissionsAsync();
 
+      console.log(status);
       if (status !== 'granted') {
         throw new Error('No tiene permisos, consulte con altego para mas información');
+      } else {
+        console.log('Approved!');
+        const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
+        setCurrentLocation({
+          location: [location.coords.latitude, location.coords.longitude],
+          reload: false
+        });
       }
-
-      const location = await Location.getCurrentPositionAsync({});
-
-      setCurrentLatitude(location.coords.latitude);
-      setCurrentLongitude(location.coords.longitude);
-
-      console.log(location.coords);
-
-      console.log(currentLatitude);
-      console.log(currentLongitude);
     })();
   }, []);
 
   useEffect(() => {
 
+    // TODO: agregar un estado para diferenciar el cambio del modal del cierre del modal.
     setIsSearching(true);
     const interval = setInterval(async () => {
-      if (currentLatitude === 0 || currentLongitude === 0) {
+      if (currentLocation.location === undefined) {
         return;
       }
+
       const token = await getItemAsync("token");
 
-      const travels = await get(`http://localhost:5000/travels?latitude=${currentLatitude}&longitude=${currentLongitude}`, token)
+      const travels = await get(`http://10.0.2.2:5000/travels?latitude=${currentLocation.location[0]}&longitude=${currentLocation.location[1]}`, token)
         .then(({ data }) => data.data);
 
       if (travels) {
@@ -51,14 +52,23 @@ export default function TravelSearch() {
         clearInterval(interval);
       }
     }, 10000);
-  }, [modalTravelFindedVisible]);
+  }, [currentLocation]);
+
+  const toggleTravelFindedModal = () => {
+    setModalTravelFindedVisible(!modalTravelFindedVisible);
+    setCurrentLocation({ ...currentLocation, reload: !currentLocation.reload });
+  };
+
+  const onCancelSearch = () => {
+    navigation.navigate("Home");
+  }
 
   return (
     <View style={{ flex: 1, flexDirection: "column" }}>
       {modalTravelFindedVisible && <TravelFindedModal
         navigation={navigation}
+        toggle={toggleTravelFindedModal}
         visible={modalTravelFindedVisible}
-        setModalTravelFindedVisible={setModalTravelFindedVisible}
       >
       </TravelFindedModal>}
       <View style={[{ flex: 0.5, padding: 50 }]}>
@@ -68,6 +78,15 @@ export default function TravelSearch() {
         <View>
           {isSearching && <ActivityIndicator size={80} color="#000000" />}
         </View>
+      </View>
+      <View>
+        <Pressable
+          style={modalStyles.modal_button}
+          onPress={onCancelSearch}>
+          <Text>
+            Volver
+          </Text>
+        </Pressable>
       </View>
     </View >
   );

@@ -47,11 +47,12 @@ export default function HomeTab({ navigation }) {
       const token = await SecureStore.getItemAsync("token");
       const params = {
         page: 1,
-        offset: 4,
+        limit: 4,
       };
 
-      await get(`http://10.0.2.2:5000/travels/${id}`, token, {}, params)
+      await get(`http://10.0.2.2:5000/travels/users/${id}`, token, {}, params)
         .then(({ data: { data } }) => {
+          console.log(data);
           setData(data);
         });
     })();
