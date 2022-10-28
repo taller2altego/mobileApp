@@ -221,7 +221,7 @@ const DriverStyles = StyleSheet.create({
   confirm_button_text: {
     textAlign: "center",
     textJustify: "center",
-    lineHeight: "3.5rem",
+    lineHeight: 60,
     fontSize: 15,
   },
   error_modal: {
@@ -295,13 +295,21 @@ const MapStyles = StyleSheet.create({
 const TravelStyles = StyleSheet.create({
   travelContainer: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
   },
   buttonContainer: {
     flex: 1,
-  }
+  },
 });
 
-export { DriverStyles, LandingStyles, modalStyles, Profilestyles, Homestyles, MapStyles, TravelStyles };
+export {
+  DriverStyles,
+  LandingStyles,
+  modalStyles,
+  Profilestyles,
+  Homestyles,
+  MapStyles,
+  TravelStyles,
+};

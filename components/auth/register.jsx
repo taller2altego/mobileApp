@@ -30,22 +30,22 @@ export default function RegisterModal({ ...props }) {
     const loginBody = { email, password };
 
     return post("http://10.0.2.2:5000/users", signUpBody)
-    .then(post(`http://10.0.2.2:5000/login`, loginBody))
-    .then(({ data: { id, token } }) => {
-      SecureStore.setItemAsync("token", token);
-      SecureStore.setItemAsync("id", id);
-      dispatch(setUserData({ name, lastname, email, phone }));
-      dispatch(setIsDriver({ isDriver: driverSelected }));
-      props.toggle();
-      if (driverSelected == "true") {
-        props.navigation.navigate("Driver");
-      } else {
-        props.navigation.navigate("Home");
-      }
-    })
-    .catch((error) =>
-      setErrorMessage(JSON.stringify(error.response.data.message))
-    );
+      .then(post(`http://10.0.2.2:5000/login`, loginBody))
+      .then(({ data: { id, token } }) => {
+        SecureStore.setItemAsync("token", token);
+        SecureStore.setItemAsync("id", id.toString());
+        dispatch(setUserData({ name, lastname, email, phone }));
+        dispatch(setIsDriver({ isDriver: driverSelected }));
+        props.toggle();
+        if (driverSelected) {
+          props.navigation.navigate("Driver");
+        } else {
+          props.navigation.navigate("Home");
+        }
+      })
+      .catch((error) =>
+        setErrorMessage(JSON.stringify(error.response.data.message))
+      );
   };
 
   const submitDriverData = () => {
