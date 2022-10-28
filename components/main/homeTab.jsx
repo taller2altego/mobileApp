@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   FlatList,
@@ -6,53 +6,27 @@ import {
   StyleSheet,
   Text,
   ScrollView,
+  Pressable,
 } from "react-native";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+import { useDispatch, useSelector } from "react-redux";
+import * as SecureStore from "expo-secure-store";
 
-import { Homestyles } from "../styles";
-const API_KEY = "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ";
-import TravelItem from "./TravelItem";
-import { useDispatch } from "react-redux";
+import { Homestyles, Profilestyles } from "../styles";
+import TravelItem from "../travel/TravelItem";
 import {
   setDestination,
   setOrigin,
 } from "../../redux/actions/UpdateTravelDetails";
+import { get } from "../../utils/requests";
 
-const DATA = [
-  {
-    id: 1,
-    price: 1500,
-    source: "Calle siempre viva 123",
-    destination: "asd 1234",
-    date: "2022-08-01T03:01",
-  },
-  {
-    id: 2,
-    price: 1500,
-    source: "Calle siempre viva 123",
-    destination: "gfd 1234",
-    date: "2022-08-01T13:00",
-  },
-  {
-    id: 3,
-    price: 1500,
-    source: "Calle siempre viva 123",
-    destination: "nbvc 1234",
-    date: "2022-06-01T20:00",
-  },
-  {
-    id: 4,
-    price: 1500,
-    source: "Calle siempre viva 123",
-    destination: "23q4 1234",
-    date: "2022-05-01T20:00",
-  },
-];
+const API_KEY = "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ";
 
 export default function HomeTab({ navigation }) {
+  const currentUserData = useSelector((store) => store.userData);
   const [srcDetails, setSrcDetails] = useState("");
   const [destDetails, setDestDetails] = useState("");
-
+  const [data_travels, setData] = useState({});
   const [selectedId, setSelectedId] = useState(null);
   const dispatch = useDispatch();
 
@@ -71,6 +45,23 @@ export default function HomeTab({ navigation }) {
       />
     );
   }
+
+  useEffect(() => {
+    (async () => {
+      const id = await SecureStore.getItemAsync("id");
+      const token = await SecureStore.getItemAsync("token");
+      const params = {
+        page: 1,
+        offset: 4,
+      };
+
+      await get(`http://10.0.2.2:5000/travels/users/${id}`, token, {}, params)
+        .then(({ data: { data } }) => {
+          console.log(data);
+          setData(data);
+        });
+    })();
+  }, []);
 
   const onConfirmationTravel = () => {
     dispatch(setOrigin({ origin: srcDetails }));
@@ -95,9 +86,8 @@ export default function HomeTab({ navigation }) {
           <View style={[{ flex: 0.2 }]}></View>
 
           <View style={{ flex: 3 }}>
-            {/* {DATA.map(travel => renderItem({ travel }))} */}
             <FlatList
-              data={DATA}
+              data={data_travels}
               renderItem={renderItem}
               keyExtractor={(item) => item.id}
               extraData={selectedId}
@@ -135,7 +125,20 @@ export default function HomeTab({ navigation }) {
                 language: "en",
               }}
             />
-
+            {currentUserData.isDriver && (
+              <View style={Profilestyles.edit_profile_button_container}>
+                <Pressable
+                  onPress={() => {
+                    navigation.navigate("TravelSearch");
+                  }}
+                  style={Profilestyles.edit_profile_button}
+                >
+                  <Text style={Profilestyles.edit_button_text}>
+                    Iniciar trabajo
+                  </Text>
+                </Pressable>
+              </View>
+            )}
             <Button
               title="Confirmar viaje"
               color="#696c6e"

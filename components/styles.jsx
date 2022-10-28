@@ -1,5 +1,4 @@
 import { StyleSheet, Dimensions } from "react-native";
-
 const PRIMARY_BLUE = "#1d9bc2";
 const SECONDARY_BLUE = "#0b0e12";
 
@@ -121,6 +120,7 @@ const Profilestyles = StyleSheet.create({
   },
   profile_container: {
     flex: 1,
+    alignItems: "center",
   },
   profile_text_container: {
     flex: 1,
@@ -144,6 +144,16 @@ const Profilestyles = StyleSheet.create({
     marginLeft: 30,
     marginRight: 30,
     outlineStyle: "none",
+  },
+  profile_visualization: {
+    fontSize: 15,
+    fontWeight: "bold",
+    marginLeft: 50,
+    width: 300,
+    height: 50,
+    marginLeft: 30,
+    marginRight: 30,
+    textAlign: "center",
   },
   edit_profile: {
     flex: 1,
@@ -281,9 +291,16 @@ const MapStyles = StyleSheet.create({
     borderRadius: 15,
   },
 });
-
-const tripDetailsStyles = StyleSheet.create({
-  
+const TravelStyles = StyleSheet.create({
+  travelContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonContainer: {
+    flex: 1,
+  }
 });
 
-export { DriverStyles, LandingStyles, modalStyles, Profilestyles, Homestyles, MapStyles };
+export { DriverStyles, LandingStyles, modalStyles, Profilestyles, Homestyles, MapStyles, TravelStyles };

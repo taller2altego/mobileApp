@@ -4,6 +4,7 @@ const initialState = {
   license: "",
   model: "",
   licensePlate: "",
+  working: "false",
 };
 
 const modifyDriverDataReducer = (state = initialState, action) => {
@@ -14,6 +15,7 @@ const modifyDriverDataReducer = (state = initialState, action) => {
         license: action.payload.license,
         model: action.payload.model,
         licensePlate: action.payload.licensePlate,
+        working: action.payload.working,
       };
     default:
       return state;

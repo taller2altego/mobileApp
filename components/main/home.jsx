@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { get } from "../../utils/requests";
 import { useDispatch } from "react-redux";
-import { setUserData } from "../../redux/actions/UpdateUserData";
+import { setIsDriver, setUserData } from "../../redux/actions/UpdateUserData";
 
 import * as SecureStore from "expo-secure-store";
 import HomeTab from "./homeTab";
@@ -17,9 +17,11 @@ export default function Home({ navigation }) {
       const id = await SecureStore.getItemAsync("id");
       const token = await SecureStore.getItemAsync("token");
       get(`http://10.0.2.2:5000/users/${id}`, token).then(
-        ({ data: { name, lastname, email, phoneNumber } }) =>
+        ({ data: { name, lastname, email, phoneNumber, isDriver } }) => {
           dispatch(setUserData({ name, lastname, email, phoneNumber }))
-      );
+          dispatch(setIsDriver({ isDriver }));
+
+        });
     })();
   }, []);
 
@@ -33,10 +35,10 @@ export default function Home({ navigation }) {
       <Tab.Screen
         name="Perfil"
         component={ProfileTab}
-        options={ ({ navigation }) => ({
+        options={({ navigation }) => ({
           headerShown: false
         })
-      }
+        }
       />
     </Tab.Navigator>
   );

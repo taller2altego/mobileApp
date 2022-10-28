@@ -1,11 +1,15 @@
 import { useRef, useState } from "react";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
-import { MapStyles } from "../styles";
+import { MapStyles, TravelStyles } from "../styles";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+import * as SecureStore from "expo-secure-store";
 import MapViewDirections from "react-native-maps-directions";
 import { View, Text, Pressable, Image } from "react-native";
-import { useSelector } from "react-redux";
+import WaitingModal from "./Waiting";
+import { useDispatch, useSelector } from "react-redux";
 import { useFonts } from "expo-font";
+import { authPost } from "../../utils/requests";
+import { setNewTravel } from "../../redux/actions/UpdateCurrentTravel";
 
 const API_KEY = "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ";
 const PRICE_PER_KM = 100;
@@ -23,12 +27,20 @@ const INITIAL_POSITION = {
   longitudeDelta: 0.1,
 };
 
-export default function ConfirmationTravel() {
+export default function ConfirmationTravel({ navigation }) {
+  // redux
   const currentTravelData = useSelector((store) => store.travelDetailsData);
-  const [distance, setDistance] = useState(0);
-  const [duration, setDuration] = useState(0);
   const origin = currentTravelData.origin;
   const destination = currentTravelData.destination;
+
+  const dispatch = useDispatch();
+
+  // states
+  const [distance, setDistance] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [price, setPrice] = useState(0);
+  const [modalWaitingVisible, setModalWaitingVisible] = useState(false);
+
   const mapRef = useRef(null);
   const [fontsLoaded] = useFonts({
     poppins: require("../../assets/fonts/Poppins-Regular.ttf"),
@@ -39,6 +51,7 @@ export default function ConfirmationTravel() {
     if (args) {
       setDistance(args.distance.toFixed(2));
       setDuration(Math.ceil(args.duration));
+      setPrice(distance * PRICE_PER_KM);
     }
   };
 
@@ -49,12 +62,31 @@ export default function ConfirmationTravel() {
     });
   };
 
+  const createTravel = async (navigation) => {
+    const id = await SecureStore.getItemAsync("id");
+    const token = await SecureStore.getItemAsync("token");
+    const body = {
+      userId: id,
+      price: price,
+      source: origin,
+      destination: destination,
+      date: new Date().toISOString(),
+    };
+
+    return authPost(`http://10.0.2.2:5000/travels`, token, body)
+      .then(({ data }) => {
+        dispatch(setNewTravel({ _id: data.data._id }));
+        setModalWaitingVisible(!modalWaitingVisible);
+      });
+  };
+
   if (!fontsLoaded) {
     return null;
   }
 
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
+      {modalWaitingVisible && <WaitingModal navigation={navigation}></WaitingModal>}
       <MapView
         ref={mapRef}
         style={MapStyles.map}
@@ -103,18 +135,42 @@ export default function ConfirmationTravel() {
           </Text>
         </View>
       </View>
-      <Pressable style={MapStyles.confirmTripButton}>
-        <Text
-          style={{
-            fontFamily: "poppins-bold",
-            color: "white",
-            textAlign: "center",
-            lineHeight: 38,
-          }}
-        >
-          Iniciar Viaje
-        </Text>
-      </Pressable>
+      <View style={TravelStyles.travelContainer}>
+        <View style={TravelStyles.buttonContainer}>
+          <Pressable
+            style={MapStyles.confirmTripButton}
+            onPress={() => navigation.navigate("Home")}
+          >
+            <Text
+              style={{
+                fontFamily: "poppins-bold",
+                color: "white",
+                textAlign: "center",
+                lineHeight: 38,
+              }}
+            >
+              Volver atras
+            </Text>
+          </Pressable>
+        </View>
+        <View style={TravelStyles.buttonContainer}>
+          <Pressable
+            style={MapStyles.confirmTripButton}
+            onPress={() => createTravel(navigation)}
+          >
+            <Text
+              style={{
+                fontFamily: "poppins-bold",
+                color: "white",
+                textAlign: "center",
+                lineHeight: 38,
+              }}
+            >
+              Iniciar Viaje
+            </Text>
+          </Pressable>
+        </View>
+      </View>
     </View>
   );
 }
