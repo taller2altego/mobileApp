@@ -32,7 +32,8 @@ export default function HomeTab({ navigation }) {
 
   const handleSelectedTrip = (item) => {
     setSelectedId(item.id);
-    navigation.navigate("TripDetails");
+    const travelId = item._id;
+    navigation.navigate("TripDetails", {travelId});
   }
 
   function renderItem({ item }) {
