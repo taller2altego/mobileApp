@@ -29,15 +29,15 @@ export default function TravelItem({
   const minutes = a.format("mm");
   const hours = a.format("HH");
   const month = a.format("MMMM");
-  const day = a.day();
-
+  const day = a.format("DD");
+  
   return (
     <TouchableOpacity style={[styles.item, backgroundColor]} onPress={onPress}>
-      <Text style={[styles.title, textColor]}>{`${item.destination}`}</Text>
+      <Text style={[styles.title, textColor]}>{`${item.destinationAddress}`}</Text>
       <Text style={[styles.subtitle, textColor]}>{`$${item.price}`}</Text>
       <Text
         style={[styles.subtitle, textColor]}
-      >{`${day} ${months[month]} - ${hours}:${minutes} ${ampm}`}</Text>
+      >{`${day} de ${months[month]} - ${hours}:${minutes} ${ampm}`}</Text>
     </TouchableOpacity>
   );
 }
@@ -48,7 +48,8 @@ const styles = StyleSheet.create({
     marginVertical: 4,
   },
   title: {
-    fontSize: 26,
+    fontSize: 16,
+    fontWeight: "bold",
   },
   subtitle: {
     fontSize: 14,

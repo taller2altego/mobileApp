@@ -26,14 +26,14 @@ export default function HomeTab({ navigation }) {
   const currentUserData = useSelector((store) => store.userData);
   const [srcDetails, setSrcDetails] = useState("");
   const [destDetails, setDestDetails] = useState("");
-  const [data_travels, setData] = useState({});
+  const [data_travels, setData] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
   const dispatch = useDispatch();
 
   const handleSelectedTrip = (item) => {
     setSelectedId(item.id);
     const travelId = item._id;
-    navigation.navigate("TripDetails", {travelId});
+    navigation.navigate("TripDetails", { travelId });
   }
 
   function renderItem({ item }) {
@@ -58,15 +58,15 @@ export default function HomeTab({ navigation }) {
 
       await get(`http://10.0.2.2:5000/travels/users/${id}`, token, {}, params)
         .then(({ data: { data } }) => {
-          console.log(data);
           setData(data);
         });
     })();
   }, []);
 
-  const onConfirmationTravel = () => {
+  const onConfirmationTravel = async () => {
     dispatch(setOrigin({ origin: srcDetails }));
     dispatch(setDestination({ destination: destDetails }));
+
     navigation.navigate("ConfirmationTravel");
   };
 

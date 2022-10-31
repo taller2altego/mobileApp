@@ -5,6 +5,7 @@ import { useFonts } from "expo-font";
 import { Rating } from "react-native-ratings";
 import { get, patch } from "../../utils/requests";
 import * as SecureStore from "expo-secure-store";
+import moment from "moment";
 
 const API_KEY = "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ";
 
@@ -28,16 +29,8 @@ export default function TripDetails({ route, navigation }) {
       await get(`http://10.0.2.2:5000/travels/${travelId}`, token)
         .then(
           ({ data: { data } }) => {
-            fetch('https://maps.googleapis.com/maps/api/geocode/json?address=' + data.source.latitude + ',' + data.source.longitude + '&key=' + API_KEY)
-              .then((response) => response.json())
-              .then((responseJson) => {
-                setSource(responseJson.results[0].formatted_address);
-              });
-            fetch('https://maps.googleapis.com/maps/api/geocode/json?address=' + data.destination.latitude + ',' + data.destination.longitude + '&key=' + API_KEY)
-              .then((response) => response.json())
-              .then((responseJson) => {
-                setDestination(responseJson.results[0].formatted_address)
-              });
+            setSource(data.sourceAddress);
+            setDestination(data.destinationAddress);
             setDriver(data.driver);
             setPrice(data.price);
             setDate(data.date);
@@ -57,6 +50,25 @@ export default function TripDetails({ route, navigation }) {
   if (!fontsLoaded) {
     return null;
   }
+  const months = {
+    January: 1,
+    February: 2,
+    March: 3,
+    April: 4,
+    May: 5,
+    June: 6,
+    July: 7,
+    August: 8,
+    September: 9,
+    October: 10,
+    November: 11,
+    December: 12,
+  };
+
+  const a = moment(date);
+  const year = a.format("YYYY");
+  const month = a.format("MMMM");
+  const day = a.format("DD");
 
   return (
     <View style={{ flex: 1 }}>
@@ -71,10 +83,10 @@ export default function TripDetails({ route, navigation }) {
         <View style={Profilestyles.profile_container}>
           <Text style={Profilestyles.profile_visualization}>Desde: {source}</Text>
           <Text style={Profilestyles.profile_visualization}>Hasta: {destination}</Text>
-          <Text style={Profilestyles.profile_visualization}>Precio: {price}</Text>
+          <Text style={Profilestyles.profile_visualization}>Precio: ${price}</Text>
           <Text style={Profilestyles.profile_visualization}>Conductor: {driver}</Text>
-          {(driverScore == 0) && (<Text style={Profilestyles.profile_visualization}>Puntaje del Viaje: {driverScore}</Text>)}
-          <Text style={Profilestyles.profile_visualization}>Fecha: {date}</Text>
+          {(driverScore > 0) && (<Text style={Profilestyles.profile_visualization}>Puntaje del Viaje: {driverScore}</Text>)}
+          <Text style={Profilestyles.profile_visualization}>Fecha: {day}/{months[month]}/{year}</Text>
         </View>
       </View>
       {(driverScore == 0) && <Rating
@@ -124,6 +136,22 @@ export default function TripDetails({ route, navigation }) {
             </Text>
           </Pressable>
           )}
+          <Pressable
+            style={MapStyles.confirmTripButton}
+          // onPress={() => navigation.navigate("Home")}
+          >
+            <Text
+              style={{
+                fontFamily: "poppins-bold",
+                color: "white",
+                textAlign: "center",
+                lineHeight: 38,
+              }}
+            >
+              Denunciar
+            </Text>
+          </Pressable>
+
         </View>
       </View>
     </View>
