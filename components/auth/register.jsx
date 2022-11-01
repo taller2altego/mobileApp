@@ -7,6 +7,7 @@ import { Entypo } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch } from "react-redux";
 import { setIsDriver, setUserData } from "../../redux/actions/UpdateUserData";
+import envs from "../../config/env";
 
 export default function RegisterModal({ ...props }) {
   const [email, setEmail] = useState("");
@@ -17,9 +18,10 @@ export default function RegisterModal({ ...props }) {
   const [driverSelected, setDriverSelected] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const dispatch = useDispatch();
+  const { API_URL, _ } = envs;
 
   const onSignUp = () => {
-    return post("http://127.0.0.1:5000/users", {
+    return post(`${API_URL}/users`, {
       name,
       lastname,
       phoneNumber: Number(phone),
@@ -27,7 +29,7 @@ export default function RegisterModal({ ...props }) {
       password,
     })
       .then(() => {
-        post(`http://127.0.0.1:5000/login`, {
+        post(`${API_URL}/login`, {
           email,
           password,
         })
@@ -62,28 +64,25 @@ export default function RegisterModal({ ...props }) {
           </Pressable>
           <View style={[modalStyles.flex_modal]}>
             <TextInput
-              style={[modalStyles.modal_input]}
+              style={[modalStyles.modal_input, { fontFamily: "poppins" }]}
               placeholder="Nombre"
               placeholderTextColor="#343437"
-              onChangeText={(name) =>
-                setName(name)}
+              onChangeText={(name) => setName(name)}
             />
             <TextInput
-              style={[modalStyles.modal_input]}
+              style={[modalStyles.modal_input, { fontFamily: "poppins" }]}
               placeholder="Apellido"
               placeholderTextColor="#343437"
-              onChangeText={(password) =>
-                setLastName(password)}
+              onChangeText={(password) => setLastName(password)}
             />
             <TextInput
-              style={[modalStyles.modal_input]}
+              style={[modalStyles.modal_input, { fontFamily: "poppins" }]}
               placeholder="Email"
               placeholderTextColor="#343437"
-              onChangeText={(email) =>
-                setEmail(email)}
+              onChangeText={(email) => setEmail(email)}
             />
             <TextInput
-              style={[modalStyles.modal_input]}
+              style={[modalStyles.modal_input, { fontFamily: "poppins" }]}
               placeholder="Telefono"
               placeholderTextColor="#343437"
               keyboardType="numeric"
@@ -92,7 +91,7 @@ export default function RegisterModal({ ...props }) {
               }}
             />
             <TextInput
-              style={[modalStyles.modal_input]}
+              style={[modalStyles.modal_input, { fontFamily: "poppins" }]}
               placeholder="Contraseña"
               placeholderTextColor="#343437"
               secureTextEntry={true}
@@ -101,8 +100,9 @@ export default function RegisterModal({ ...props }) {
             <Picker
               selectedValue={driverSelected}
               onValueChange={(driverSelected, ItemIndex) =>
-                setDriverSelected(driverSelected)}
-              style={[modalStyles.modal_picker]}
+                setDriverSelected(driverSelected)
+              }
+              style={[modalStyles.modal_picker, { fontFamily: "poppins" }]}
             >
               <Picker.Item label="Conductor" value={true} />
               <Picker.Item label="Pasajero" value={false} />
@@ -111,7 +111,11 @@ export default function RegisterModal({ ...props }) {
               style={modalStyles.modal_button}
               onPress={() => onSignUp()}
             >
-              <Text style={LandingStyles.textButton}>Sign Up</Text>
+              <Text
+                style={[LandingStyles.textButton, { fontFamily: "poppins" }]}
+              >
+                Sign Up
+              </Text>
             </Pressable>
             <Text style={modalStyles.error_modal}>{errorMessage}</Text>
           </View>

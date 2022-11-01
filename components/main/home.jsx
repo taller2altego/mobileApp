@@ -6,18 +6,20 @@ import { Profilestyles } from "../styles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserData } from "../../redux/actions/UpdateUserData";
+import envs from "../../config/env";
 
 export default function Home({ navigation }) {
   const Tab = createBottomTabNavigator();
   const dispatch = useDispatch();
+  const { API_URL, _ } = envs;
 
   useEffect(() => {
     (async () => {
       const id = await AsyncStorage.getItem("id");
       const token = await AsyncStorage.getItem("token");
-      get(`http://localhost:5000/users/${id}`, token).then(
+      get(`${API_URL}/users/${id}`, token).then(
         ({ data: { name, lastname, email, phoneNumber } }) =>
-          dispatch(setUserData({ name, lastname, email, phoneNumber })),
+          dispatch(setUserData({ name, lastname, email, phoneNumber }))
       );
     })();
   }, []);
@@ -50,17 +52,19 @@ export default function Home({ navigation }) {
     const handleUpdate = async () => {
       const id = await AsyncStorage.getItem("id");
       const token = await AsyncStorage.getItem("token");
-      patch(`http://127.0.0.1:5000/users/${id}`, token, {
+      patch(`${API_URL}/users/${id}`, token, {
         name: nameText,
         lastname: lastnameText,
         phoneNumber: Number(phoneText),
       }).then(() => {
-        dispatch(setUserData({
-          name: nameText,
-          lastname: lastnameText,
-          phoneNumber: Number(phoneText),
-          email: emailText,
-        }));
+        dispatch(
+          setUserData({
+            name: nameText,
+            lastname: lastnameText,
+            phoneNumber: Number(phoneText),
+            email: emailText,
+          })
+        );
       });
       setIsEditing(false);
     };
@@ -99,41 +103,37 @@ export default function Home({ navigation }) {
           />
         </View>
         <View style={Profilestyles.edit_profile}>
-          {isEditing
-            ? (
-              <View style={Profilestyles.edit_profile_button_container}>
-                <Pressable
-                  onPress={() => {
-                    handleUpdate();
-                  }}
-                  style={Profilestyles.edit_profile_button}
-                >
-                  <Text style={Profilestyles.edit_button_text}>
-                    Guardar Cambios
-                  </Text>
-                </Pressable>
-                <Pressable
-                  onPress={() => {
-                    handleCancelEdit();
-                  }}
-                  style={Profilestyles.edit_profile_button}
-                >
-                  <Text style={Profilestyles.edit_button_text}>Cancelar</Text>
-                </Pressable>
-              </View>
-            )
-            : (
+          {isEditing ? (
+            <View style={Profilestyles.edit_profile_button_container}>
               <Pressable
                 onPress={() => {
-                  setIsEditing(!isEditing);
+                  handleUpdate();
                 }}
                 style={Profilestyles.edit_profile_button}
               >
                 <Text style={Profilestyles.edit_button_text}>
-                  Editar Perfil
+                  Guardar Cambios
                 </Text>
               </Pressable>
-            )}
+              <Pressable
+                onPress={() => {
+                  handleCancelEdit();
+                }}
+                style={Profilestyles.edit_profile_button}
+              >
+                <Text style={Profilestyles.edit_button_text}>Cancelar</Text>
+              </Pressable>
+            </View>
+          ) : (
+            <Pressable
+              onPress={() => {
+                setIsEditing(!isEditing);
+              }}
+              style={Profilestyles.edit_profile_button}
+            >
+              <Text style={Profilestyles.edit_button_text}>Editar Perfil</Text>
+            </Pressable>
+          )}
         </View>
       </View>
     );
