@@ -41,9 +41,12 @@ export default function TripDetails({ route, navigation }) {
 
   const sendRatingToDriver = async (navigation) => {
     const token = await SecureStore.getItemAsync("token");
-    return patch(`http://10.0.2.2:5000/travels/${travelId}`, token, { driverScore: rating })
+    return patch(`http://10.0.2.2:5000/drivers/${1}}`, token, { score: rating })
       .then(() => {
-        navigation.navigate("Home");
+        return patch(`http://10.0.2.2:5000/travels/${travelId}`, token, { driverScore: rating })
+          .then(() => {
+            navigation.navigate("Home");
+          });
       });
   }
 

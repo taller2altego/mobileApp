@@ -23,13 +23,13 @@ export default function VisualizationTab({ navigation }) {
       const id = 2;
       const token = await SecureStore.getItemAsync("token");
       await get(`http://10.0.2.2:5000/users/${id}`, token).then(
-        ({ data: { name, lastname, email, phoneNumber, score } }) => {
+        ({ data: { name, lastname, email, phoneNumber, numberOfScores, totalScore } }) => {
           setName(name);
           setLastName(lastname);
           setEmail(email);
           setPhoneNumber(phoneNumber);
-          setNumberOfScores(score.numberOfScores);
-          setAverageScore(score.totalScore);
+          setNumberOfScores(numberOfScores);
+          setAverageScore(totalScore);
         }
       );
     })();
