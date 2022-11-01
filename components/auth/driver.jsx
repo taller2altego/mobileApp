@@ -6,6 +6,7 @@ import { setDriverData } from "../../redux/actions/UpdateDriverData";
 import { authPost } from "../../utils/requests";
 import { DriverStyles } from "../styles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import envs from "../../config/env";
 
 export default function Driver({ navigation }) {
   const [license, setLicense] = useState("");
@@ -13,24 +14,27 @@ export default function Driver({ navigation }) {
   const [model, setModel] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const dispatch = useDispatch();
+  const { API_URL, _ } = envs;
 
   const confirmData = async () => {
     const id = await AsyncStorage.getItem("id");
     const token = await AsyncStorage.getItem("token");
-    authPost(`http://127.0.0.1:5000/users/${id}/driver`, token, {
+    authPost(`${API_URL}/users/${id}/driver`, token, {
       license,
       model,
       licensePlate,
-    }).then(() => {
-      dispatch(
-        setDriverData({
-          license: license,
-          model: model,
-          licensePlate: licensePlate,
-        }),
-      );
-      navigation.navigate("Home");
-    }).catch((error) => setErrorMessage(error.response.data.message));
+    })
+      .then(() => {
+        dispatch(
+          setDriverData({
+            license: license,
+            model: model,
+            licensePlate: licensePlate,
+          })
+        );
+        navigation.navigate("Home");
+      })
+      .catch((error) => setErrorMessage(error.response.data.message));
   };
 
   return (
