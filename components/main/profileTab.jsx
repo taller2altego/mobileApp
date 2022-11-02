@@ -5,6 +5,7 @@ import * as SecureStore from "expo-secure-store";
 import { patch, authPost } from "../../utils/requests";
 import { setUserData } from "../../redux/actions/UpdateUserData";
 import { Profilestyles } from "../styles";
+import envs from "../../config/env";
 
 export default function ProfileTab({ navigation }) {
   const currentUserData = useSelector((store) => store.userData);
@@ -15,10 +16,11 @@ export default function ProfileTab({ navigation }) {
   const [emailText, setEmailText] = useState(currentUserData.email);
   const [isEditing, setIsEditing] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const { API_URL, _ } = envs;
 
   const logOut = async ( navigation ) => {
     const token = await SecureStore.getItemAsync("token");
-    return authPost("http://10.0.2.2:5000/logout", token)
+    return authPost(`${API_URL}/logout`, token)
       .then(async () => {
         await SecureStore.deleteItemAsync("token");
         navigation.navigate("Landing");
@@ -40,7 +42,7 @@ export default function ProfileTab({ navigation }) {
   const handleUpdate = async () => {
     const id = await SecureStore.getItemAsync("id");
     const token = await SecureStore.getItemAsync("token");
-    patch(`http://10.0.2.2:5000/users/${id}`, token, {
+    patch(`${API_URL}/users/${id}`, token, {
       name: nameText,
       lastname: lastnameText,
       phoneNumber: Number(phoneText),

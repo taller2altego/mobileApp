@@ -10,8 +10,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useFonts } from "expo-font";
 import { authPost } from "../../utils/requests";
 import { setNewTravel } from "../../redux/actions/UpdateCurrentTravel";
+import envs from "../../config/env";
 
-const API_KEY = "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ";
 const PRICE_PER_KM = 100;
 
 const edgePadding = {
@@ -41,9 +41,11 @@ export default function ConfirmationTravel({ navigation }) {
   const [price, setPrice] = useState(0);
   const [modalWaitingVisible, setModalWaitingVisible] = useState(false);
 
+  const { API_URL, GOOGLE_API_KEY } = envs;
+
   const mapRef = useRef(null);
   const [fontsLoaded] = useFonts({
-    poppins: require("../../assets/fonts/Poppins-Regular.ttf"),
+    "poppins": require("../../assets/fonts/Poppins-Regular.ttf"),
     "poppins-bold": require("../../assets/fonts/Poppins-Bold.ttf"),
   });
 
@@ -73,7 +75,7 @@ export default function ConfirmationTravel({ navigation }) {
       date: new Date().toISOString(),
     };
 
-    return authPost(`http://10.0.2.2:5000/travels`, token, body)
+    return authPost(`${API_URL}/travels`, token, body)
       .then(({ data }) => {
         dispatch(setNewTravel({ _id: data.data._id }));
         setModalWaitingVisible(!modalWaitingVisible);
@@ -102,7 +104,7 @@ export default function ConfirmationTravel({ navigation }) {
         )}
         {origin && destination && (
           <MapViewDirections
-            apikey={API_KEY}
+            apikey={GOOGLE_API_KEY}
             origin={origin}
             destination={destination}
             strokeColor="black"

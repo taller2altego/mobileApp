@@ -50,11 +50,6 @@ export default function RegisterModal({ ...props }) {
       );
   };
 
-  const submitDriverData = () => {
-    // TODO request para datos de conductor
-    props.toggle();
-  };
-
   return (
     <Modal animationType="slide" transparent={true} visible={props.visible}>
       <View style={modalStyles.modal_extern_view}>
