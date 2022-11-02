@@ -7,6 +7,7 @@ import { Entypo } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";
 import { setIsDriver, setUserData } from "../../redux/actions/UpdateUserData";
 import * as SecureStore from "expo-secure-store";
+import envs from "../../config/env";
 
 export default function RegisterModal({ ...props }) {
   const [email, setEmail] = useState("");
@@ -17,6 +18,7 @@ export default function RegisterModal({ ...props }) {
   const [driverSelected, setDriverSelected] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const dispatch = useDispatch();
+  const { API_URL, _ } = envs;
 
   const onSignUp = () => {
     const signUpBody = {
@@ -29,8 +31,8 @@ export default function RegisterModal({ ...props }) {
 
     const loginBody = { email, password };
 
-    return post("http://10.0.2.2:5000/users", signUpBody)
-      .then(post(`http://10.0.2.2:5000/login`, loginBody))
+    return post(`${API_URL}/users`, signUpBody)
+      .then(post(`${API_URL}/login`, loginBody))
       .then(({ data: { id, token } }) => {
         SecureStore.setItemAsync("token", token);
         SecureStore.setItemAsync("id", id.toString());

@@ -5,6 +5,7 @@ import { setDriverData } from "../../redux/actions/UpdateDriverData";
 import { authPost } from "../../utils/requests";
 import { DriverStyles } from "../styles";
 import * as SecureStore from "expo-secure-store";
+import envs from "../../config/env";
 
 export default function Driver({ navigation }) {
   const [license, setLicense] = useState("");
@@ -12,11 +13,12 @@ export default function Driver({ navigation }) {
   const [model, setModel] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const dispatch = useDispatch();
+  const { API_URL, _ } = envs;
 
   const confirmData = async () => {
     const id = await SecureStore.getItemAsync("id");
     const token = await SecureStore.getItemAsync("token");
-    authPost(`http://10.0.2.2:5000/users/${id}/driver`, token, {
+    authPost(`${API_URL}/users/${id}/driver`, token, {
       license,
       model,
       licensePlate,

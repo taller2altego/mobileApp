@@ -4,16 +4,18 @@ import { post } from "../../utils/requests";
 import { LandingStyles, modalStyles } from "../styles";
 import { Entypo } from "@expo/vector-icons";
 import * as SecureStore from "expo-secure-store";
+import envs from "../../config/env";
 
 export default function LoginModal({ ...props }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const { API_URL, _ } = envs;
 
   const onSignIn = () => {
-    return post(`http://10.0.2.2:5000/login`, {
-      email: 'n@s.com',
-      password: '1234'
+    return post(`${API_URL}/login`, {
+      email,
+      password
     })
       .then(async (info) => {
         console.log(info);
@@ -36,7 +38,7 @@ export default function LoginModal({ ...props }) {
           <Pressable onPress={props.toggle}>
             <Entypo name="cross" size={24} color="black" />
           </Pressable>
-          <View style={[modalStyles.flex_modal]}>
+          <View style={[modalStyles.flex_modal, { fontFamily: "poppins" }]}>
             <TextInput
               style={[modalStyles.modal_input, { fontFamily: "poppins" }]}
               placeholder="Email"
@@ -62,7 +64,7 @@ export default function LoginModal({ ...props }) {
                 Login
               </Text>
             </Pressable>
-            <Text style={modalStyles.error_modal}>{errorMessage}</Text>
+            <Text style={[modalStyles.error_modal, { fontFamily: "poppins" }]}>{errorMessage}</Text>
           </View>
         </View>
       </View>

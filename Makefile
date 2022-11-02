@@ -16,5 +16,8 @@ emulator:
 init: 
 	npm install
 	
-start:
-	npx expo start
+start_dev:
+	npx expo start 
+
+start_prod:
+	npx expo start --no-dev
