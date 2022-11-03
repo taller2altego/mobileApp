@@ -231,4 +231,85 @@ const DriverStyles = StyleSheet.create({
   },
 });
 
-export { DriverStyles, LandingStyles, modalStyles, Profilestyles };
+const Homestyles = StyleSheet.create({
+  searchContainer: {
+    width: "90%",
+    backgroundColor: "white",
+    shadowColor: "black",
+    shadowOpacity: 0.5,
+    shadowOffset: { width: 2, height: 2 },
+    shadowRadius: 4,
+    elevation: 4,
+    padding: 8,
+    borderRadius: 8,
+    top: 35,
+  },
+  searchInput: {
+    borderColor: "#888",
+    borderWidth: 1,
+  },
+});
+
+const MapStyles = StyleSheet.create({
+  map: {
+    top: 0,
+    width: Dimensions.get("window").width,
+    height: (80 * Dimensions.get("window").height) / 100,
+  },
+  searchContainer: {
+    width: "90%",
+    backgroundColor: "white",
+    shadowColor: "black",
+    shadowOpacity: 0.5,
+    shadowOffset: { width: 2, height: 2 },
+    shadowRadius: 4,
+    elevation: 4,
+    padding: 8,
+    borderRadius: 8,
+    top: 35,
+  },
+  searchInput: {
+    borderColor: "#888",
+    borderWidth: 1,
+  },
+  tripInfoContainer: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#e4e4e4",
+    borderBottomColor: "black",
+  },
+  carImage: { height: 100, width: 110 },
+  confirmTripButton: {
+    alignSelf: "center",
+    height: 40,
+    width: 200,
+    backgroundColor: "black",
+    marginBottom: 10,
+    marginTop: 10,
+    borderRadius: 15,
+  },
+});
+
+const TravelStyles = StyleSheet.create({
+  travelContainer: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  buttonContainer: {
+    flex: 1,
+  },
+});
+
+export {
+  DriverStyles,
+  LandingStyles,
+  modalStyles,
+  Profilestyles,
+  Homestyles,
+  MapStyles,
+  TravelStyles,
+};

@@ -1,12 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Modal, Pressable, Text, TextInput, View } from "react-native";
 import { post } from "../../utils/requests";
 import { LandingStyles, modalStyles } from "../styles";
 import { Picker } from "@react-native-picker/picker";
 import { Entypo } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch } from "react-redux";
 import { setIsDriver, setUserData } from "../../redux/actions/UpdateUserData";
+import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
 
 export default function RegisterModal({ ...props }) {
@@ -21,38 +21,33 @@ export default function RegisterModal({ ...props }) {
   const { API_URL, _ } = envs;
 
   const onSignUp = () => {
-    return post(`${API_URL}/users`, {
+    const signUpBody = {
       name,
       lastname,
       phoneNumber: Number(phone),
       email,
       password,
-    })
-      .then(() => {
-        post(`${API_URL}/login`, {
-          email,
-          password,
-        })
-          .then(({ data: { id, token } }) => {
-            AsyncStorage.setItem("token", token);
-            AsyncStorage.setItem("id", id);
-            dispatch(setUserData({ name, lastname, email, phone }));
-            dispatch(setIsDriver({ isDriver: driverSelected }));
-            props.toggle();
-            if (driverSelected == "true") {
-              props.navigation.navigate("Driver");
-            } else {
-              props.navigation.navigate("Home");
-            }
-          })
-          .catch((error) => setErrorMessage(error.response.data.message));
-      })
-      .catch((error) => setErrorMessage(error.response.data.message));
-  };
+    };
 
-  const submitDriverData = () => {
-    // TODO request para datos de conductor
-    props.toggle();
+    const loginBody = { email, password };
+
+    return post(`${API_URL}/users`, signUpBody)
+      .then(post(`${API_URL}/login`, loginBody))
+      .then(({ data: { id, token } }) => {
+        SecureStore.setItemAsync("token", token);
+        SecureStore.setItemAsync("id", id.toString());
+        dispatch(setUserData({ name, lastname, email, phone }));
+        dispatch(setIsDriver({ isDriver: driverSelected }));
+        props.toggle();
+        if (driverSelected) {
+          props.navigation.navigate("Driver");
+        } else {
+          props.navigation.navigate("Home");
+        }
+      })
+      .catch((error) =>
+        setErrorMessage(JSON.stringify(error.response.data.message))
+      );
   };
 
   return (
@@ -117,7 +112,9 @@ export default function RegisterModal({ ...props }) {
                 Sign Up
               </Text>
             </Pressable>
-            <Text style={modalStyles.error_modal}>{errorMessage}</Text>
+            <Text style={[modalStyles.error_modal, { fontFamily: "poppins" }]}>
+              {errorMessage}
+            </Text>
           </View>
         </View>
       </View>
