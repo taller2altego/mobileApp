@@ -7,6 +7,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { get } from "../../utils/requests";
 import { setDriverId } from "../../redux/actions/UpdateCurrentTravel";
 import { modalStyles } from "../styles";
+import envs from "../../config/env";
 
 export default function WaitingDriverModal({ navigation, ...props }) {
 
@@ -15,11 +16,13 @@ export default function WaitingDriverModal({ navigation, ...props }) {
   const id = currentTravelData._id;
   const dispatch = useDispatch();
 
+  const { API_URL, GOOGLE_API_KEY } = envs;
+
   useEffect(() => {
     const interval = setInterval(async () => {
       const token = await SecureStore.getItemAsync("token");
 
-      await get(`http://10.0.2.2:5000/travels/${id}/driver`, token)
+      await get(`${API_URL}/travels/${id}/driver`, token)
         .then(({ data }) => {
           if (data.data.driverId) {
             dispatch(setDriverId({ driverId: data.data.driverId }));

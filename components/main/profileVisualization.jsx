@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import { get } from "../../utils/requests";
 import { Profilestyles } from "../styles";
 import HomeTab from "./homeTab";
+import envs from "../../config/env";
 
 export default function VisualizationTab({ navigation }) {
   //states
@@ -17,12 +18,13 @@ export default function VisualizationTab({ navigation }) {
   // actual driver
   const currentTravelData = useSelector((store) => store.currentTravel);
   const id = currentTravelData.driverId;
+  const { API_URL, _ } = envs;
 
   useEffect(() => {
     (async () => {
       const id = 2;
       const token = await SecureStore.getItemAsync("token");
-      await get(`http://10.0.2.2:5000/users/${id}`, token).then(
+      await get(`${API_URL}/users/${id}`, token).then(
         ({ data: { name, lastname, email, phoneNumber, score } }) => {
           setName(name);
           setLastName(lastname);

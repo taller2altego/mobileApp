@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { View, Text, ActivityIndicator, Pressable } from "react-native";
 import TravelFindedModal from "./TravelFindedModal";
 import * as Location from 'expo-location';
+import envs from "../../config/env";
 
 // modules
 import { LandingStyles, modalStyles } from "../styles";
@@ -12,6 +13,7 @@ export default function TravelSearch({ navigation }) {
   const [modalTravelFindedVisible, setModalTravelFindedVisible] = useState(false);
   const [isSearching, setIsSearching] = useState(true);
   const [currentLocation, setCurrentLocation] = useState({ location: undefined, reload: false });
+  const { API_URL, _ } = envs;
 
   useEffect(() => {
     (async () => {
@@ -43,7 +45,7 @@ export default function TravelSearch({ navigation }) {
 
       const token = await getItemAsync("token");
 
-      const travels = await get(`http://10.0.2.2:5000/travels?latitude=${currentLocation.location[0]}&longitude=${currentLocation.location[1]}`, token)
+      const travels = await get(`${API_URL}/travels?latitude=${currentLocation.location[0]}&longitude=${currentLocation.location[1]}`, token)
         .then(({ data }) => data.data);
 
       if (travels) {
