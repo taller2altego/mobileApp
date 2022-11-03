@@ -4,8 +4,11 @@ import { Entypo } from "@expo/vector-icons";
 
 import { LandingStyles, modalStyles } from "../styles";
 
-export default function WaitingDriverModal({ navigation, setModalTravelFindedVisible, ...props }) {
-
+export default function TravelFindedModal({
+  navigation,
+  setModalTravelFindedVisible,
+  ...props
+}) {
   return (
     <Modal animationType="slide" transparent={false} visible={props.visible}>
       <View style={[modalStyles.modal_extern_view, { fontFamily: "poppins" }]}>
@@ -15,17 +18,16 @@ export default function WaitingDriverModal({ navigation, setModalTravelFindedVis
           </Pressable>
           <View style={[modalStyles.flex_modal]}>
             <Pressable
-              style={modalStyles.modal_button}
-              onPress={() => { navigation.navigate("TravelInProgressDriver"); }}>
-              <Text> Aceptar Viaje </Text>
+              style={{ alignSelf: "center" }}
+              onPress={() => {
+                navigation.navigate("TravelInProgressDriver");
+              }}
+            >
+              <Text style={{ fontSize: 25 }}> Aceptar Viaje </Text>
             </Pressable>
 
-            <Pressable
-              style={modalStyles.modal_button}
-              onPress={props.toggle}>
-              <Text>
-                Volver
-              </Text>
+            <Pressable style={{ alignSelf: "center" }} onPress={props.toggle}>
+              <Text style={{ fontSize: 25 }}>Volver</Text>
             </Pressable>
           </View>
         </View>
@@ -33,9 +35,3 @@ export default function WaitingDriverModal({ navigation, setModalTravelFindedVis
     </Modal>
   );
 }
-
-
-
-
-
-

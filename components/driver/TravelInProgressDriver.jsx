@@ -29,11 +29,10 @@ export default function TravelInProgressDriver({ navigation }) {
   const [distance, setDistance] = useState(0);
   const [duration, setDuration] = useState(0);
   const [driver, setDriver] = useState("Raul Gomez");
-  const [modalWaitingVisible, setModalWaitingVisible] = useState(false);
   const origin = currentTravelData.origin;
   const destination = currentTravelData.destination;
 
-  const { API_URL, GOOGLE_API_KEY} = envs;
+  const { API_URL, GOOGLE_API_KEY } = envs;
   // origen -- actual conductor hasta llegar a la casa del usuario
   // destino -- casa del usuario
 
