@@ -7,8 +7,8 @@ import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
 
 export default function LoginModal({ ...props }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("M@g");
+  const [password, setPassword] = useState("1234");
   const [errorMessage, setErrorMessage] = useState("");
   const { API_URL, _ } = envs;
 
