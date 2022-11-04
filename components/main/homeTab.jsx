@@ -11,6 +11,7 @@ import {
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import { useDispatch, useSelector } from "react-redux";
 import * as SecureStore from "expo-secure-store";
+import envs from "../../config/env";
 
 import { Homestyles, Profilestyles } from "../styles";
 import TravelItem from "../travel/TravelItem";
@@ -20,8 +21,6 @@ import {
 } from "../../redux/actions/UpdateTravelDetails";
 import { get } from "../../utils/requests";
 
-const API_KEY = "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ";
-
 export default function HomeTab({ navigation }) {
   const currentUserData = useSelector((store) => store.userData);
   const [srcDetails, setSrcDetails] = useState("");
@@ -29,6 +28,7 @@ export default function HomeTab({ navigation }) {
   const [data_travels, setData] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
   const dispatch = useDispatch();
+  const { API_URL, GOOGLE_API_KEY } = envs;
 
   const handleSelectedTrip = (item) => {
     setSelectedId(item.id);
@@ -53,10 +53,10 @@ export default function HomeTab({ navigation }) {
       const token = await SecureStore.getItemAsync("token");
       const params = {
         page: 1,
-        offset: 4,
+        limit: 4,
       };
 
-      await get(`http://10.0.2.2:5000/travels/users/${id}`, token, {}, params)
+      await get(`${API_URL}/travels/users/${id}`, token, {}, params)
         .then(({ data: { data } }) => {
           setData(data);
         });
@@ -107,7 +107,7 @@ export default function HomeTab({ navigation }) {
                 });
               }}
               query={{
-                key: API_KEY,
+                key: GOOGLE_API_KEY,
                 language: "en",
               }}
             />
@@ -122,7 +122,7 @@ export default function HomeTab({ navigation }) {
                 });
               }}
               query={{
-                key: API_KEY,
+                key: GOOGLE_API_KEY,
                 language: "en",
               }}
             />

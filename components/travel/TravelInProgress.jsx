@@ -7,8 +7,8 @@ import { useSelector } from "react-redux";
 import { useFonts } from "expo-font";
 import { get } from "../../utils/requests";
 import * as SecureStore from "expo-secure-store";
+import envs from "../../config/env";
 
-const API_KEY = "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ";
 const PRICE_PER_KM = 100;
 
 const edgePadding = {
@@ -33,10 +33,12 @@ export default function TravelInProgress({ navigation }) {
   const origin = currentTravelData.origin;
   const destination = currentTravelData.destination;
 
-  // origen -- actual conductor hasta llegar a la casa del chabon
-  // destino -- casa del chabon
+  const { API_URL, GOOGLE_API_KEY } = envs;
 
-  // origen actual posicion del conductor con el chabon, inicial en domicilio del chabon
+  // origen -- actual conductor hasta llegar a la casa del usuario
+  // destino -- casa del usuario
+
+  // origen actual posicion del conductor con el usuario, inicial en domicilio del usuario
   // destino -- travel.destination
 
   // const driverId = await SecureStore.getItemAsync("id");
@@ -94,7 +96,7 @@ export default function TravelInProgress({ navigation }) {
         )}
         {origin && destination && (
           <MapViewDirections
-            apikey={API_KEY}
+            apikey={GOOGLE_API_KEY}
             origin={origin}
             destination={destination}
             strokeColor="black"

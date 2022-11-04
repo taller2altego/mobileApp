@@ -17,7 +17,7 @@ export default function CreateTravel({ navigation }) {
   const destination = currentTravelData.destination;
   const mapRef = useRef(null);
   const [fontsLoaded] = useFonts({
-    poppins: require("../../assets/fonts/Poppins-Regular.ttf"),
+    "poppins": require("../../assets/fonts/Poppins-Regular.ttf"),
     "poppins-bold": require("../../assets/fonts/Poppins-Bold.ttf"),
   });
 
