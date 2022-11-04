@@ -291,7 +291,6 @@ const MapStyles = StyleSheet.create({
     borderRadius: 15,
   },
 });
-
 const TravelStyles = StyleSheet.create({
   travelContainer: {
     flex: 1,

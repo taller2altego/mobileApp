@@ -17,7 +17,7 @@ import { Provider } from "react-redux";
 import ConfirmationTravel from "./components/travel/ConfirmationTravel";
 import DriverSearch from "./components/travel/DriverSearch";
 import DriverIncoming from "./components/travel/DriverIncoming";
-
+import TripDetailsScreen from "./components/main/TripDetails";
 
 const Stack = createNativeStackNavigator();
 
@@ -79,6 +79,11 @@ export default function App(props) {
           <Stack.Screen
             name="TravelSearch"
             component={TravelSearch}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="TripDetails"
+            component={TripDetailsScreen}
             options={{ headerShown: false }}
           />
         </Stack.Navigator>
