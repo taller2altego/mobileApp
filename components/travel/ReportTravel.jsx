@@ -30,15 +30,14 @@ export default function ReportTravel({ route, navigation }) {
     });
 
     const sendReport = async (navigation) => {
-        const id = await SecureStore.getItemAsync("id");
+        // const id = await SecureStore.getItemAsync("id");
         const token = await SecureStore.getItemAsync("token");
-
-        // return authPost(`${API_URL}/travels`, token, body)
-        //   .then(({ data }) => {
-        //     dispatch(setNewTravel({ _id: data.data._id }));
-        //     setModalWaitingVisible(!modalWaitingVisible);
-        //   });
-        navigation.navigate("Home");
+        const data = {
+            driverId: item.driver,
+            description: reportText
+        };
+        return authPost(`${API_URL}/reports`, token, data)
+            .then(() => navigation.navigate("TripDetails", { travelId: item.travelId }))
     };
 
     const comeBack = (navigation) => {
@@ -49,9 +48,7 @@ export default function ReportTravel({ route, navigation }) {
         return null;
     }
 
-
     return (
-
         <View style={Profilestyles.profile_container}>
             <View style={ReportStyles.info_container}>
                 <Text style={ReportStyles.destination_text}>{item.destination}</Text>
