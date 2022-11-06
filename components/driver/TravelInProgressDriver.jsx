@@ -1,5 +1,9 @@
 import { useRef, useState } from "react";
-import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import MapView, {
+  AnimatedRegion,
+  Marker,
+  PROVIDER_GOOGLE,
+} from "react-native-maps";
 import { MapStyles, TravelStyles } from "../styles";
 import MapViewDirections from "react-native-maps-directions";
 import { View, Text, Pressable, Image } from "react-native";
@@ -8,6 +12,8 @@ import { useFonts } from "expo-font";
 import { get } from "../../utils/requests";
 import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
+import { useEffect } from "react";
+import * as Location from "expo-location";
 
 const PRICE_PER_KM = 100;
 
@@ -17,31 +23,51 @@ const edgePadding = {
   bottom: 100,
   left: 100,
 };
-const INITIAL_POSITION = {
-  latitude: -34.6035,
-  longitude: -58.4611,
-  latitudeDelta: 0.1,
-  longitudeDelta: 0.1,
-};
 
 export default function TravelInProgressDriver({ navigation }) {
   const currentTravelData = useSelector((store) => store.travelDetailsData);
   const [distance, setDistance] = useState(0);
   const [duration, setDuration] = useState(0);
+  const markerRef = useRef(null);
   const [driver, setDriver] = useState("Raul Gomez");
+  let locationSubscription = null;
+  const [fontsLoaded] = useFonts({
+    poppins: require("../../assets/fonts/Poppins-Regular.ttf"),
+    "poppins-bold": require("../../assets/fonts/Poppins-Bold.ttf"),
+  });
+
   const origin = currentTravelData.origin;
   const destination = currentTravelData.destination;
 
+  const INITIAL_POSITION = {
+    latitude: origin.latitude,
+    longitude: origin.longitude,
+    latitudeDelta: 0.1,
+    longitudeDelta: 0.1,
+  };
   const { API_URL, GOOGLE_API_KEY } = envs;
-  // origen -- actual conductor hasta llegar a la casa del usuario
-  // destino -- casa del usuario
 
-  // origen actual posicion del conductor con el usuario, inicial en domicilio del usuario
-  // destino -- travel.destination
+  const updateDriverPosition = () => {
+    locationSubscription = Location.watchPositionAsync(
+      { accuracy: Location.Accuracy.High, distanceInterval: 10 },
+      (location) => {
+        const newCoordinate = {
+          latitude: location.coords.latitude,
+          longitude: location.coods.longitude,
+        };
+        if (markerRef) {
+          markerRef.current.animateMarkerToCoordinate(newCoordinate, 500);
+        }
+      },
+      (error) => {
+        console.log("hay error aca"), console.log(error);
+      }
+    );
+  };
 
-  // const driverId = await SecureStore.getItemAsync("id");
-  // const token = await SecureStore.getItemAsync("token");
-  // get()
+  useEffect(() => {
+    updateDriverPosition();
+  });
 
   const cancelTravel = (navigation) => {
     // request para eliminar el driver del tralel
@@ -50,14 +76,6 @@ export default function TravelInProgressDriver({ navigation }) {
   };
 
   const mapRef = useRef(null);
-  const [fontsLoaded] = useFonts({
-    poppins: require("../../assets/fonts/Poppins-Regular.ttf"),
-    "poppins-bold": require("../../assets/fonts/Poppins-Bold.ttf"),
-  });
-
-  // const onDriverSearch = () => {
-  //   navigation.navigate("DriverSearch");
-  // };
 
   const updateTripProps = (args) => {
     if (args) {
@@ -81,14 +99,13 @@ export default function TravelInProgressDriver({ navigation }) {
     <View style={{ flex: 1, backgroundColor: "white" }}>
       <MapView
         ref={mapRef}
+        showsUserLocation
+        followsUserLocation
         style={MapStyles.map}
         provider={PROVIDER_GOOGLE}
-        onMapLoaded={() => {
-          zoomOnDirections();
-        }}
         initialRegion={INITIAL_POSITION}
       >
-        {origin && <Marker coordinate={origin} identifier="originMark" />}
+        <Marker.Animated ref={markerRef} coordinate={origin} />
         {destination && (
           <Marker coordinate={destination} identifier="destMark" />
         )}

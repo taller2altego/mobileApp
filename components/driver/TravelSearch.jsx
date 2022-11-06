@@ -9,11 +9,16 @@ import envs from "../../config/env";
 // modules
 import { LandingStyles, modalStyles } from "../styles";
 import { get } from "../../utils/requests";
-import { setOriginDriver } from "../../redux/actions/UpdateUserTravelDetails";
-import { updateLocale } from "moment/moment";
+import {
+  setTravelDetails,
+  setTravelInfo,
+} from "../../redux/actions/UpdateTravelDetails";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function TravelSearch({ navigation }) {
-  const [modalTravelFindedVisible, setModalTravelFindedVisible] = useState(false);
+  const [modalTravelFindedVisible, setModalTravelFindedVisible] =
+    useState(false);
+  const dispatch = useDispatch();
   const [isSearching, setIsSearching] = useState(true);
   const [currentLocation, setCurrentLocation] = useState({ location: null });
   const [locationSubscription, setLocationSubscription] = useState(null);
@@ -46,7 +51,9 @@ export default function TravelSearch({ navigation }) {
       console.log(error);
     };
 
-    setLocationSubscription(await Location.watchPositionAsync(options, success, error));
+    setLocationSubscription(
+      await Location.watchPositionAsync(options, success, error)
+    );
   };
 
   useEffect(() => {
@@ -61,11 +68,20 @@ export default function TravelSearch({ navigation }) {
       const token = await SecureStore.getItemAsync("token");
 
       const url = `${API_URL}/travels?latitude=${currentLocation.location[0]}&longitude=${currentLocation.location[1]}`;
-      const travels = await get(url, token)
-        .then(({ data }) => {
-          console.log(`Todos putos: ${JSON.stringify(data, undefined, 2)}`);
-          return data.data;
-        });
+      const travels = await get(url, token).then(({ data }) => {
+        dispatch(
+          setTravelDetails({
+            origin: data.data.source,
+            destination: data.data.destination,
+          })
+        );
+        dispatch(
+          setTravelInfo({
+            originAddress: data.data.sourceAddress,
+            destinationAddress: data.data.destinationAddress,
+          })
+        );
+      });
 
       if (travels) {
         setIsSearching(false);
@@ -74,7 +90,6 @@ export default function TravelSearch({ navigation }) {
         locationSubscription.remove();
       }
     }, 10000);
-
   }, [currentLocation]);
 
   const toggleTravelFindedModal = () => {

@@ -3,12 +3,14 @@ import { Pressable, Modal, Text, View } from "react-native";
 import { Entypo } from "@expo/vector-icons";
 
 import { LandingStyles, modalStyles } from "../styles";
+import { useSelector } from "react-redux";
 
 export default function TravelFindedModal({
   navigation,
   setModalTravelFindedVisible,
   ...props
 }) {
+  const currentTravel = useSelector((store) => store.travelDetailsData);
   return (
     <Modal animationType="slide" transparent={false} visible={props.visible}>
       <View style={[modalStyles.modal_extern_view, { fontFamily: "poppins" }]}>
