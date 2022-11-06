@@ -30,9 +30,10 @@ export default function ReportTravel({ route, navigation }) {
     });
 
     const sendReport = async (navigation) => {
-        // const id = await SecureStore.getItemAsync("id");
+        const id = await SecureStore.getItemAsync("id");
         const token = await SecureStore.getItemAsync("token");
         const data = {
+            userId: id,
             driverId: item.driver,
             description: reportText
         };
