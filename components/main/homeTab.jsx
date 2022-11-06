@@ -18,7 +18,7 @@ import TravelItem from "../travel/TravelItem";
 import {
   setDestination,
   setOrigin,
-} from "../../redux/actions/UpdateTravelDetails";
+} from "../../redux/actions/UpdateUserTravelDetails";
 import { get } from "../../utils/requests";
 
 export default function HomeTab({ navigation }) {

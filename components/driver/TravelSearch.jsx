@@ -3,74 +3,79 @@ import { useEffect, useState } from "react";
 import { View, Text, ActivityIndicator, Pressable } from "react-native";
 import TravelFindedModal from "./TravelFindedModal";
 import * as Location from "expo-location";
+import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
 
 // modules
 import { LandingStyles, modalStyles } from "../styles";
 import { get } from "../../utils/requests";
-import { setOriginDriver } from "../../redux/actions/UpdateTravelDetails";
+import { setOriginDriver } from "../../redux/actions/UpdateUserTravelDetails";
 import { updateLocale } from "moment/moment";
 
 export default function TravelSearch({ navigation }) {
-  const [modalTravelFindedVisible, setModalTravelFindedVisible] =
-    useState(false);
+  const [modalTravelFindedVisible, setModalTravelFindedVisible] = useState(false);
   const [isSearching, setIsSearching] = useState(true);
   const [currentLocation, setCurrentLocation] = useState({ location: null });
-  let locationSubscription = null;
+  const [locationSubscription, setLocationSubscription] = useState(null);
+
   const { API_URL, _ } = envs;
 
   useEffect(() => {
     (async () => {
-      console.log("init");
       const { status } = await Location.requestForegroundPermissionsAsync();
-
-      console.log(status);
       if (status !== "granted") {
         throw new Error(
           "No tiene permisos, consulte con altego para mas información"
         );
       } else {
-        console.log("Approved!");
-        updateDriverPosition();
+        await updateDriverPosition();
       }
     })();
   }, []);
 
-  const updateDriverPosition = () => {
-    locationSubscription = Location.watchPositionAsync(
-      { accuracy: Location.Accuracy.High, distanceInterval: 10 },
-      (location) => {
-        setCurrentLocation({
-          location: [location.coords.latitude, location.coords.longitude],
-        });
-      },
-      (error) => {
-        console.log("hay error aca"), console.log(error);
-      }
-    );
+  const updateDriverPosition = async () => {
+    const options = { accuracy: Location.Accuracy.High, distanceInterval: 10 };
+    const success = (location) => {
+      const obj = {
+        location: [location.coords.latitude, location.coords.longitude],
+      };
+      setCurrentLocation(obj);
+    };
+
+    const error = (error) => {
+      console.log(error);
+    };
+
+    setLocationSubscription(await Location.watchPositionAsync(options, success, error));
   };
 
   useEffect(() => {
     // TODO: agregar un estado para diferenciar el cambio del modal del cierre del modal.
     setIsSearching(true);
-    const interval = setInterval(async () => {
-      if (currentLocation.location === null) {
-        return;
-      }
 
-      console.log(currentLocation.location);
-      const travels = await get(
-        `${API_URL}/travels?latitude=${currentLocation.location[0]}&longitude=${currentLocation.location[1]}`,
-        token
-      ).then(({ data }) => data.data);
+    if (currentLocation.location === null) {
+      return;
+    }
+
+    const interval = setInterval(async () => {
+      const token = await SecureStore.getItemAsync("token");
+
+      const url = `${API_URL}/travels?latitude=${currentLocation.location[0]}&longitude=${currentLocation.location[1]}`;
+      const travels = await get(url, token)
+        .then(({ data }) => {
+          console.log(`Todos putos: ${JSON.stringify(data, undefined, 2)}`);
+          return data.data;
+        });
 
       if (travels) {
         setIsSearching(false);
         setModalTravelFindedVisible(true);
         clearInterval(interval);
+        locationSubscription.remove();
       }
     }, 10000);
-  }, []);
+
+  }, [currentLocation]);
 
   const toggleTravelFindedModal = () => {
     setModalTravelFindedVisible(!modalTravelFindedVisible);

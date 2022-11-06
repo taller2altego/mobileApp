@@ -1,27 +1,35 @@
 import React, { useState } from "react";
 import { Modal, Pressable, Text, TextInput, View } from "react-native";
-import { post } from "../../utils/requests";
+import { get, post } from "../../utils/requests";
 import { LandingStyles, modalStyles } from "../styles";
 import { Entypo } from "@expo/vector-icons";
 import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
+import { useDispatch } from "react-redux";
+import { setIsDriver, setUserData } from "../../redux/actions/UpdateUserData";
 
 export default function LoginModal({ ...props }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const dispatch = useDispatch();
   const { API_URL, _ } = envs;
 
+  const getUserInfo = async (id, token) => {
+    return get(`${API_URL}/users/${id}`, token).then(({ data }) => data);
+  };
+
   const onSignIn = () => {
-    return post(`${API_URL}/login`, {
-      email,
-      password
-    })
-      .then(async (info) => {
-        console.log(info);
-        const { data: { id, token } } = info;
+    const body = { email: "driver@fiuber.com", password: "1234" };
+    return post(`${API_URL}/login`, body)
+      .then(async ({ data: { id, token } }) => {
         await SecureStore.setItemAsync("token", token);
         await SecureStore.setItemAsync("id", id.toString());
+
+        const userInfo = await getUserInfo(id, token);
+        const userData = { name: userInfo.name, lastname: userInfo.lastname, phoneNumber: userInfo.phoneNumberm, email: userInfo.email };
+        dispatch(setUserData(userData));
+        dispatch(setIsDriver({ isDriver: userInfo.isDriver }))
         props.toggle();
         props.navigation.navigate("Home");
       })
@@ -42,7 +50,7 @@ export default function LoginModal({ ...props }) {
             <TextInput
               style={[modalStyles.modal_input, { fontFamily: "poppins" }]}
               placeholder="Email"
-              value={email}
+              value="driver@fiuber.com"
               placeholderTextColor="#343437"
               onChangeText={(email) => setEmail(email)}
             />
@@ -50,7 +58,7 @@ export default function LoginModal({ ...props }) {
               style={[modalStyles.modal_input, { fontFamily: "poppins" }]}
               placeholder="Contraseña"
               placeholderTextColor="#343437"
-              value={password}
+              value="1234"
               secureTextEntry={true}
               onChangeText={(password) => setPassword(password)}
             />
