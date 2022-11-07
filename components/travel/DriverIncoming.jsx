@@ -68,7 +68,6 @@ export default function DriverIncoming({ navigation }) {
 
       await get(`${API_URL}/travels/${travelId}/driver`, token)
         .then(({ data }) => {
-          console.log(data.data)
           const position = data.data.currentDriverPosition;
           setCurrentOrigin(position);
 

@@ -6,58 +6,70 @@ import MapView, {
 } from "react-native-maps";
 import { MapStyles, TravelStyles } from "../styles";
 import MapViewDirections from "react-native-maps-directions";
-import { View, Text, Pressable, Image } from "react-native";
+import { View, Text, Pressable, Image, Dimensions } from "react-native";
 import { useSelector } from "react-redux";
 import { useFonts } from "expo-font";
-import { get } from "../../utils/requests";
-import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
 import { useEffect } from "react";
 import * as Location from "expo-location";
+import { Polyline } from "react-native-maps";
 
-const PRICE_PER_KM = 100;
+const screen = Dimensions.get("window");
+const ASPECT_RATIO = screen.width / screen.height;
+const LATITUDE_DELTA = 0.02;
+const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
-const edgePadding = {
-  top: 100,
-  right: 100,
-  bottom: 100,
-  left: 100,
-};
+const { API_URL, GOOGLE_API_KEY } = envs;
 
 export default function TravelInProgressDriver({ navigation }) {
-  const currentTravelData = useSelector((store) => store.travelDetailsData);
-  const [distance, setDistance] = useState(0);
-  const [duration, setDuration] = useState(0);
+  // refs
   const markerRef = useRef(null);
+  const mapRef = useRef(null);
+
+  // redux
+  const tripData = useSelector((store) => store.travelDetailsData);
+
+  // state
+  const [actualTripState, setActualTripState] = useState({
+    currentLoc: {
+      latitude: tripData.origin.latitude,
+      longitude: tripData.origin.longitude,
+    },
+    destinationCoords: {
+      latitude: tripData.destination.latitude,
+      longitude: tripData.destination.longitude,
+    },
+    coordinates: new AnimatedRegion({
+      latitude: tripData.origin.latitude,
+      longitude: tripData.origin.longitude,
+      latitudeDelta: LATITUDE_DELTA,
+      longitudeDelta: LONGITUDE_DELTA,
+    }),
+  });
+
   const [driver, setDriver] = useState("Raul Gomez");
-  let locationSubscription = null;
   const [fontsLoaded] = useFonts({
     poppins: require("../../assets/fonts/Poppins-Regular.ttf"),
     "poppins-bold": require("../../assets/fonts/Poppins-Bold.ttf"),
   });
 
-  const origin = currentTravelData.origin;
-  const destination = currentTravelData.destination;
-
-  const INITIAL_POSITION = {
-    latitude: origin.latitude,
-    longitude: origin.longitude,
-    latitudeDelta: 0.1,
-    longitudeDelta: 0.1,
-  };
-  const { API_URL, GOOGLE_API_KEY } = envs;
-
   const updateDriverPosition = () => {
-    locationSubscription = Location.watchPositionAsync(
+    Location.watchPositionAsync(
       { accuracy: Location.Accuracy.High, distanceInterval: 10 },
       (location) => {
-        const newCoordinate = {
-          latitude: location.coords.latitude,
-          longitude: location.coods.longitude,
-        };
-        if (markerRef) {
-          markerRef.current.animateMarkerToCoordinate(newCoordinate, 500);
-        }
+        const newLatitude = location.coords.latitude;
+        const newLongitude = location.coords.longitude;
+        animate(newLatitude, newLongitude);
+        setActualTripState({
+          ...actualTripState,
+          currentLoc: { latitude: newLatitude, longitude: newLongitude },
+          coordinates: new AnimatedRegion({
+            latitude: newLatitude,
+            longitude: newLongitude,
+            latitudeDelta: LATITUDE_DELTA,
+            longitudeDelta: LONGITUDE_DELTA,
+          }),
+        });
       },
       (error) => {
         console.log("hay error aca"), console.log(error);
@@ -65,30 +77,27 @@ export default function TravelInProgressDriver({ navigation }) {
     );
   };
 
+  const animate = (latitude, longitude) => {
+    const newCoordinate = { latitude, longitude };
+    if (markerRef.current) {
+      markerRef.current.animateMarkerToCoordinate(newCoordinate, 7000);
+      mapRef.current.animateToRegion({
+        latitude: newCoordinate.latitude,
+        longitude: newCoordinate.longitude,
+        longitudeDelta: LONGITUDE_DELTA,
+        latitudeDelta: LATITUDE_DELTA,
+      });
+    }
+  };
+
   useEffect(() => {
     updateDriverPosition();
-  });
+  }, []);
 
   const cancelTravel = (navigation) => {
     // request para eliminar el driver del tralel
     // limpiar inputs de destino y origen en main
     navigation.navigate("Home");
-  };
-
-  const mapRef = useRef(null);
-
-  const updateTripProps = (args) => {
-    if (args) {
-      setDistance(args.distance.toFixed(2));
-      setDuration(Math.ceil(args.duration));
-    }
-  };
-
-  const zoomOnDirections = () => {
-    mapRef.current.fitToSuppliedMarkers(["originMark", "destMark"], {
-      animated: true,
-      edgePadding: edgePadding,
-    });
   };
 
   if (!fontsLoaded) {
@@ -99,82 +108,31 @@ export default function TravelInProgressDriver({ navigation }) {
     <View style={{ flex: 1, backgroundColor: "white" }}>
       <MapView
         ref={mapRef}
-        showsUserLocation
-        followsUserLocation
         style={MapStyles.map}
         provider={PROVIDER_GOOGLE}
-        initialRegion={INITIAL_POSITION}
+        initialRegion={{
+          latitude: tripData.origin.latitude,
+          longitude: tripData.origin.longitude,
+          latitudeDelta: LATITUDE_DELTA,
+          longitudeDelta: LONGITUDE_DELTA,
+        }}
       >
-        <Marker.Animated ref={markerRef} coordinate={origin} />
-        {destination && (
-          <Marker coordinate={destination} identifier="destMark" />
-        )}
-        {origin && destination && (
+        <Marker.Animated
+          ref={markerRef}
+          coordinate={actualTripState.coordinates}
+        />
+        <Marker coordinate={tripData.destination} identifier="destMark" />
+        {tripData.origin && tripData.destination && (
           <MapViewDirections
             apikey={GOOGLE_API_KEY}
-            origin={origin}
-            destination={destination}
+            origin={actualTripState.currentLoc}
+            destination={tripData.destination}
             strokeColor="black"
+            optimizeWaypoints={true}
             strokeWidth={5}
-            onReady={updateTripProps}
           />
         )}
       </MapView>
-      <View style={MapStyles.tripInfoContainer}>
-        <View style={{ paddingLeft: 35 }}></View>
-        <Image
-          style={MapStyles.carImage}
-          source={{
-            uri: "https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,w_896,h_504/f_auto,q_auto/products/carousel/UberX.png",
-          }}
-        />
-        <View style={{ paddingRight: 20 }}>
-          <Text style={{ fontFamily: "poppins", fontSize: 15 }}>
-            {" "}
-            Cliente: {driver}
-          </Text>
-          <Text style={{ fontFamily: "poppins", fontSize: 15 }}>
-            {" "}
-            {distance} km
-          </Text>
-        </View>
-      </View>
-      <View style={TravelStyles.travelContainer}>
-        <View style={TravelStyles.buttonContainer}>
-          <Pressable
-            style={MapStyles.confirmTripButton}
-            onPress={() => cancelTravel(navigation)}
-          >
-            <Text
-              style={{
-                fontFamily: "poppins-bold",
-                color: "white",
-                textAlign: "center",
-                lineHeight: 38,
-              }}
-            >
-              Cancelar viaje
-            </Text>
-          </Pressable>
-        </View>
-        <View style={TravelStyles.buttonContainer}>
-          <Pressable
-            style={MapStyles.confirmTripButton}
-            onPress={() => navigation.navigate("ProfileVisualization")}
-          >
-            <Text
-              style={{
-                fontFamily: "poppins-bold",
-                color: "white",
-                textAlign: "center",
-                lineHeight: 38,
-              }}
-            >
-              Visualizar Cliente
-            </Text>
-          </Pressable>
-        </View>
-      </View>
     </View>
   );
 }

@@ -42,7 +42,10 @@ export default function TravelSearch({ navigation }) {
     const options = { accuracy: Location.Accuracy.High, distanceInterval: 10 };
     const success = (location) => {
       const obj = {
-        location: [location.coords.latitude, location.coords.longitude],
+        location: {
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+        },
       };
       setCurrentLocation(obj);
     };
@@ -66,13 +69,12 @@ export default function TravelSearch({ navigation }) {
 
     const interval = setInterval(async () => {
       const token = await SecureStore.getItemAsync("token");
-
-      const url = `${API_URL}/travels?latitude=${currentLocation.location[0]}&longitude=${currentLocation.location[1]}`;
+      const url = `${API_URL}/travels?latitude=${currentLocation.location.latitude}&longitude=${currentLocation.location.longitude}`;
       const travels = await get(url, token).then(({ data }) => {
         dispatch(
           setTravelDetails({
-            origin: data.data.source,
-            destination: data.data.destination,
+            origin: currentLocation.location,
+            destination: data.data.source,
           })
         );
         dispatch(
@@ -81,15 +83,19 @@ export default function TravelSearch({ navigation }) {
             destinationAddress: data.data.destinationAddress,
           })
         );
+        return data;
       });
 
       if (travels) {
         setIsSearching(false);
         setModalTravelFindedVisible(true);
         clearInterval(interval);
-        locationSubscription.remove();
       }
     }, 10000);
+    return () => {
+      clearInterval(interval);
+      locationSubscription.remove();
+    };
   }, [currentLocation]);
 
   const toggleTravelFindedModal = () => {

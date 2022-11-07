@@ -11,6 +11,7 @@ export default function TravelFindedModal({
   ...props
 }) {
   const currentTravel = useSelector((store) => store.travelDetailsData);
+
   return (
     <Modal animationType="slide" transparent={false} visible={props.visible}>
       <View style={[modalStyles.modal_extern_view, { fontFamily: "poppins" }]}>
@@ -19,6 +20,14 @@ export default function TravelFindedModal({
             <Entypo name="cross" size={24} color="black" />
           </Pressable>
           <View style={[modalStyles.flex_modal]}>
+            <Text style={{ fontSize: 25, alignSelf: "center" }}>
+              {" "}
+              {currentTravel.originAddress}
+            </Text>
+            <Text style={{ fontSize: 25, alignSelf: "center" }}>
+              {" "}
+              {currentTravel.destinationAddress}{" "}
+            </Text>
             <Pressable
               style={{ alignSelf: "center" }}
               onPress={() => {
