@@ -15,7 +15,6 @@ export default function TripDetails({ route, navigation }) {
     "poppins-bold": require("../../assets/fonts/Poppins-Bold.ttf"),
   });
   const [rating, handleRating] = useState();
-  const { travelId } = route.params;
   const [source, setSource] = useState();
   const [destination, setDestination] = useState();
   const [price, setPrice] = useState();
@@ -25,6 +24,8 @@ export default function TripDetails({ route, navigation }) {
 
   useEffect(() => {
     (async () => {
+      const { travelId } = route.params;
+
       const token = await SecureStore.getItemAsync("token");
       await get(`http://10.0.2.2:5000/travels/${travelId}`, token)
         .then(
@@ -50,9 +51,6 @@ export default function TripDetails({ route, navigation }) {
       });
   }
 
-  if (!fontsLoaded) {
-    return null;
-  }
   const months = {
     January: 1,
     February: 2,
@@ -68,10 +66,20 @@ export default function TripDetails({ route, navigation }) {
     December: 12,
   };
 
+  if (!fontsLoaded) {
+    return null;
+  }
+  
   const a = moment(date);
   const year = a.format("YYYY");
   const month = a.format("MMMM");
   const day = a.format("DD");
+
+  const sendReport = (navigation) => {
+    const dateTravel = `${day}/${months[month]}/${year}`
+    const { travelId } = route.params;
+    navigation.navigate("ReportTravel", { travelId, destination, dateTravel, driver });
+  }
 
   return (
     <View style={{ flex: 1 }}>
@@ -141,7 +149,7 @@ export default function TripDetails({ route, navigation }) {
           )}
           <Pressable
             style={MapStyles.confirmTripButton}
-          // onPress={() => navigation.navigate("Home")}
+            onPress={() => sendReport(navigation)}
           >
             <Text
               style={{
@@ -157,6 +165,6 @@ export default function TripDetails({ route, navigation }) {
 
         </View>
       </View>
-    </View>
+    </View >
   );
 }

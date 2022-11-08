@@ -303,6 +303,44 @@ const TravelStyles = StyleSheet.create({
   },
 });
 
+const ReportStyles = StyleSheet.create({
+  info_container: {
+    flex: 3,
+    marginTop: 100,
+    textAlign: "center",
+  },
+  input_text: {
+    flex: 2,
+  },
+  destination_text: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  other_info_text: {
+    fontSize: 16,
+    textAlign: "center",
+    marginTop: 10,
+  },
+  report_container: {
+    height: (25 * Dimensions.get("window").height) / 100,
+    width: (90 * Dimensions.get("window").width) / 100,
+    backgroundColor: "white",
+    fontSize: 16,
+    textAlign: "center",
+    shadowColor: "black",
+    borderColor: 'black',
+    borderWidth: 2,
+    marginBottom: 20,
+    shadowOpacity: 0.5,
+    shadowOffset: { width: 2, height: 2 },
+    shadowRadius: 4,
+    elevation: 4,
+    padding: 8,
+    borderRadius: 8,
+    top: 35,
+  }
+});
+
 export {
   DriverStyles,
   LandingStyles,
@@ -311,4 +349,5 @@ export {
   Homestyles,
   MapStyles,
   TravelStyles,
+  ReportStyles,
 };
