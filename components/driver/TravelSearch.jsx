@@ -12,6 +12,7 @@ import { get } from "../../utils/requests";
 import {
   setTravelDetails,
   setTravelInfo,
+  setUserLocation,
 } from "../../redux/actions/UpdateTravelDetails";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -74,7 +75,7 @@ export default function TravelSearch({ navigation }) {
         dispatch(
           setTravelDetails({
             origin: currentLocation.location,
-            destination: data.data.source,
+            destination: data.data.destination,
           })
         );
         dispatch(
@@ -83,6 +84,9 @@ export default function TravelSearch({ navigation }) {
             destinationAddress: data.data.destinationAddress,
           })
         );
+        dispatch(setUserLocation({
+          userLocation: data.data.source,
+        }));
         return data;
       });
 

@@ -12,7 +12,6 @@ import { useFonts } from "expo-font";
 import envs from "../../config/env";
 import { useEffect } from "react";
 import * as Location from "expo-location";
-import { Polyline } from "react-native-maps";
 
 const screen = Dimensions.get("window");
 const ASPECT_RATIO = screen.width / screen.height;
@@ -36,20 +35,20 @@ export default function TravelInProgressDriver({ navigation }) {
       longitude: tripData.origin.longitude,
     },
     destinationCoords: {
-      latitude: tripData.destination.latitude,
-      longitude: tripData.destination.longitude,
+      latitude: tripData.userLocation.latitude,
+      longitude: tripData.userLocation.longitude,
     },
-    coordinates: new AnimatedRegion({
+    animatedcoords: new AnimatedRegion({
       latitude: tripData.origin.latitude,
       longitude: tripData.origin.longitude,
       latitudeDelta: LATITUDE_DELTA,
       longitudeDelta: LONGITUDE_DELTA,
     }),
   });
+  const [tripToFinalDestiny, setTripToFinalDestiny] = useState(false);
 
-  const [driver, setDriver] = useState("Raul Gomez");
   const [fontsLoaded] = useFonts({
-    poppins: require("../../assets/fonts/Poppins-Regular.ttf"),
+    "poppins": require("../../assets/fonts/Poppins-Regular.ttf"),
     "poppins-bold": require("../../assets/fonts/Poppins-Bold.ttf"),
   });
 
@@ -63,12 +62,6 @@ export default function TravelInProgressDriver({ navigation }) {
         setActualTripState({
           ...actualTripState,
           currentLoc: { latitude: newLatitude, longitude: newLongitude },
-          coordinates: new AnimatedRegion({
-            latitude: newLatitude,
-            longitude: newLongitude,
-            latitudeDelta: LATITUDE_DELTA,
-            longitudeDelta: LONGITUDE_DELTA,
-          }),
         });
       },
       (error) => {
@@ -80,7 +73,7 @@ export default function TravelInProgressDriver({ navigation }) {
   const animate = (latitude, longitude) => {
     const newCoordinate = { latitude, longitude };
     if (markerRef.current) {
-      markerRef.current.animateMarkerToCoordinate(newCoordinate, 7000);
+      actualTripState.animatedcoords.timing(newCoordinate).start();
       mapRef.current.animateToRegion({
         latitude: newCoordinate.latitude,
         longitude: newCoordinate.longitude,
@@ -93,6 +86,22 @@ export default function TravelInProgressDriver({ navigation }) {
   useEffect(() => {
     updateDriverPosition();
   }, []);
+
+  const updateDistance = (args) => {
+    if (args.distance.toFixed(2) < 0.05) {
+      setTripToFinalDestiny(true);
+    }
+  };
+
+  const startTrip = () => {
+    setActualTripState({
+      ...actualTripState,
+      destinationCoords: {
+        latitude: tripData.destination.latitude,
+        longitude: tripData.destination.longitude,
+      },
+    });
+  };
 
   const cancelTravel = (navigation) => {
     // request para eliminar el driver del tralel
@@ -119,20 +128,31 @@ export default function TravelInProgressDriver({ navigation }) {
       >
         <Marker.Animated
           ref={markerRef}
-          coordinate={actualTripState.coordinates}
+          coordinate={actualTripState.animatedcoords}
         />
-        <Marker coordinate={tripData.destination} identifier="destMark" />
-        {tripData.origin && tripData.destination && (
+        <Marker
+          coordinate={actualTripState.destinationCoords}
+          identifier="destMark"
+        />
+        {actualTripState.currentLoc && actualTripState.destinationCoords && (
           <MapViewDirections
             apikey={GOOGLE_API_KEY}
             origin={actualTripState.currentLoc}
-            destination={tripData.destination}
+            destination={actualTripState.destinationCoords}
             strokeColor="black"
             optimizeWaypoints={true}
             strokeWidth={5}
+            onReady={updateDistance}
           />
         )}
       </MapView>
+      {tripToFinalDestiny ? (
+        <Pressable onPress={startTrip}>
+          <Text> INICIAR VIAJE </Text>
+        </Pressable>
+      ) : (
+        <></>
+      )}
     </View>
   );
 }
