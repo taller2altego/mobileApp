@@ -6,7 +6,7 @@ import { Entypo } from "@expo/vector-icons";
 import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
 
-export default function LoginModal({ ...props }) {
+export default function LoginModal({ navigation, ...props }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -64,6 +64,29 @@ export default function LoginModal({ ...props }) {
                 Login
               </Text>
             </Pressable>
+            <View style={LandingStyles.land_buttons_login}>
+              <Pressable
+                onPress={() => navigation.navigate("RecoverPassword")
+                }
+              >
+                <Text
+                  style={[LandingStyles.simpleText, { fontFamily: "poppins" }]}
+                >
+                  Forgot Password
+                </Text>
+              </Pressable>
+              <Pressable
+                onPress={() => navigation.navigate("AuthToken")
+                }
+              >
+                <Text
+                  style={[LandingStyles.simpleText, { fontFamily: "poppins" }]}
+                >
+                  Have a Token
+                </Text>
+              </Pressable>
+            </View>
+
             <Text style={[modalStyles.error_modal, { fontFamily: "poppins" }]}>{errorMessage}</Text>
           </View>
         </View>
@@ -71,3 +94,4 @@ export default function LoginModal({ ...props }) {
     </Modal>
   );
 }
+
