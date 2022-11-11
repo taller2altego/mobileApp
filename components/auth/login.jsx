@@ -5,6 +5,7 @@ import { LandingStyles, modalStyles } from "../styles";
 import { Entypo } from "@expo/vector-icons";
 import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
+import LoginGoogleButton from "./LoginGoogleButton";
 
 export default function LoginModal({ ...props }) {
   const [email, setEmail] = useState("M@g");
@@ -64,6 +65,9 @@ export default function LoginModal({ ...props }) {
                 Login
               </Text>
             </Pressable>
+            <LoginGoogleButton
+              navigation={props.navigation}
+            ></LoginGoogleButton>
             <Text style={[modalStyles.error_modal, { fontFamily: "poppins" }]}>{errorMessage}</Text>
           </View>
         </View>
