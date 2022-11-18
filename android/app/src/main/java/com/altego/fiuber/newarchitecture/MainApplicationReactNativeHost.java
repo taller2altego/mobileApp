@@ -1,4 +1,4 @@
-package com.app.newarchitecture;
+package com.altego.fiuber.newarchitecture;
 
 import android.app.Application;
 import androidx.annotation.NonNull;
@@ -20,9 +20,9 @@ import com.facebook.react.fabric.EmptyReactNativeConfig;
 import com.facebook.react.fabric.FabricJSIModuleProvider;
 import com.facebook.react.fabric.ReactNativeConfig;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import com.app.BuildConfig;
-import com.app.newarchitecture.components.MainComponentsRegistry;
-import com.app.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
+import com.altego.fiuber.BuildConfig;
+import com.altego.fiuber.newarchitecture.components.MainComponentsRegistry;
+import com.altego.fiuber.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
 import java.util.ArrayList;
 import java.util.List;
 

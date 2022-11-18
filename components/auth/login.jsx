@@ -5,6 +5,7 @@ import { LandingStyles, modalStyles } from "../styles";
 import { Entypo } from "@expo/vector-icons";
 import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
+import LoginGoogleButton from "./LoginGoogleButton";
 
 export default function LoginModal({ navigation, ...props }) {
   const [email, setEmail] = useState("");
@@ -18,7 +19,6 @@ export default function LoginModal({ navigation, ...props }) {
       password
     })
       .then(async (info) => {
-        console.log(info);
         const { data: { id, token } } = info;
         await SecureStore.setItemAsync("token", token);
         await SecureStore.setItemAsync("id", id.toString());
@@ -64,6 +64,7 @@ export default function LoginModal({ navigation, ...props }) {
                 Login
               </Text>
             </Pressable>
+            <LoginGoogleButton navigation={props.navigation} setErrorMessage={setErrorMessage}></LoginGoogleButton>
             <View style={LandingStyles.land_buttons_login}>
               <Pressable
                 onPress={() => navigation.navigate("RecoverPassword")

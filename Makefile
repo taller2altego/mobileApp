@@ -21,3 +21,6 @@ start_dev:
 
 start_prod:
 	npx expo start --no-dev
+
+build_app:
+	npm run android
