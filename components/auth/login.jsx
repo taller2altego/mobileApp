@@ -7,9 +7,9 @@ import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
 import LoginGoogleButton from "./LoginGoogleButton";
 
-export default function LoginModal({ ...props }) {
-  const [email, setEmail] = useState("M@g");
-  const [password, setPassword] = useState("1234");
+export default function LoginModal({ navigation, ...props }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const { API_URL, _ } = envs;
 
@@ -65,6 +65,29 @@ export default function LoginModal({ ...props }) {
               </Text>
             </Pressable>
             <LoginGoogleButton navigation={props.navigation} setErrorMessage={setErrorMessage}></LoginGoogleButton>
+            <View style={LandingStyles.land_buttons_login}>
+              <Pressable
+                onPress={() => navigation.navigate("RecoverPassword")
+                }
+              >
+                <Text
+                  style={[LandingStyles.simpleText, { fontFamily: "poppins" }]}
+                >
+                  Forgot Password
+                </Text>
+              </Pressable>
+              <Pressable
+                onPress={() => navigation.navigate("AuthToken")
+                }
+              >
+                <Text
+                  style={[LandingStyles.simpleText, { fontFamily: "poppins" }]}
+                >
+                  Have a Token
+                </Text>
+              </Pressable>
+            </View>
+
             <Text style={[modalStyles.error_modal, { fontFamily: "poppins" }]}>{errorMessage}</Text>
           </View>
         </View>
@@ -72,3 +95,4 @@ export default function LoginModal({ ...props }) {
     </Modal>
   );
 }
+

@@ -27,6 +27,7 @@
     "expo-splash-screen": "~0.16.2",
     "expo-status-bar": "~1.4.0",
     "expo-updates": "~0.14.7",
+    "jwt-decode": "^3.1.2",
     "moment": "^2.29.4",
     "react": "18.0.0",
     "react-content-loader": "^6.2.0",
@@ -46,7 +47,8 @@
     "react-native-svg": "12.3.0",
     "react-native-web": "~0.18.7",
     "react-redux": "^8.0.4",
-    "redux": "^4.2.0"
+    "redux": "^4.2.0",
+    "validator": "^13.7.0"
   },
   "devDependencies": {
     "@babel/core": "^7.18.6"
