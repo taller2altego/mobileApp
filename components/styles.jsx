@@ -21,6 +21,14 @@ const LandingStyles = StyleSheet.create({
     lineHeight: 65,
     fontSize: 20,
   },
+  simpleText: {
+    textAlign: "center",
+    textJustify: "center",
+    color: "black",
+    lineHeight: 65,
+    fontWeight: "bold",
+    fontSize: 14,
+  },
   tinyLogo: {
     width: 150,
     height: 150,
@@ -43,6 +51,11 @@ const LandingStyles = StyleSheet.create({
   },
   land_buttons_container: {
     flex: 1.5,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-around",
+  },
+  land_buttons_login: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-around",
@@ -112,6 +125,73 @@ const modalStyles = StyleSheet.create({
     textAlign: "center",
     color: "#C73E1D",
   },
+});
+
+const RecoverStyles = StyleSheet.create({
+  info_container: {
+    flex: 3,
+    marginTop: 100,
+    textAlign: "center",
+  },
+  input_text: {
+    flex: 2,
+  },
+  destination_text: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  other_info_text: {
+    fontSize: 14,
+    textAlign: "center",
+    padding: 20,
+    color: "grey",
+    marginTop: 10,
+  },
+  invalid_email: {
+    fontSize: 14,
+    textAlign: "center",
+    padding: 20,
+    color: "red",
+    marginTop: 10,
+  },
+  report_container: {
+    height: (5 * Dimensions.get("window").height) / 100,
+    width: (90 * Dimensions.get("window").width) / 100,
+    backgroundColor: "white",
+    fontSize: 16,
+    color: "grey",
+    textAlign: "center",
+    shadowColor: "black",
+    borderColor: 'black',
+    borderWidth: 2,
+    marginBottom: 20,
+    shadowOpacity: 0.5,
+    shadowOffset: { width: 2, height: 2 },
+    shadowRadius: 4,
+    elevation: 4,
+    padding: 8,
+    borderRadius: 8,
+    top: 35,
+  },
+  input_text_container: {
+    height: (20 * Dimensions.get("window").height) / 100,
+    width: (90 * Dimensions.get("window").width) / 100,
+    backgroundColor: "white",
+    fontSize: 16,
+    color: "grey",
+    textAlign: "center",
+    shadowColor: "black",
+    borderColor: 'black',
+    borderWidth: 2,
+    marginBottom: 20,
+    shadowOpacity: 0.5,
+    shadowOffset: { width: 2, height: 2 },
+    shadowRadius: 4,
+    elevation: 4,
+    padding: 8,
+    borderRadius: 8,
+    top: 35,
+  }
 });
 
 const Profilestyles = StyleSheet.create({
@@ -349,5 +429,6 @@ export {
   Homestyles,
   MapStyles,
   TravelStyles,
+  RecoverStyles
   ReportStyles,
 };
