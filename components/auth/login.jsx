@@ -19,7 +19,6 @@ export default function LoginModal({ ...props }) {
       password
     })
       .then(async (info) => {
-        console.log(info);
         const { data: { id, token } } = info;
         await SecureStore.setItemAsync("token", token);
         await SecureStore.setItemAsync("id", id.toString());
@@ -65,9 +64,7 @@ export default function LoginModal({ ...props }) {
                 Login
               </Text>
             </Pressable>
-            <LoginGoogleButton
-              navigation={props.navigation}
-            ></LoginGoogleButton>
+            <LoginGoogleButton navigation={props.navigation} setErrorMessage={setErrorMessage}></LoginGoogleButton>
             <Text style={[modalStyles.error_modal, { fontFamily: "poppins" }]}>{errorMessage}</Text>
           </View>
         </View>
