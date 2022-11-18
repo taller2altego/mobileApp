@@ -38,7 +38,6 @@ export default function LoginGoogleButton({ setErrorMessage, ...props }) {
   }, [response, accessToken]);
 
   const fetchUserInfo = authentication => {
-    console.log('\n\n\n\n');
     return authPost(`${API_URL}/login/oauth`, authentication.idToken)
       .then(async info => {
         const { data: { id, token } } = info;
