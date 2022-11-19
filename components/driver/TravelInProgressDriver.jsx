@@ -27,6 +27,7 @@ export default function TravelInProgressDriver({ navigation }) {
 
   // redux
   const tripData = useSelector((store) => store.travelDetailsData);
+  const [locationSubscription, setLocationSubscription] = useState(null);
 
   // state
   const [actualTripState, setActualTripState] = useState({
@@ -48,12 +49,12 @@ export default function TravelInProgressDriver({ navigation }) {
   const [tripToFinalDestiny, setTripToFinalDestiny] = useState(false);
 
   const [fontsLoaded] = useFonts({
-    "poppins": require("../../assets/fonts/Poppins-Regular.ttf"),
+    poppins: require("../../assets/fonts/Poppins-Regular.ttf"),
     "poppins-bold": require("../../assets/fonts/Poppins-Bold.ttf"),
   });
 
-  const updateDriverPosition = () => {
-    Location.watchPositionAsync(
+  const updateDriverPosition = async () => {
+    const x = await Location.watchPositionAsync(
       { accuracy: Location.Accuracy.High, distanceInterval: 10 },
       (location) => {
         const newLatitude = location.coords.latitude;
@@ -68,6 +69,8 @@ export default function TravelInProgressDriver({ navigation }) {
         console.log("hay error aca"), console.log(error);
       }
     );
+
+    setLocationSubscription(x);
   };
 
   const animate = (latitude, longitude) => {
@@ -83,8 +86,23 @@ export default function TravelInProgressDriver({ navigation }) {
     }
   };
 
+  useEffect(
+    (async () => {
+      console.log("logs");
+      console.log(actualTripState);
+      if (actualTripState.tripStarted) {
+        await updateDriverPosition();
+      }
+    })(),
+    [actualTripState]
+  );
+
   useEffect(() => {
+    console.log("ENTRO A USE EFFECT");
     updateDriverPosition();
+    return () => {
+      locationSubscription.remove();
+    };
   }, []);
 
   const updateDistance = (args) => {
@@ -94,12 +112,14 @@ export default function TravelInProgressDriver({ navigation }) {
   };
 
   const startTrip = () => {
+    locationSubscription.remove();
     setActualTripState({
       ...actualTripState,
       destinationCoords: {
         latitude: tripData.destination.latitude,
         longitude: tripData.destination.longitude,
       },
+      tripStarted: true,
     });
   };
 
