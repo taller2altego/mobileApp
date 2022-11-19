@@ -21,7 +21,7 @@ export default function LoginModal({ ...props }) {
   };
 
   const onSignIn = () => {
-    const body = { email: "driver@fiuber.com", password: "1234" };
+    const body = { email, password };
     return post(`${API_URL}/login`, body)
       .then(async ({ data: { id, token } }) => {
         await SecureStore.setItemAsync("token", token);
@@ -58,7 +58,7 @@ export default function LoginModal({ ...props }) {
             <TextInput
               style={[modalStyles.modal_input, { fontFamily: "poppins" }]}
               placeholder="Email"
-              value="driver@fiuber.com"
+              value={email}
               placeholderTextColor="#343437"
               onChangeText={(email) => setEmail(email)}
             />
@@ -66,7 +66,7 @@ export default function LoginModal({ ...props }) {
               style={[modalStyles.modal_input, { fontFamily: "poppins" }]}
               placeholder="Contraseña"
               placeholderTextColor="#343437"
-              value="1234"
+              value={password}
               secureTextEntry={true}
               onChangeText={(password) => setPassword(password)}
             />
@@ -85,14 +85,16 @@ export default function LoginModal({ ...props }) {
               setErrorMessage={setErrorMessage}
             ></LoginGoogleButton>
             <View style={LandingStyles.land_buttons_login}>
-              <Pressable onPress={() => navigation.navigate("RecoverPassword")}>
+              <Pressable
+                onPress={() => props.navigation.navigate("RecoverPassword")}
+              >
                 <Text
                   style={[LandingStyles.simpleText, { fontFamily: "poppins" }]}
                 >
                   Forgot Password
                 </Text>
               </Pressable>
-              <Pressable onPress={() => navigation.navigate("AuthToken")}>
+              <Pressable onPress={() => props.navigation.navigate("AuthToken")}>
                 <Text
                   style={[LandingStyles.simpleText, { fontFamily: "poppins" }]}
                 >
