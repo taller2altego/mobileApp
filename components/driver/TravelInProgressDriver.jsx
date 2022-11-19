@@ -36,6 +36,10 @@ export default function TravelInProgressDriver({ navigation }) {
       longitude: tripData.origin.longitude,
     },
     destinationCoords: {
+      latitude: tripData.destination.latitude,
+      longitude: tripData.destination.longitude,
+    },
+    userCoords: {
       latitude: tripData.userLocation.latitude,
       longitude: tripData.userLocation.longitude,
     },
@@ -46,7 +50,9 @@ export default function TravelInProgressDriver({ navigation }) {
       longitudeDelta: LONGITUDE_DELTA,
     }),
   });
-  const [tripToFinalDestiny, setTripToFinalDestiny] = useState(false);
+  const [arriveOnUserLocation, setArriveOnUserLocation] = useState(false);
+  const [arriveOnDestination, setArriveOnDestination] = useState(false);
+  const [roadTofinalDestination, setRoadTofinalDestination] = useState(false);
 
   const [fontsLoaded] = useFonts({
     poppins: require("../../assets/fonts/Poppins-Regular.ttf"),
@@ -54,7 +60,7 @@ export default function TravelInProgressDriver({ navigation }) {
   });
 
   const updateDriverPosition = async () => {
-    const x = await Location.watchPositionAsync(
+    const locSubscription = await Location.watchPositionAsync(
       { accuracy: Location.Accuracy.High, distanceInterval: 10 },
       (location) => {
         const newLatitude = location.coords.latitude;
@@ -70,7 +76,7 @@ export default function TravelInProgressDriver({ navigation }) {
       }
     );
 
-    setLocationSubscription(x);
+    setLocationSubscription(locSubscription);
   };
 
   const animate = (latitude, longitude) => {
@@ -86,41 +92,30 @@ export default function TravelInProgressDriver({ navigation }) {
     }
   };
 
-  useEffect(
-    (async () => {
-      console.log("logs");
-      console.log(actualTripState);
-      if (actualTripState.tripStarted) {
-        await updateDriverPosition();
-      }
-    })(),
-    [actualTripState]
-  );
-
   useEffect(() => {
-    console.log("ENTRO A USE EFFECT");
     updateDriverPosition();
-    return () => {
+    return function cleanup() {
       locationSubscription.remove();
     };
   }, []);
 
-  const updateDistance = (args) => {
+  const updateDistance = (args, tripPart) => {
+    const setArrive =
+      tripPart === "start" ? setArriveOnUserLocation : setArriveOnDestination;
     if (args.distance.toFixed(2) < 0.05) {
-      setTripToFinalDestiny(true);
+      setArrive(true);
+    } else {
+      setArrive(false);
     }
   };
 
   const startTrip = () => {
-    locationSubscription.remove();
-    setActualTripState({
-      ...actualTripState,
-      destinationCoords: {
-        latitude: tripData.destination.latitude,
-        longitude: tripData.destination.longitude,
-      },
-      tripStarted: true,
-    });
+    setRoadTofinalDestination(true);
+    setArriveOnUserLocation(false);
+  };
+
+  const endTrip = () => {
+    navigation.navigate("Home");
   };
 
   const cancelTravel = (navigation) => {
@@ -154,21 +149,51 @@ export default function TravelInProgressDriver({ navigation }) {
           coordinate={actualTripState.destinationCoords}
           identifier="destMark"
         />
-        {actualTripState.currentLoc && actualTripState.destinationCoords && (
+        {!roadTofinalDestination && (
+          <Marker
+            coordinate={actualTripState.userCoords}
+            identifier="userMark"
+          />
+        )}
+        {!roadTofinalDestination &&
+          actualTripState.currentLoc &&
+          actualTripState.userCoords && (
+            <MapViewDirections
+              apikey={GOOGLE_API_KEY}
+              origin={actualTripState.currentLoc}
+              destination={actualTripState.userCoords}
+              strokeColor="black"
+              optimizeWaypoints={true}
+              strokeWidth={5}
+              onReady={(args) => updateDistance(args, "start")}
+            />
+          )}
+        {actualTripState.userCoords && actualTripState.destinationCoords && (
           <MapViewDirections
             apikey={GOOGLE_API_KEY}
-            origin={actualTripState.currentLoc}
+            origin={
+              roadTofinalDestination
+                ? actualTripState.currentLoc
+                : actualTripState.userCoords
+            }
             destination={actualTripState.destinationCoords}
             strokeColor="black"
             optimizeWaypoints={true}
             strokeWidth={5}
-            onReady={updateDistance}
+            onReady={(args) => updateDistance(args, "end")}
           />
         )}
       </MapView>
-      {tripToFinalDestiny ? (
+      {arriveOnUserLocation ? (
         <Pressable onPress={startTrip}>
           <Text> INICIAR VIAJE </Text>
+        </Pressable>
+      ) : (
+        <></>
+      )}
+      {arriveOnDestination ? (
+        <Pressable onPress={endTrip}>
+          <Text> FINALIZAR VIAJE </Text>
         </Pressable>
       ) : (
         <></>
