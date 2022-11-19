@@ -22,17 +22,23 @@ export default function HomeTab({ navigation }) {
   const currentUserData = useSelector((store) => store.userData);
   const [srcDetails, setSrcDetails] = useState("");
   const [destDetails, setDestDetails] = useState("");
-  const [data_travels, setData] = useState({});
+  const [data_travels, setData] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
   const dispatch = useDispatch();
   const { API_URL, GOOGLE_API_KEY } = envs;
+
+  const handleSelectedTrip = (item) => {
+    setSelectedId(item.id);
+    const travelId = item._id;
+    navigation.navigate("TripDetails", { travelId });
+  }
 
   function renderItem({ item }) {
     const backgroundColor = item.id === selectedId ? "#f2f2f200" : "white";
     return (
       <TravelItem
         item={item}
-        onPress={() => setSelectedId(item.id)}
+        onPress={() => handleSelectedTrip(item)}
         backgroundColor={{ backgroundColor }}
       />
     );
@@ -44,7 +50,7 @@ export default function HomeTab({ navigation }) {
       const token = await SecureStore.getItemAsync("token");
       const params = {
         page: 1,
-        offset: 4,
+        limit: 4,
       };
 
       await get(`${API_URL}/travels/users/${id}`, token, {}, params).then(

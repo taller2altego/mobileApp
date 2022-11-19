@@ -24,5 +24,6 @@ mkShell {
     android-sdk
     nodejs-16_x
     git
+    openjdk11
   ];
 }

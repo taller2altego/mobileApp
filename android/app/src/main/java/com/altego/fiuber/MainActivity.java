@@ -1,4 +1,4 @@
-package com.app;
+package com.altego.fiuber;
 
 import android.os.Build;
 import android.os.Bundle;

@@ -8,7 +8,7 @@ import envs from "../../config/env";
 import { useDispatch } from "react-redux";
 import { setIsDriver, setUserData } from "../../redux/actions/UpdateUserData";
 
-export default function LoginModal({ ...props }) {
+export default function LoginModal({ navigation, ...props }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -72,6 +72,30 @@ export default function LoginModal({ ...props }) {
                 Login
               </Text>
             </Pressable>
+            <LoginGoogleButton navigation={props.navigation} setErrorMessage={setErrorMessage}></LoginGoogleButton>
+            <View style={LandingStyles.land_buttons_login}>
+              <Pressable
+                onPress={() => navigation.navigate("RecoverPassword")
+                }
+              >
+                <Text
+                  style={[LandingStyles.simpleText, { fontFamily: "poppins" }]}
+                >
+                  Forgot Password
+                </Text>
+              </Pressable>
+              <Pressable
+                onPress={() => navigation.navigate("AuthToken")
+                }
+              >
+                <Text
+                  style={[LandingStyles.simpleText, { fontFamily: "poppins" }]}
+                >
+                  Have a Token
+                </Text>
+              </Pressable>
+            </View>
+
             <Text style={[modalStyles.error_modal, { fontFamily: "poppins" }]}>{errorMessage}</Text>
           </View>
         </View>
@@ -79,3 +103,4 @@ export default function LoginModal({ ...props }) {
     </Modal>
   );
 }
+

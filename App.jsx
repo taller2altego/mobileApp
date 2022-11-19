@@ -18,6 +18,10 @@ import DriverSearch from "./components/travel/DriverSearch";
 import DriverIncoming from "./components/travel/DriverIncoming";
 import TravelFindedModal from "./components/driver/TravelFindedModal";
 import TravelInProgressDriver from "./components/driver/TravelInProgressDriver";
+import TripDetailsScreen from "./components/main/TripDetails";
+import RecoverPassword from "./components/auth/recoverPassword";
+import ResetPassword from "./components/auth/resetPassword";
+import AuthToken from "./components/auth/authToken";
 
 const Stack = createNativeStackNavigator();
 
@@ -86,6 +90,32 @@ export default function App(props) {
             component={TravelFindedModal}
             options={{ headerShown: false }}
           />
+          <Stack.Screen
+            name="TripDetails"
+            component={TripDetailsScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="RecoverPassword"
+            component={RecoverPassword}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="ResetPassword"
+            component={ResetPassword}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="AuthToken"
+            component={AuthToken}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="ReportTravel"
+            component={ReportTravel}
+            options={{ headerShown: false }}
+          />
+
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>

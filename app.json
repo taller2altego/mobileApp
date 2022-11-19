@@ -11,7 +11,11 @@
     },
     "ios": {
       "bundleIdentifier": "com.altego.fiuber"
-    }
+    },
+    "scheme": "googleredirect"
   },
-  "name": "fiuber"
+  "name": "fiuber",
+  "plugins": [
+    "@react-native-google-signin/google-signin"
+  ]
 }

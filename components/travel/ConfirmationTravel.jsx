@@ -10,8 +10,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useFonts } from "expo-font";
 import { authPost } from "../../utils/requests";
 import { setNewTravel } from "../../redux/actions/UpdateCurrentTravel";
+const API_KEY = "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ";
 import envs from "../../config/env";
-
 const PRICE_PER_KM = 100;
 
 const edgePadding = {
@@ -28,6 +28,7 @@ const INITIAL_POSITION = {
 };
 
 export default function ConfirmationTravel({ navigation }) {
+  // export default function ConfirmationTravel({ navigation }) {
   // redux
   const currentTravelData = useSelector((store) => store.travelDetailsData);
   const origin = currentTravelData.origin;
@@ -40,20 +41,21 @@ export default function ConfirmationTravel({ navigation }) {
   const [duration, setDuration] = useState(0);
   const [price, setPrice] = useState(0);
   const [modalWaitingVisible, setModalWaitingVisible] = useState(false);
-
   const { API_URL, GOOGLE_API_KEY } = envs;
-
   const mapRef = useRef(null);
   const [fontsLoaded] = useFonts({
     "poppins": require("../../assets/fonts/Poppins-Regular.ttf"),
     "poppins-bold": require("../../assets/fonts/Poppins-Bold.ttf"),
   });
 
-  const updateTripProps = (args) => {
+  const updateTripProps = async (args) => {
     if (args) {
       setDistance(args.distance.toFixed(2));
+      setDistance((stateDistance) => {
+        setPrice(stateDistance * PRICE_PER_KM);
+        return stateDistance;
+      });
       setDuration(Math.ceil(args.duration));
-      setPrice(distance * PRICE_PER_KM);
     }
   };
 
@@ -67,11 +69,23 @@ export default function ConfirmationTravel({ navigation }) {
   const createTravel = async (navigation) => {
     const id = await SecureStore.getItemAsync("id");
     const token = await SecureStore.getItemAsync("token");
+    const srcAddress = await fetch('https://maps.googleapis.com/maps/api/geocode/json?address=' + origin.latitude + ',' + origin.longitude + '&key=' + API_KEY)
+      .then((response) => response.json())
+      .then((responseJson) => {
+        return responseJson.results[0].formatted_address
+      });
+    const dstAddress = await fetch('https://maps.googleapis.com/maps/api/geocode/json?address=' + destination.latitude + ',' + destination.longitude + '&key=' + API_KEY)
+      .then((response) => response.json())
+      .then((responseJson) => {
+        return responseJson.results[0].formatted_address
+      });
     const body = {
       userId: id,
       price: price,
       source: origin,
+      sourceAddress: srcAddress,
       destination: destination,
+      destinationAddress: dstAddress,
       date: new Date().toISOString(),
     };
 
