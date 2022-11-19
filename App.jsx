@@ -4,6 +4,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
+import ReportTravel from "./components/travel/ReportTravel";
 import LandingScreen from "./components/auth/landing";
 import RegisterModal from "./components/auth/register";
 import LoginModal from "./components/auth/login";
@@ -25,7 +26,7 @@ import AuthToken from "./components/auth/authToken";
 
 const Stack = createNativeStackNavigator();
 
-export default function App(props) {
+export default function App() {
   return (
     <Provider store={store}>
       <NavigationContainer>
@@ -115,7 +116,6 @@ export default function App(props) {
             component={ReportTravel}
             options={{ headerShown: false }}
           />
-
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>

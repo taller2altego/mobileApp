@@ -7,8 +7,9 @@ import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
 import { useDispatch } from "react-redux";
 import { setIsDriver, setUserData } from "../../redux/actions/UpdateUserData";
+import LoginGoogleButton from "../auth/LoginGoogleButton";
 
-export default function LoginModal({ navigation, ...props }) {
+export default function LoginModal({ ...props }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -27,14 +28,21 @@ export default function LoginModal({ navigation, ...props }) {
         await SecureStore.setItemAsync("id", id.toString());
 
         const userInfo = await getUserInfo(id, token);
-        const userData = { name: userInfo.name, lastname: userInfo.lastname, phoneNumber: userInfo.phoneNumberm, email: userInfo.email };
+        const userData = {
+          name: userInfo.name,
+          lastname: userInfo.lastname,
+          phoneNumber: userInfo.phoneNumberm,
+          email: userInfo.email,
+        };
         dispatch(setUserData(userData));
-        dispatch(setIsDriver({ isDriver: userInfo.isDriver }))
+        dispatch(setIsDriver({ isDriver: userInfo.isDriver }));
         props.toggle();
         props.navigation.navigate("Home");
       })
-      .catch(e => {
-        const errMessage = e.response && e.response.data && e.response.data.message || e.message;
+      .catch((e) => {
+        const errMessage =
+          (e.response && e.response.data && e.response.data.message) ||
+          e.message;
         setErrorMessage(errMessage);
       });
   };
@@ -72,22 +80,19 @@ export default function LoginModal({ navigation, ...props }) {
                 Login
               </Text>
             </Pressable>
-            <LoginGoogleButton navigation={props.navigation} setErrorMessage={setErrorMessage}></LoginGoogleButton>
+            <LoginGoogleButton
+              navigation={props.navigation}
+              setErrorMessage={setErrorMessage}
+            ></LoginGoogleButton>
             <View style={LandingStyles.land_buttons_login}>
-              <Pressable
-                onPress={() => navigation.navigate("RecoverPassword")
-                }
-              >
+              <Pressable onPress={() => navigation.navigate("RecoverPassword")}>
                 <Text
                   style={[LandingStyles.simpleText, { fontFamily: "poppins" }]}
                 >
                   Forgot Password
                 </Text>
               </Pressable>
-              <Pressable
-                onPress={() => navigation.navigate("AuthToken")
-                }
-              >
+              <Pressable onPress={() => navigation.navigate("AuthToken")}>
                 <Text
                   style={[LandingStyles.simpleText, { fontFamily: "poppins" }]}
                 >
@@ -96,11 +101,12 @@ export default function LoginModal({ navigation, ...props }) {
               </Pressable>
             </View>
 
-            <Text style={[modalStyles.error_modal, { fontFamily: "poppins" }]}>{errorMessage}</Text>
+            <Text style={[modalStyles.error_modal, { fontFamily: "poppins" }]}>
+              {errorMessage}
+            </Text>
           </View>
         </View>
       </View>
     </Modal>
   );
 }
-
