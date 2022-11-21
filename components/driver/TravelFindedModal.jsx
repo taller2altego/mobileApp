@@ -4,13 +4,19 @@ import { Entypo } from "@expo/vector-icons";
 
 import { LandingStyles, modalStyles } from "../styles";
 import { useSelector } from "react-redux";
+import { sendNotification } from "../notifications/Notifications";
 
 export default function TravelFindedModal({
   navigation,
   setModalTravelFindedVisible,
   ...props
 }) {
+  // Redux
   const currentTravel = useSelector((store) => store.travelDetailsData);
+
+  useEffect(() => {
+    sendNotification();
+  }, []);
 
   return (
     <Modal animationType="slide" transparent={false} visible={props.visible}>
