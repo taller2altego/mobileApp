@@ -15,6 +15,9 @@ import {
   setUserLocation,
 } from "../../redux/actions/UpdateTravelDetails";
 import { useDispatch, useSelector } from "react-redux";
+import * as TaskManager from "expo-task-manager";
+import { createNewTask, FETCH_TRAVEL, addNewTask } from "../../utils/Tasks";
+import * as BackgroundFetch from "expo-background-fetch";
 
 export default function TravelSearch({ navigation }) {
   const [modalTravelFindedVisible, setModalTravelFindedVisible] =
@@ -23,8 +26,34 @@ export default function TravelSearch({ navigation }) {
   const [isSearching, setIsSearching] = useState(true);
   const [currentLocation, setCurrentLocation] = useState({ location: null });
   const [locationSubscription, setLocationSubscription] = useState(null);
+  const [newTravel, setNewTravel] = useState(null);
 
   const { API_URL, _ } = envs;
+
+  const fetchTravels = async () => {
+    const token = await SecureStore.getItemAsync("token");
+      const url = `${API_URL}/travels?latitude=${currentLocation.location.latitude}&longitude=${currentLocation.location.longitude}`;
+      console.log("HAGO REQUEST");
+      const travels = await get(url, token).then(({ data }) => {
+        dispatch(
+          setTravelDetails({
+            origin: currentLocation.location,
+            destination: data.data.destination,
+          })
+        );
+        dispatch(
+          setTravelInfo({
+            originAddress: data.data.sourceAddress,
+            destinationAddress: data.data.destinationAddress,
+          })
+        );
+        dispatch(setUserLocation({
+          userLocation: data.data.source,
+        }));
+        setNewTravel(data);
+      });
+
+  }
 
   useEffect(() => {
     (async () => {
@@ -61,6 +90,7 @@ export default function TravelSearch({ navigation }) {
   };
 
   useEffect(() => {
+    addNewTask(FETCH_TRAVEL, fetchTravels);
     // TODO: agregar un estado para diferenciar el cambio del modal del cierre del modal.
     setIsSearching(true);
 
@@ -68,42 +98,22 @@ export default function TravelSearch({ navigation }) {
       return;
     }
 
-    const interval = setInterval(async () => {
-      const token = await SecureStore.getItemAsync("token");
-      const url = `${API_URL}/travels?latitude=${currentLocation.location.latitude}&longitude=${currentLocation.location.longitude}`;
-      const travels = await get(url, token).then(({ data }) => {
-        dispatch(
-          setTravelDetails({
-            origin: currentLocation.location,
-            destination: data.data.destination,
-          })
-        );
-        dispatch(
-          setTravelInfo({
-            originAddress: data.data.sourceAddress,
-            destinationAddress: data.data.destinationAddress,
-          })
-        );
-        dispatch(setUserLocation({
-          userLocation: data.data.source,
-        }));
-        return data;
-      });
-
-      if (travels) {
-        setIsSearching(false);
-        setModalTravelFindedVisible(true);
-        clearInterval(interval);
-      }
-    }, 10000);
+    const interval = setInterval(fetchTravels, 10000);
+    createNewTask(FETCH_TRAVEL);
+    if (newTravel) {
+      setIsSearching(false);
+      setModalTravelFindedVisible(true);
+      clearInterval(interval);
+    }
     return () => {
       clearInterval(interval);
       locationSubscription.remove();
     };
-  }, [currentLocation]);
+  }, [currentLocation, newTravel]);
 
   const toggleTravelFindedModal = () => {
     setModalTravelFindedVisible(!modalTravelFindedVisible);
+    setNewTravel(null);
     setCurrentLocation({ ...currentLocation });
   };
 

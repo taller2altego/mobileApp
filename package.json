@@ -52,7 +52,8 @@
     "expo-permissions": "~13.2.0",
     "expo-notifications": "~0.16.1",
     "expo-device": "~4.3.0",
-    "expo-task-manager": "~10.3.0"
+    "expo-task-manager": "~10.3.0",
+    "expo-background-fetch": "~10.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.18.6"
