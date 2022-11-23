@@ -123,10 +123,18 @@ export default function TravelInProgressDriver({ navigation }) {
     });
   };
 
+  const finishTravel = (navigation) => {
+    return post(`/travels/${tripData._id}/finish`).then(
+      navigation.navigate("Home")
+    )
+  };
+
   const cancelTravel = (navigation) => {
     // request para eliminar el driver del tralel
     // limpiar inputs de destino y origen en main
-    navigation.navigate("Home");
+    return post(`/travels/${tripData._id}/reject?isTravelCancelled='true'`).then(
+      navigation.navigate("Home")
+    )
   };
 
   if (!fontsLoaded) {
@@ -167,11 +175,19 @@ export default function TravelInProgressDriver({ navigation }) {
         )}
       </MapView>
       {tripToFinalDestiny ? (
-        <Pressable onPress={startTrip}>
-          <Text> INICIAR VIAJE </Text>
-        </Pressable>
+        <div>
+          <Pressable onPress={startTrip}>
+            <Text> INICIAR VIAJE </Text>
+          </Pressable>
+          <Pressable onPress={cancelTravel}>
+            <Text> CANCELAR </Text>
+          </Pressable>
+        </div>
+
       ) : (
-        <></>
+        <Pressable onPress={finishTravel}>
+            <Text> FINALIZAR VIAJE </Text>
+        </Pressable>
       )}
     </View>
   );

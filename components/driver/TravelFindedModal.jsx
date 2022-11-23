@@ -12,6 +12,12 @@ export default function TravelFindedModal({
 }) {
   const currentTravel = useSelector((store) => store.travelDetailsData);
 
+  const acceptTravel = async () => {
+    return  post(`/travels/${currentTravel._id}/accept`).then(
+      navigation.navigate("TravelInProgressDriver")
+    )
+  };
+
   return (
     <Modal animationType="slide" transparent={false} visible={props.visible}>
       <View style={[modalStyles.modal_extern_view, { fontFamily: "poppins" }]}>
@@ -30,9 +36,7 @@ export default function TravelFindedModal({
             </Text>
             <Pressable
               style={{ alignSelf: "center" }}
-              onPress={() => {
-                navigation.navigate("TravelInProgressDriver");
-              }}
+              onPress={acceptTravel}
             >
               <Text style={{ fontSize: 25 }}> Aceptar Viaje </Text>
             </Pressable>
