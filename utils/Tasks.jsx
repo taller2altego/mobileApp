@@ -1,4 +1,3 @@
-import React from "react";
 import * as BackgroundFetch from "expo-background-fetch";
 import * as TaskManager from "expo-task-manager";
 
@@ -12,7 +11,7 @@ export const addNewTask = (name, fn) => {
 
 export const createNewTask = (name) => {
   return BackgroundFetch.registerTaskAsync(name, {
-    minimumInterval: 1,
+    minimumInterval: 1000,
     stopOnTerminate: false,
     startOnBoot: true,
   });
