@@ -4,18 +4,29 @@ import { Entypo } from "@expo/vector-icons";
 
 import { LandingStyles, modalStyles } from "../styles";
 import { useSelector } from "react-redux";
+import { authPost } from "../../utils/requests";
+import * as SecureStore from "expo-secure-store";
+import envs from "../../config/env";
 
 export default function TravelFindedModal({
   navigation,
   setModalTravelFindedVisible,
   ...props
 }) {
-  const currentTravel = useSelector((store) => store.travelDetailsData);
+  const { API_URL, _ } = envs;
+  const travelDetailsData = useSelector((store) => store.travelDetailsData);
+  const currentTravel = useSelector((store) => store.currentTravel);
 
   const acceptTravel = async () => {
-    return  post(`/travels/${currentTravel._id}/accept`).then(
+    const id = await SecureStore.getItemAsync("id");
+    const token = await SecureStore.getItemAsync("token");
+    // FIXME sacar el id del viaje hardcodeado
+    return authPost(`${API_URL}/travels/637ecde3d6c43a5791361204/accept`, token, {
+      driverId: id,
+      currentDriverPosition: travelDetailsData.origin
+    }).then(
       navigation.navigate("TravelInProgressDriver")
-    )
+    );
   };
 
   return (
@@ -28,16 +39,13 @@ export default function TravelFindedModal({
           <View style={[modalStyles.flex_modal]}>
             <Text style={{ fontSize: 25, alignSelf: "center" }}>
               {" "}
-              {currentTravel.originAddress}
+              {travelDetailsData.originAddress}
             </Text>
             <Text style={{ fontSize: 25, alignSelf: "center" }}>
               {" "}
-              {currentTravel.destinationAddress}{" "}
+              {travelDetailsData.destinationAddress}{" "}
             </Text>
-            <Pressable
-              style={{ alignSelf: "center" }}
-              onPress={acceptTravel}
-            >
+            <Pressable style={{ alignSelf: "center" }} onPress={acceptTravel}>
               <Text style={{ fontSize: 25 }}> Aceptar Viaje </Text>
             </Pressable>
 

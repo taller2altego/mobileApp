@@ -12,6 +12,8 @@ import { useFonts } from "expo-font";
 import envs from "../../config/env";
 import { useEffect } from "react";
 import * as Location from "expo-location";
+import { authPost } from "../../utils/requests";
+import * as SecureStore from "expo-secure-store";
 
 const screen = Dimensions.get("window");
 const ASPECT_RATIO = screen.width / screen.height;
@@ -109,27 +111,31 @@ export default function TravelInProgressDriver({ navigation }) {
     }
   };
 
-  const startTrip = () => {
+  const startTrip = async () => {
+    const id = await SecureStore.getItemAsync("id");
+    const token = await SecureStore.getItemAsync("token");
     setRoadTofinalDestination(true);
     setArriveOnUserLocation(false);
+    // FIXME sacar el id del viaje hardcodeado
+    authPost(`${API_URL}/travels/637ecde3d6c43a5791361204/start`, token)
   };
 
-  const endTrip = () => {
-    navigation.navigate("Home");
-  };
-
-  const finishTravel = (navigation) => {
-    return post(`/travels/${tripData._id}/finish`).then(
+  const finishTravel = async () => {
+    const id = await SecureStore.getItemAsync("id");
+    const token = await SecureStore.getItemAsync("token");
+    // FIXME sacar el id del viaje hardcodeado
+    return authPost(`${API_URL}/travels/637ecde3d6c43a5791361204/finish`, token).then(
       navigation.navigate("Home")
-    )
+    );
   };
 
-  const cancelTravel = (navigation) => {
+  const cancelTravel = () => {
     // request para eliminar el driver del tralel
     // limpiar inputs de destino y origen en main
-    return post(`/travels/${tripData._id}/reject?isTravelCancelled='true'`).then(
-      navigation.navigate("Home")
-    )
+    // FIXME sacar el id del viaje hardcodeado
+    return post(
+      `${API_URL}/travels/637ecde3d6c43a5791361204/reject?isTravelCancelled='true'`
+    ).then(navigation.navigate("Home"));
   };
 
   if (!fontsLoaded) {
@@ -193,21 +199,17 @@ export default function TravelInProgressDriver({ navigation }) {
         )}
       </MapView>
       {arriveOnUserLocation ? (
-        <div>
+        <View>
           <Pressable onPress={startTrip}>
             <Text> INICIAR VIAJE </Text>
           </Pressable>
           <Pressable onPress={cancelTravel}>
             <Text> CANCELAR </Text>
           </Pressable>
-        </div>
-      ) : (
-        <Pressable onPress={finishTravel}>
-            <Text> FINALIZAR VIAJE </Text>
-        </Pressable>
-      )}
+        </View>
+      ) : <></>}
       {arriveOnDestination ? (
-        <Pressable onPress={endTrip}>
+        <Pressable onPress={finishTravel}>
           <Text> FINALIZAR VIAJE </Text>
         </Pressable>
       ) : (
