@@ -27,6 +27,7 @@ export default function RegisterModal({ ...props }) {
       phoneNumber: Number(phone),
       email,
       password,
+      role: "user"
     };
 
     const loginBody = { email, password };
