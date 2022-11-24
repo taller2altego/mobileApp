@@ -429,6 +429,6 @@ export {
   Homestyles,
   MapStyles,
   TravelStyles,
-  RecoverStyles
+  RecoverStyles,
   ReportStyles,
 };

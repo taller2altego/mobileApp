@@ -7,7 +7,7 @@ import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
 import LoginGoogleButton from "./LoginGoogleButton";
 
-export default function LoginModal({ navigation, ...props }) {
+export default function LoginModal({ ...props }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
