@@ -1,23 +1,21 @@
 import { useEffect, useState } from "react";
 import { View, Text, ActivityIndicator, Pressable } from "react-native";
 import * as SecureStore from "expo-secure-store";
-import { useDispatch } from "react-redux";
+// import { useDispatch } from "react-redux";
 
-import * as Location from "expo-location";
-import * as TaskManager from 'expo-task-manager';
+// import * as Location from "expo-location";
+// import * as TaskManager from 'expo-task-manager';
 
-// modules
-import envs from "../../config/env";
-import TravelFindedModal from "./TravelFindedModal";
-import { get } from "../../utils/requests";
-import {
-  setTravelDetails,
-  setTravelInfo,
-  setUserLocation,
-} from "../../redux/actions/UpdateTravelDetails";
+// // modules
+// import envs from "../../config/env";
+// import TravelFindedModal from "./TravelFindedModal";
+// import { get } from "../../utils/requests";
+// import {
+//   setTravelDetails,
+//   setTravelInfo,
+//   setUserLocation,
+// } from "../../redux/actions/UpdateTravelDetails";
 // import { createNewTask, FETCH_TRAVEL, addNewTask } from "../../utils/Tasks";
-
-
 
 // const updateDriverPosition = async () => {
 //   const options = { accuracy: Location.Accuracy.High, distanceInterval: 10 };
@@ -39,83 +37,58 @@ import {
 //   return await Location.watchPositionAsync(options, success, error);
 // };
 
-
-
 export default function TravelSearch({ navigation }) {
-  const [modalTravelFindedVisible, setModalTravelFindedVisible] =
-    useState(false);
-  const dispatch = useDispatch();
-  const [isSearching, setIsSearching] = useState(true);
-  const [currentLocation, setCurrentLocation] = useState({ location: null });
-  const [locationSubscription, setLocationSubscription] = useState(null);
+  // const [modalTravelFindedVisible, setModalTravelFindedVisible] =
+  //   useState(false);
+  // const dispatch = useDispatch();
+  // const [isSearching, setIsSearching] = useState(true);
+  // const [currentLocation, setCurrentLocation] = useState({ location: null });
+  // const [locationSubscription, setLocationSubscription] = useState(null);
   const [newTravel, setNewTravel] = useState(null);
 
-  const { API_URL, _ } = envs;
+  // const { API_URL, _ } = envs;
 
-  
+  useEffect(() => {
+    (async () => {
+      await SecureStore.setItemAsync('askForTravel', 'true');
+    })();
 
-  // useEffect((async () => {
-  //   await requestPermissions();
-    
-  // })());
+    const interval = setInterval(async () => {
+      const response = await SecureStore.getItemAsync("travelInfo")
+        .then(response => JSON.parse(response));
+        console.log(response);
+        setNewTravel(response);
+    }, 10000);
 
-  const fetchTravels = async () => {
-    const token = await SecureStore.getItemAsync("token");
-      const url = `${API_URL}/travels?latitude=${currentLocation.location.latitude}&longitude=${currentLocation.location.longitude}`;
-      console.log("HAGO REQUEST");
-      const travels = await get(url, token).then(({ data }) => {
-        dispatch(
-          setTravelDetails({
-            origin: currentLocation.location,
-            destination: data.data.destination,
-          })
-        );
-        dispatch(
-          setTravelInfo({
-            originAddress: data.data.sourceAddress,
-            destinationAddress: data.data.destinationAddress,
-          })
-        );
-        dispatch(setUserLocation({
-          userLocation: data.data.source,
-        }));
-        setNewTravel(data);
-      });
-  }
+    if (newTravel) {
+      clearInterval(interval);
+    }
 
-  // useEffect(() => {
-  //   (async () => {
-  //     const { status } = await Location.requestForegroundPermissionsAsync();
-  //     if (status !== "granted") {
-  //       throw new Error(
-  //         "No tiene permisos, consulte con altego para mas información"
+  }, [newTravel]);
+
+  // const fetchTravels = async () => {
+  //   const token = await SecureStore.getItemAsync("token");
+  //     const url = `${API_URL}/travels?latitude=${currentLocation.location.latitude}&longitude=${currentLocation.location.longitude}`;
+  //     console.log("HAGO REQUEST");
+  //     const travels = await get(url, token).then(({ data }) => {
+  //       dispatch(
+  //         setTravelDetails({
+  //           origin: currentLocation.location,
+  //           destination: data.data.destination,
+  //         })
   //       );
-  //     } else {
-  //       await updateDriverPosition();
-  //     }
-  //   })();
-  // }, []);
-
-  const updateDriverPosition = async () => {
-    const options = { accuracy: Location.Accuracy.High, distanceInterval: 10 };
-    const success = (location) => {
-      const obj = {
-        location: {
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-        },
-      };
-      setCurrentLocation(obj);
-    };
-
-    const error = (error) => {
-      console.log(error);
-    };
-
-    setLocationSubscription(
-      await Location.watchPositionAsync(options, success, error)
-    );
-  };
+  //       dispatch(
+  //         setTravelInfo({
+  //           originAddress: data.data.sourceAddress,
+  //           destinationAddress: data.data.destinationAddress,
+  //         })
+  //       );
+  //       dispatch(setUserLocation({
+  //         userLocation: data.data.source,
+  //       }));
+  //       setNewTravel(data);
+  //     });
+  // }
 
   // useEffect(() => {
   //   // addNewTask(FETCH_TRAVEL, fetchTravels);
@@ -140,19 +113,20 @@ export default function TravelSearch({ navigation }) {
   //   };
   // }, [currentLocation, newTravel]);
 
-  const toggleTravelFindedModal = () => {
-    setModalTravelFindedVisible(!modalTravelFindedVisible);
-    setNewTravel(null);
-    setCurrentLocation({ ...currentLocation });
-  };
+  // const toggleTravelFindedModal = () => {
+  //   setModalTravelFindedVisible(!modalTravelFindedVisible);
+  //   setNewTravel(null);
+  //   setCurrentLocation({ ...currentLocation });
+  // };
 
-  const onCancelSearch = () => {
-    navigation.navigate("Home");
-  };
+  // const onCancelSearch = () => {
+  //   navigation.navigate("Home");
+  // };
 
   return (
     <View style={{ flex: 1 }}>
-      {modalTravelFindedVisible && (
+      <Text> hola </Text>
+      {/* {modalTravelFindedVisible && (
         <TravelFindedModal
           navigation={navigation}
           toggle={toggleTravelFindedModal}
@@ -169,7 +143,7 @@ export default function TravelSearch({ navigation }) {
         <Pressable onPress={onCancelSearch}>
           <Text style={{ fontSize: 25, fontFamily: "poppins" }}>Cancelar</Text>
         </Pressable>
-      </View>
+      </View> */}
     </View>
   );
 }
