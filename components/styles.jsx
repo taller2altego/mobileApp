@@ -266,12 +266,13 @@ const DriverStyles = StyleSheet.create({
   },
   driver_title: {
     alignSelf: "center",
-    fontSize: 15,
+    fontSize: 22,
+    top: 40,
   },
   driver_subtitle: {
     alignSelf: "center",
-    fontSize: 10,
-    marginTop: 30,
+    fontSize: 12,
+    top: 50,
   },
   driver_inputs: {
     flex: 4,
@@ -279,7 +280,7 @@ const DriverStyles = StyleSheet.create({
     alignItems: "center",
   },
   profile_input: {
-    fontSize: 10,
+    fontSize: 14,
     marginLeft: 50,
     width: 250,
     borderWidth: 1,
