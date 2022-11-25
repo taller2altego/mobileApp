@@ -108,6 +108,11 @@ export default function HomeTab({ navigation }) {
               placeholder="Punto de partida"
               fetchDetails
               enablePoweredByContainer={false}
+              textInputProps={{
+                onChangeText: (_) => {
+                  setCorrectSrcInput(false);
+                },
+              }}
               listEmptyComponent={() => (
                 <View style={{ flex: 1 }}>
                   <Text>No se encontraron resultados</Text>
@@ -130,6 +135,11 @@ export default function HomeTab({ navigation }) {
               placeholder="Punto de llegada"
               fetchDetails
               enablePoweredByContainer={false}
+              textInputProps={{
+                onChangeText: (_) => {
+                  setCorrectDestInput(false);
+                },
+              }}
               listEmptyComponent={() => (
                 <View style={{ flex: 1 }}>
                   <Text>No se encontraron resultados</Text>
