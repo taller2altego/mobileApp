@@ -22,19 +22,26 @@ import {
 import { get } from "../../utils/requests";
 
 export default function HomeTab({ navigation }) {
+  // redux
   const currentUserData = useSelector((store) => store.userData);
+  const dispatch = useDispatch();
+
+  // envs
+  const { API_URL, GOOGLE_API_KEY } = envs;
+
+  // state
   const [srcDetails, setSrcDetails] = useState("");
   const [destDetails, setDestDetails] = useState("");
   const [data_travels, setData] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
-  const dispatch = useDispatch();
-  const { API_URL, GOOGLE_API_KEY } = envs;
+  const [correctSrcInput, setCorrectSrcInput] = useState(false);
+  const [correctDestInput, setCorrectDestInput] = useState(false);
 
   const handleSelectedTrip = (item) => {
     setSelectedId(item.id);
     const travelId = item._id;
     navigation.navigate("TripDetails", { travelId });
-  }
+  };
 
   function renderItem({ item }) {
     const backgroundColor = item.id === selectedId ? "#f2f2f200" : "white";
@@ -56,17 +63,17 @@ export default function HomeTab({ navigation }) {
         limit: 4,
       };
 
-      await get(`${API_URL}/travels/users/${id}`, token, {}, params)
-        .then(({ data: { data } }) => {
+      await get(`${API_URL}/travels/users/${id}`, token, {}, params).then(
+        ({ data: { data } }) => {
           setData(data);
-        });
+        }
+      );
     })();
   }, []);
 
   const onConfirmationTravel = async () => {
     dispatch(setOrigin({ origin: srcDetails }));
     dispatch(setDestination({ destination: destDetails }));
-
     navigation.navigate("ConfirmationTravel");
   };
 
@@ -100,7 +107,19 @@ export default function HomeTab({ navigation }) {
               styles={{ textInput: Homestyles.searchInput, flex: 1 }}
               placeholder="Punto de partida"
               fetchDetails
+              enablePoweredByContainer={false}
+              textInputProps={{
+                onChangeText: (_) => {
+                  setCorrectSrcInput(false);
+                },
+              }}
+              listEmptyComponent={() => (
+                <View style={{ flex: 1 }}>
+                  <Text>No se encontraron resultados</Text>
+                </View>
+              )}
               onPress={(data, details) => {
+                setCorrectSrcInput(true);
                 setSrcDetails({
                   latitude: details.geometry.location.lat,
                   longitude: details.geometry.location.lng,
@@ -115,7 +134,19 @@ export default function HomeTab({ navigation }) {
               styles={{ textInput: Homestyles.searchInput, flex: 1 }}
               placeholder="Punto de llegada"
               fetchDetails
+              enablePoweredByContainer={false}
+              textInputProps={{
+                onChangeText: (_) => {
+                  setCorrectDestInput(false);
+                },
+              }}
+              listEmptyComponent={() => (
+                <View style={{ flex: 1 }}>
+                  <Text>No se encontraron resultados</Text>
+                </View>
+              )}
               onPress={(data, details) => {
+                setCorrectDestInput(true);
                 setDestDetails({
                   latitude: details.geometry.location.lat,
                   longitude: details.geometry.location.lng,
@@ -143,6 +174,7 @@ export default function HomeTab({ navigation }) {
             <Button
               title="Confirmar viaje"
               color="#696c6e"
+              disabled={!correctSrcInput || !correctDestInput}
               onPress={() => onConfirmationTravel()}
             />
           </View>
