@@ -3,6 +3,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { get } from "../../utils/requests";
 import { useDispatch } from "react-redux";
 import { setIsDriver, setUserData } from "../../redux/actions/UpdateUserData";
+import { Ionicons } from "@expo/vector-icons";
 
 import * as SecureStore from "expo-secure-store";
 import HomeTab from "./homeTab";
@@ -20,27 +21,44 @@ export default function Home({ navigation }) {
       const token = await SecureStore.getItemAsync("token");
       get(`${API_URL}/users/${id}`, token).then(
         ({ data: { name, lastname, email, phoneNumber, isDriver } }) => {
-          dispatch(setUserData({ name, lastname, email, phoneNumber }))
+          dispatch(setUserData({ name, lastname, email, phoneNumber }));
           dispatch(setIsDriver({ isDriver }));
-
-        });
+        }
+      );
     })();
   }, []);
 
   return (
     <Tab.Navigator>
       <Tab.Screen
-        name="Main"
+        name="Home"
         component={HomeTab}
-        options={{ headerShown: false }}
+        options={{
+          headerShown: false,
+          tabBarShowLabel: false,
+          tabBarIcon: ({ focused }) => (
+            <Ionicons
+              name={focused ? "home-sharp" : "home-outline"}
+              size={24}
+              color="black"
+            />
+          ),
+        }}
       />
       <Tab.Screen
-        name="Perfil"
+        name="Profile"
         component={ProfileTab}
-        options={({ navigation }) => ({
-          headerShown: false
-        })
-        }
+        options={{
+          headerShown: false,
+          tabBarShowLabel: false,
+          tabBarIcon: ({ focused }) => (
+            <Ionicons
+              name={focused ? "person" : "person-outline"}
+              size={24}
+              color="black"
+            />
+          ),
+        }}
       />
     </Tab.Navigator>
   );
