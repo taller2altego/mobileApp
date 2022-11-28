@@ -15,7 +15,6 @@ import ProfileVisualization from "./components/main/profileVisualization";
 import store from "./redux/store/store";
 import { Provider } from "react-redux";
 import ConfirmationTravel from "./components/travel/ConfirmationTravel";
-import DriverSearch from "./components/travel/DriverSearch";
 import DriverIncoming from "./components/travel/DriverIncoming";
 import TravelFindedModal from "./components/driver/TravelFindedModal";
 import TravelInProgressDriver from "./components/driver/TravelInProgressDriver";
@@ -49,11 +48,6 @@ export default function App() {
           <Stack.Screen
             name="ConfirmationTravel"
             component={ConfirmationTravel}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="DriverSearch"
-            component={DriverSearch}
             options={{ headerShown: false }}
           />
           <Stack.Screen

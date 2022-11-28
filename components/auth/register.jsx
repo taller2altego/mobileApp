@@ -33,11 +33,14 @@ export default function RegisterModal({ ...props }) {
     const loginBody = { email, password };
 
     return post(`${API_URL}/users`, signUpBody)
-      .then(post(`${API_URL}/login`, loginBody))
-      .then(({ data: { id, token } }) => {
-        SecureStore.setItemAsync("token", token);
-        SecureStore.setItemAsync("id", id.toString());
-        dispatch(setUserData({ name, lastname, email, phone }));
+      .then(() => post(`${API_URL}/login`, loginBody))
+      .then(async ({ data }) => {
+        await SecureStore.setItemAsync("token", data.token);
+        return data;
+      })
+      .then(( data ) => SecureStore.setItemAsync("id", data.id.toString()))
+      .then(() => {
+        dispatch(setUserData({ name, lastname, email, phoneNumber: phone }));
         dispatch(setIsDriver({ isDriver: driverSelected }));
         props.toggle();
         if (driverSelected) {
@@ -46,8 +49,9 @@ export default function RegisterModal({ ...props }) {
           props.navigation.navigate("Home");
         }
       })
-      .catch((error) =>
-        setErrorMessage(JSON.stringify(error.response.data.message))
+      .catch((error) => {
+          setErrorMessage(JSON.stringify(error.response.data.message))
+        }
       );
   };
 
