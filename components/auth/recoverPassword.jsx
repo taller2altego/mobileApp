@@ -2,7 +2,7 @@ import { useState } from "react";
 import { MapStyles, TravelStyles, Profilestyles, RecoverStyles } from "../styles";
 import { View, Text, TextInput, Pressable } from "react-native";
 import { useFonts } from "expo-font";
-import { post } from "../../utils/requests";
+import { post, functionError } from "../../utils/requests";
 import validator from 'validator';
 import envs from "../../config/env";
 
@@ -30,7 +30,7 @@ export default function RecoverPassword({ navigation }) {
             setInvalidEmail(true);
         } else {
             setInvalidEmail(false);
-            return post(`${API_URL}/recover`, { email: email },navigation)
+            return post(`${API_URL}/recover`, { email: email },unctionError(navigation))
                 .then(() => {
                     navigation.navigate("AuthToken");
                 });

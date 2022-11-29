@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Modal, Pressable, Text, TextInput, View } from "react-native";
-import { post } from "../../utils/requests";
+import { post, functionError} from "../../utils/requests";
 import { LandingStyles, modalStyles } from "../styles";
 import { Picker } from "@react-native-picker/picker";
 import { Entypo } from "@expo/vector-icons";
@@ -31,8 +31,8 @@ export default function RegisterModal({ ...props }) {
 
     const loginBody = { email, password };
 
-    return post(`${API_URL}/users`, signUpBody, navigation)
-      .then(post(`${API_URL}/login`, loginBody, navigation))
+    return post(`${API_URL}/users`, signUpBody, () => {})
+      .then(post(`${API_URL}/login`, loginBody, () => {}))
       .then(({ data: { id, token } }) => {
         SecureStore.setItemAsync("token", token);
         SecureStore.setItemAsync("id", id.toString());

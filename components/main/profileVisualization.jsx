@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Pressable, Text, View } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import { useSelector } from "react-redux";
-import { get } from "../../utils/requests";
+import { get, functionError } from "../../utils/requests";
 import { Profilestyles } from "../styles";
 import HomeTab from "./homeTab";
 import envs from "../../config/env";

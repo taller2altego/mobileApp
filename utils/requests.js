@@ -1,41 +1,60 @@
 import axios from "axios";
+import * as SecureStore from "expo-secure-store";
 
-const post = (url, body, extraHeaders, token, navigation) => {
-  return axios.post(url, body, {
-    headers: { ...extraHeaders, "Content-Type": "application/json" },
-  }).catch(async (error) => {
-    if (error.response.status == 400){
-      await SecureStore.deleteItemAsync("token");
-      navigation.navigate("Landing");
-    }
-  });
+const functionError = (navigation) => async () => {
+  await SecureStore.deleteItemAsync("token");
+  navigation.navigate("Landing");
 };
 
-const authPost = (url, token, body, extraHeaders, navigation) => {
+const post = (url, body, extraHeaders, token, errorFunction) => {
+  return axios
+    .post(url, body, {
+      headers: { ...extraHeaders, "Content-Type": "application/json" },
+    })
+    .catch(async (error) => {
+      if (error.response.status == 401) {
+        errorFunction();
+      }
+    });
+};
+
+const authPost = (url, token, body, extraHeaders, errorFunction) => {
   return axios.post(url, body, {
     headers: {
       ...extraHeaders,
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`,
+      Authorization: `Bearer ${token}`,
+    },
+  }).catch(async (error) => {
+    if (error.response.status == 401) {
+      errorFunction();
     }
-  });
+  });;
 };
 
-const get = (url, token, extraHeaders, params, navigation) => {
+const get = (url, token, extraHeaders, params, errorFunction) => {
   return axios.get(url, {
     params,
-    headers: { ...extraHeaders, "Authorization": `Bearer ${token}` },
-  });
+    headers: { ...extraHeaders, Authorization: `Bearer ${token}` },
+  }).catch(async (error) => {
+    if (error.response.status == 401) {
+      errorFunction();
+    }
+  });;
 };
 
-const patch = (url, token, body, extraHeaders, navigation) => {
+const patch = (url, token, body, extraHeaders, errorFunction) => {
   return axios.patch(url, body, {
     headers: {
       ...extraHeaders,
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     },
-  });
+  }).catch(async (error) => {
+    if (error.response.status == 401) {
+      errorFunction();
+    }
+  });;
 };
 
-export { authPost, get, patch, post };
+export { authPost, get, patch, post, functionError };

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import * as SecureStore from "expo-secure-store";
-import { patch, authPost } from "../../utils/requests";
+import { patch, authPost, functionError } from "../../utils/requests";
 import { setUserData } from "../../redux/actions/UpdateUserData";
 import { Profilestyles } from "../styles";
 import envs from "../../config/env";
@@ -20,7 +20,7 @@ export default function ProfileTab({ navigation }) {
 
   const logOut = async ( navigation ) => {
     const token = await SecureStore.getItemAsync("token");
-    return authPost(`${API_URL}/logout`, token, navigation)
+    return authPost(`${API_URL}/logout`, token, functionError(navigation))
       .then(async () => {
         await SecureStore.deleteItemAsync("token");
         navigation.navigate("Landing");
@@ -46,7 +46,7 @@ export default function ProfileTab({ navigation }) {
       name: nameText,
       lastname: lastnameText,
       phoneNumber: Number(phoneText),
-    }, navigation).then(() => {
+    }, functionError(navigation)).then(() => {
       dispatch(
         setUserData({
           name: nameText,

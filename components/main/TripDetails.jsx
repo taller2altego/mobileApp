@@ -3,7 +3,7 @@ import { MapStyles, TravelStyles, Profilestyles } from "../styles";
 import { View, Text, Pressable, Image } from "react-native";
 import { useFonts } from "expo-font";
 import { Rating } from "react-native-ratings";
-import { get, patch } from "../../utils/requests";
+import { get, patch, functionError } from "../../utils/requests";
 import * as SecureStore from "expo-secure-store";
 import moment from "moment";
 
@@ -42,9 +42,9 @@ export default function TripDetails({ route, navigation }) {
 
   const sendRatingToDriver = async (navigation) => {
     const token = await SecureStore.getItemAsync("token");
-    return patch(`http://10.0.2.2:5000/drivers/${driver}}`, token, { score: rating }, navigation)
+    return patch(`http://10.0.2.2:5000/drivers/${driver}}`, token, { score: rating }, functionError(navigation))
       .then(() => {
-        return patch(`http://10.0.2.2:5000/travels/${travelId}`, token, { driverScore: rating }, navigation)
+        return patch(`http://10.0.2.2:5000/travels/${travelId}`, token, { driverScore: rating }, functionError(navigation))
           .then(() => {
             navigation.navigate("Home");
           });

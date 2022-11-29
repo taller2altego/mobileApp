@@ -4,7 +4,7 @@ import * as SecureStore from "expo-secure-store";
 import { useSelector, useDispatch } from "react-redux";
 
 // modules
-import { get } from "../../utils/requests";
+import { get, functionError } from "../../utils/requests";
 import { setDriverId } from "../../redux/actions/UpdateCurrentTravel";
 import { modalStyles } from "../styles";
 import envs from "../../config/env";
@@ -22,7 +22,7 @@ export default function WaitingDriverModal({ navigation, ...props }) {
     const interval = setInterval(async () => {
       const token = await SecureStore.getItemAsync("token");
 
-      await get(`${API_URL}/travels/${id}/driver`, token, navigation)
+      await get(`${API_URL}/travels/${id}/driver`, token, functionError(navigation))
         .then(({ data }) => {
           if (data.data.driverId) {
             dispatch(setDriverId({ driverId: data.data.driverId }));

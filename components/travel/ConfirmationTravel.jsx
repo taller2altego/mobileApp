@@ -8,7 +8,7 @@ import { View, Text, Pressable, Image } from "react-native";
 import WaitingModal from "./Waiting";
 import { useDispatch, useSelector } from "react-redux";
 import { useFonts } from "expo-font";
-import { authPost } from "../../utils/requests";
+import { authPost, functionError } from "../../utils/requests";
 import { setNewTravel } from "../../redux/actions/UpdateCurrentTravel";
 const API_KEY = "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ";
 import envs from "../../config/env";
@@ -89,7 +89,7 @@ export default function ConfirmationTravel({ navigation }) {
       date: new Date().toISOString(),
     };
 
-    return authPost(`${API_URL}/travels`, token, body, navigation)
+    return authPost(`${API_URL}/travels`, token, body, functionError(navigation))
       .then(({ data }) => {
         dispatch(setNewTravel({ _id: data.data._id }));
         setModalWaitingVisible(!modalWaitingVisible);

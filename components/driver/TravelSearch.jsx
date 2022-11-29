@@ -8,7 +8,7 @@ import envs from "../../config/env";
 
 // modules
 import { LandingStyles, modalStyles } from "../styles";
-import { get } from "../../utils/requests";
+import { get, functionError } from "../../utils/requests";
 import {
   setTravelDetails,
   setTravelInfo,

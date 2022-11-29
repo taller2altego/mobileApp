@@ -2,7 +2,7 @@ import { useState } from "react";
 import { MapStyles, TravelStyles, Profilestyles, RecoverStyles } from "../styles";
 import { View, Text, TextInput, Pressable } from "react-native";
 import { useFonts } from "expo-font";
-import { patch } from "../../utils/requests";
+import { patch, functionError } from "../../utils/requests";
 import envs from "../../config/env";
 import jwt from 'jwt-decode'
 
@@ -26,7 +26,7 @@ export default function ResetPassword({ route, navigation }) {
         }
         const { token } = route.params;
         const userEmail = jwt(token).email;
-        return patch(`${API_URL}/users`, token, { email: userEmail, password: password }, navigation)
+        return patch(`${API_URL}/users`, token, { email: userEmail, password: password }, functionError(navigation))
             .then(() => {
                 navigation.navigate("Landing");
             })

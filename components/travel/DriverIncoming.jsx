@@ -5,7 +5,7 @@ import MapViewDirections from "react-native-maps-directions";
 import { View, Text, Pressable, Image } from "react-native";
 import { useSelector } from "react-redux";
 import { useFonts } from "expo-font";
-import { get } from "../../utils/requests";
+import { get, functionError } from "../../utils/requests";
 import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
 
@@ -84,7 +84,7 @@ export default function DriverIncoming({ navigation }) {
 
   const cancelTravel = (navigation) => {
     clearInterval(interval);
-    return post(`/travels/${currentTravel._id}/reject?isTravelCancelled='true'`, navigation).then(
+    return post(`/travels/${currentTravel._id}/reject?isTravelCancelled='true'`, functionError(navigation)).then(
       navigation.navigate("Home")
     )
   };

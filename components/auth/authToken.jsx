@@ -2,7 +2,7 @@ import { useState } from "react";
 import { MapStyles, TravelStyles, Profilestyles, RecoverStyles } from "../styles";
 import { View, Text, TextInput, Pressable, FlatList } from "react-native";
 import { useFonts } from "expo-font";
-import { authPost } from "../../utils/requests";
+import { authPost, functionError } from "../../utils/requests";
 import envs from "../../config/env";
 
 export default function AuthToken({ navigation }) {
@@ -18,7 +18,7 @@ export default function AuthToken({ navigation }) {
     });
 
     const validateToken = (navigation) => {
-        return authPost(`${API_URL}/auth`, token, navigation)
+        return authPost(`${API_URL}/auth`, token, functionError(navigation))
             .then(() => {
                 navigation.navigate("ResetPassword", { token: token });
             })

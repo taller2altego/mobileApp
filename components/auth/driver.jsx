@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 import { useDispatch } from "react-redux";
 import { setDriverData } from "../../redux/actions/UpdateDriverData";
-import { authPost } from "../../utils/requests";
+import { authPost, functionError } from "../../utils/requests";
 import { DriverStyles } from "../styles";
 import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
@@ -22,7 +22,7 @@ export default function Driver({ navigation }) {
       license,
       model,
       licensePlate,
-    }, navigation)
+    }, functionError(navigation))
       .then(() => {
         dispatch(
           setDriverData({
