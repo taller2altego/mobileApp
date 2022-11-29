@@ -89,7 +89,7 @@ export default function ConfirmationTravel({ navigation }) {
       date: new Date().toISOString(),
     };
 
-    return authPost(`${API_URL}/travels`, token, body)
+    return authPost(`${API_URL}/travels`, token, body, navigation)
       .then(({ data }) => {
         dispatch(setNewTravel({ _id: data.data._id }));
         setModalWaitingVisible(!modalWaitingVisible);

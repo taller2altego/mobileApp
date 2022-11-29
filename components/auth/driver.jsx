@@ -22,7 +22,7 @@ export default function Driver({ navigation }) {
       license,
       model,
       licensePlate,
-    })
+    }, navigation)
       .then(() => {
         dispatch(
           setDriverData({

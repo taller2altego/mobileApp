@@ -24,7 +24,7 @@ export default function VisualizationTab({ navigation }) {
     (async () => {
       const id = 2;
       const token = await SecureStore.getItemAsync("token");
-      await get(`${API_URL}/users/${id}`, token).then(
+      await get(`${API_URL}/users/${id}`, token, navigation).then(
         ({ data: { name, lastname, email, phoneNumber, numberOfScores, totalScore } }) => {
 
           setName(name);

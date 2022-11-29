@@ -17,12 +17,12 @@ export default function LoginModal({ ...props }) {
   const { API_URL, _ } = envs;
 
   const getUserInfo = async (id, token) => {
-    return get(`${API_URL}/users/${id}`, token).then(({ data }) => data);
+    return get(`${API_URL}/users/${id}`, token, navigation).then(({ data }) => data);
   };
 
   const onSignIn = () => {
     const body = { email, password };
-    return post(`${API_URL}/login`, body)
+    return post(`${API_URL}/login`, body, navigation)
       .then(async ({ data: { id, token } }) => {
         await SecureStore.setItemAsync("token", token);
         await SecureStore.setItemAsync("id", id.toString());

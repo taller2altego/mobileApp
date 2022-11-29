@@ -18,7 +18,7 @@ export default function AuthToken({ navigation }) {
     });
 
     const validateToken = (navigation) => {
-        return authPost(`${API_URL}/auth`, token)
+        return authPost(`${API_URL}/auth`, token, navigation)
             .then(() => {
                 navigation.navigate("ResetPassword", { token: token });
             })

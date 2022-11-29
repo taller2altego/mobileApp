@@ -27,7 +27,7 @@ export default function TripDetails({ route, navigation }) {
       const { travelId } = route.params;
 
       const token = await SecureStore.getItemAsync("token");
-      await get(`http://10.0.2.2:5000/travels/${travelId}`, token)
+      await get(`http://10.0.2.2:5000/travels/${travelId}`, token, navigation)
         .then(
           ({ data: { data } }) => {
             setSource(data.sourceAddress);
@@ -42,9 +42,9 @@ export default function TripDetails({ route, navigation }) {
 
   const sendRatingToDriver = async (navigation) => {
     const token = await SecureStore.getItemAsync("token");
-    return patch(`http://10.0.2.2:5000/drivers/${driver}}`, token, { score: rating })
+    return patch(`http://10.0.2.2:5000/drivers/${driver}}`, token, { score: rating }, navigation)
       .then(() => {
-        return patch(`http://10.0.2.2:5000/travels/${travelId}`, token, { driverScore: rating })
+        return patch(`http://10.0.2.2:5000/travels/${travelId}`, token, { driverScore: rating }, navigation)
           .then(() => {
             navigation.navigate("Home");
           });

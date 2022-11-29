@@ -37,7 +37,7 @@ export default function ReportTravel({ route, navigation }) {
             driverId: item.driver,
             description: reportText
         };
-        return authPost(`${API_URL}/reports`, token, data)
+        return authPost(`${API_URL}/reports`, token, data, navigation)
             .then(() => navigation.navigate("TripDetails", { travelId: item.travelId }))
     };
 

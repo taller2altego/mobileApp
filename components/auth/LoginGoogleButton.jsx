@@ -38,7 +38,7 @@ export default function LoginGoogleButton({ setErrorMessage, ...props }) {
   }, [response, accessToken]);
 
   const fetchUserInfo = authentication => {
-    return authPost(`${API_URL}/login/oauth`, authentication.idToken)
+    return authPost(`${API_URL}/login/oauth`, authentication.idToken, navigation)
       .then(async info => {
         const { data: { id, token } } = info;
         await SecureStore.setItemAsync("token", token);

@@ -31,8 +31,8 @@ export default function RegisterModal({ ...props }) {
 
     const loginBody = { email, password };
 
-    return post(`${API_URL}/users`, signUpBody)
-      .then(post(`${API_URL}/login`, loginBody))
+    return post(`${API_URL}/users`, signUpBody, navigation)
+      .then(post(`${API_URL}/login`, loginBody, navigation))
       .then(({ data: { id, token } }) => {
         SecureStore.setItemAsync("token", token);
         SecureStore.setItemAsync("id", id.toString());

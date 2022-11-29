@@ -30,7 +30,7 @@ export default function RecoverPassword({ navigation }) {
             setInvalidEmail(true);
         } else {
             setInvalidEmail(false);
-            return post(`${API_URL}/recover`, { email: email })
+            return post(`${API_URL}/recover`, { email: email },navigation)
                 .then(() => {
                     navigation.navigate("AuthToken");
                 });

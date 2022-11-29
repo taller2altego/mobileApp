@@ -18,7 +18,7 @@ export default function Home({ navigation }) {
     (async () => {
       const id = await SecureStore.getItemAsync("id");
       const token = await SecureStore.getItemAsync("token");
-      get(`${API_URL}/users/${id}`, token).then(
+      get(`${API_URL}/users/${id}`, token, navigation).then(
         ({ data: { name, lastname, email, phoneNumber, isDriver } }) => {
           dispatch(setUserData({ name, lastname, email, phoneNumber }))
           dispatch(setIsDriver({ isDriver }));

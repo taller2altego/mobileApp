@@ -26,7 +26,7 @@ export default function ResetPassword({ route, navigation }) {
         }
         const { token } = route.params;
         const userEmail = jwt(token).email;
-        return patch(`${API_URL}/users`, token, { email: userEmail, password: password })
+        return patch(`${API_URL}/users`, token, { email: userEmail, password: password }, navigation)
             .then(() => {
                 navigation.navigate("Landing");
             })

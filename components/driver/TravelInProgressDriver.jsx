@@ -119,7 +119,7 @@ export default function TravelInProgressDriver({ navigation }) {
   };
 
   const finishTravel = (navigation) => {
-    return post(`/travels/${tripData._id}/finish`).then(
+    return post(`/travels/${tripData._id}/finish`, navigation).then(
       navigation.navigate("Home")
     )
   };
@@ -127,7 +127,7 @@ export default function TravelInProgressDriver({ navigation }) {
   const cancelTravel = (navigation) => {
     // request para eliminar el driver del tralel
     // limpiar inputs de destino y origen en main
-    return post(`/travels/${tripData._id}/reject?isTravelCancelled='true'`).then(
+    return post(`/travels/${tripData._id}/reject?isTravelCancelled='true'`, navigation).then(
       navigation.navigate("Home")
     )
   };

@@ -20,7 +20,7 @@ export default function ProfileTab({ navigation }) {
 
   const logOut = async ( navigation ) => {
     const token = await SecureStore.getItemAsync("token");
-    return authPost(`${API_URL}/logout`, token)
+    return authPost(`${API_URL}/logout`, token, navigation)
       .then(async () => {
         await SecureStore.deleteItemAsync("token");
         navigation.navigate("Landing");
@@ -46,7 +46,7 @@ export default function ProfileTab({ navigation }) {
       name: nameText,
       lastname: lastnameText,
       phoneNumber: Number(phoneText),
-    }).then(() => {
+    }, navigation).then(() => {
       dispatch(
         setUserData({
           name: nameText,

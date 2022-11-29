@@ -49,7 +49,7 @@ export default function DriverIncoming({ navigation }) {
   useEffect(() => {
     (async () => {
       const token = await SecureStore.getItemAsync("token");
-      return get(`${API_URL}/users/${driverId}`, token)
+      return get(`${API_URL}/users/${driverId}`, token, navigation)
         .then(({ data }) => {
           const { name, lastname } = data;
           const fullname = `${name} ${lastname}`;
@@ -66,7 +66,7 @@ export default function DriverIncoming({ navigation }) {
     setRequestInterval(setInterval(async () => {
       const token = await SecureStore.getItemAsync("token");
 
-      await get(`${API_URL}/travels/${travelId}/driver`, token)
+      await get(`${API_URL}/travels/${travelId}/driver`, token, navigation)
         .then(({ data }) => {
           const position = data.data.currentDriverPosition;
           setCurrentOrigin(position);
@@ -84,7 +84,7 @@ export default function DriverIncoming({ navigation }) {
 
   const cancelTravel = (navigation) => {
     clearInterval(interval);
-    return post(`/travels/${currentTravel._id}/reject?isTravelCancelled='true'`).then(
+    return post(`/travels/${currentTravel._id}/reject?isTravelCancelled='true'`, navigation).then(
       navigation.navigate("Home")
     )
   };
