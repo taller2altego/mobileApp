@@ -4,7 +4,6 @@ import { Entypo } from "@expo/vector-icons";
 
 import { LandingStyles, modalStyles } from "../styles";
 import { useSelector } from "react-redux";
-import { sendNotification } from "../notifications/Notifications";
 
 export default function TravelFindedModal({
   navigation,
@@ -14,15 +13,15 @@ export default function TravelFindedModal({
   // Redux
   const currentTravel = useSelector((store) => store.travelDetailsData);
 
-  useEffect(() => {
-    sendNotification();
-  }, []);
+  // useEffect(() => {
+  //   sendNotification();
+  // }, []);
 
   return (
     <Modal animationType="slide" transparent={false} visible={props.visible}>
       <View style={[modalStyles.modal_extern_view, { fontFamily: "poppins" }]}>
         <View style={[modalStyles.modal_view, { fontFamily: "poppins" }]}>
-          <Pressable onPress={props.toggle}>
+          <Pressable onPress={props.toggleAccept}>
             <Entypo name="cross" size={24} color="black" />
           </Pressable>
           <View style={[modalStyles.flex_modal]}>
@@ -43,7 +42,7 @@ export default function TravelFindedModal({
               <Text style={{ fontSize: 25 }}> Aceptar Viaje </Text>
             </Pressable>
 
-            <Pressable style={{ alignSelf: "center" }} onPress={props.toggle}>
+            <Pressable style={{ alignSelf: "center" }} onPress={props.toggleCancel}>
               <Text style={{ fontSize: 25 }}>Volver</Text>
             </Pressable>
           </View>

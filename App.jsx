@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
@@ -33,15 +33,14 @@ const { API_URL, _ } = envs;
 const Stack = createNativeStackNavigator();
 
 const LOCATION_TASK_NAME = "LOCATION_TASK_NAME";
-let foregroundSubscription = null;
 let interval = undefined;
-
 
 TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
   if (error) {
     console.error(error);
     return;
   }
+
   if (data) {
     const { locations } = data;
     const location = locations[0];
@@ -51,26 +50,23 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
     }
 
     if (location) {
+
+      console.log(location);
+
       interval = setInterval(async () => {
-        console.log(`estoy buscando un travel después de 10 segundos con las coords: ${JSON.stringify(location.coords, undefined, 2)}`);
         const flag = await SecureStore.getItemAsync('askForTravel');
+
+        console.log(flag);
 
         if (flag === 'true') {
           const token = await SecureStore.getItemAsync("token");
-          const pushToken = await SecureStore.getItemAsync("pushToken")
+          const pushToken = await SecureStore.getItemAsync("pushToken");
+
           const url = `${API_URL}/travels?latitude=${location.coords.latitude}&longitude=${location.coords.longitude}&token=${pushToken}`;
-          console.log("HAGO REQUEST");
           await get(url, token)
-            .then(({ data: { data } }) => {
-              console.log(data);
-              return data;
-            })
-            .then(data => SecureStore.setItemAsync('travelInfo'. JSON.stringify(data)))
-            .then(response => {
-              console.log(response);
-            });
-        } else {
-          console.log('La busqueda no ha iniciado');
+            .then(({ data: { data } }) => data)
+            .then(data => SecureStore.setItemAsync('travelInfo', JSON.stringify({ ...data, driverLocation: location.coords })))
+            .then(() => {});
         }
 
       }, 20000);
@@ -78,62 +74,49 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
   }
 });
 
-const startBackgroundUpdate = async () => {
-  const { granted } = await Location.getBackgroundPermissionsAsync();
-  if (!granted) {
-    console.log("location tracking denied");
-    return;
-  }
-
-  const isTaskDefined = await TaskManager.isTaskDefined(LOCATION_TASK_NAME);
-  if (!isTaskDefined) {
-    console.log("Task is not defined");
-    return;
-  }
-
-  const hasStarted = await Location.hasStartedLocationUpdatesAsync(LOCATION_TASK_NAME);
-
-  if (hasStarted) {
-    console.log("Already started");
-    return;
-  }
-
-  await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-    accuracy: Location.Accuracy.BestForNavigation,
-    showsBackgroundLocationIndicator: true,
-    distanceInterval: 100,
-    foregroundService: {
-      notificationTitle: "Location",
-      notificationBody: "Location tracking in background",
-      notificationColor: "#fff",
-    }
-  })
-  .then(() => {
-    console.log(response => {
-      console.log('startLocationUpdatesAsync');
-      console.log(response);
-    })
-  });
-}
-
-const requestPermissions = async () => {
-  const foreground = await Location.requestForegroundPermissionsAsync();
-  if (foreground.granted) await Location.requestBackgroundPermissionsAsync();
-}
-
-requestPermissions()
-  .then(response => {
-    console.log('requestPermission');
-    console.log(response);
-  })
-  .then(() => {
-    return startBackgroundUpdate()
-  })
-  .then(response => {
-    console.log(response);
-  });
-
 export default function App() {
+
+  const startBackgroundUpdate = async () => {
+    const { granted } = await Location.getBackgroundPermissionsAsync();
+    if (!granted) {
+      console.log("location tracking denied");
+      return;
+    }
+  
+    const isTaskDefined = await TaskManager.isTaskDefined(LOCATION_TASK_NAME);
+    if (!isTaskDefined) {
+      console.log("Task is not defined");
+      return;
+    }
+  
+    const hasStarted = await Location.hasStartedLocationUpdatesAsync(LOCATION_TASK_NAME);
+  
+    if (hasStarted) {
+      console.log("Already started");
+      return;
+    }
+  
+    await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
+      accuracy: Location.Accuracy.BestForNavigation,
+      showsBackgroundLocationIndicator: true,
+      distanceInterval: 100,
+      foregroundService: {
+        notificationTitle: "Location",
+        notificationBody: "Location tracking in background",
+        notificationColor: "#fff",
+      }
+    });
+  }
+  
+  const requestPermissions = async () => {
+    const foreground = await Location.requestForegroundPermissionsAsync();
+    if (foreground.granted) await Location.requestBackgroundPermissionsAsync();
+  }
+  
+  requestPermissions()
+    .then(() => startBackgroundUpdate())
+    .then(() => {});
+
   return (
     <Provider store={store}>
       <NavigationContainer>

@@ -26,9 +26,9 @@ export default function Home({ navigation }) {
   const { API_URL, _ } = envs;
 
   useEffect(() => {
-    registerForPushNotificationsAsync().then((token) =>
-      SecureStore.setItemAsync("pushToken", token)
-    );
+    registerForPushNotificationsAsync()
+      .then(token => SecureStore.setItemAsync("pushToken", token));
+
     const setIinitialData = async () => {
       const id = await SecureStore.getItemAsync("id");
       const token = await SecureStore.getItemAsync("token");
@@ -56,7 +56,6 @@ export default function Home({ navigation }) {
         throw new Error("Permission not granted!");
       }
       const token = (await Notifications.getExpoPushTokenAsync()).data;
-      console.log(token);
       return token;
     } catch (error) {
       console.error(error);
@@ -67,7 +66,7 @@ export default function Home({ navigation }) {
         name: "default",
         importance: Notifications.AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
-        lightColor: "#FF231F7C",
+        lightColor: "#FF231F7C"
       });
     }
   };
