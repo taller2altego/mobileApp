@@ -34,7 +34,7 @@ export default function VisualizationTab({ navigation }) {
           setNumberOfScores(numberOfScores);
           setAverageScore(totalScore);
         }
-      );
+      ).catch(error => functionError(navigation, error));
     })();
   }, []);
 

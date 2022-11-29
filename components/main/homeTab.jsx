@@ -53,12 +53,12 @@ export default function HomeTab({ navigation }) {
         limit: 4,
       };
 
-      await get(`${API_URL}/travels/users/${id}`, token, {}, params, navigation).then(
+      await get(`${API_URL}/travels/users/${id}`, token, {}, params).then(
         ({ data: { data } }) => {
           console.log(data);
           setData(data);
         }
-      );
+      ).catch(error => functionError(navigation, error))
     })();
   }, []);
 

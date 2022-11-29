@@ -4,7 +4,7 @@ import * as SecureStore from "expo-secure-store";
 import { View, Text, TextInput, Pressable, FlatList } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useFonts } from "expo-font";
-import { authPost, functionError} from "../../utils/requests";
+import { authPost, functionError } from "../../utils/requests";
 import TravelItem from "../travel/TravelItem";
 const API_KEY = "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ";
 import envs from "../../config/env";
@@ -37,8 +37,8 @@ export default function ReportTravel({ route, navigation }) {
             driverId: item.driver,
             description: reportText
         };
-        return authPost(`${API_URL}/reports`, token, data, functionError(navigation))
-            .then(() => navigation.navigate("TripDetails", { travelId: item.travelId }))
+        return authPost(`${API_URL}/reports`, token, data)
+            .then(() => navigation.navigate("TripDetails", { travelId: item.travelId })).catch(error => functionError(navigation, error))
     };
 
     const comeBack = (navigation) => {

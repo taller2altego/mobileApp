@@ -26,10 +26,10 @@ export default function ResetPassword({ route, navigation }) {
         }
         const { token } = route.params;
         const userEmail = jwt(token).email;
-        return patch(`${API_URL}/users`, token, { email: userEmail, password: password }, functionError(navigation))
+        return patch(`${API_URL}/users`, token, { email: userEmail, password: password })
             .then(() => {
                 navigation.navigate("Landing");
-            })
+            }).catch(error => functionError(navigation, error))
     };
 
     const comeBack = (navigation) => {

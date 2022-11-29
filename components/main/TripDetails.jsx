@@ -42,13 +42,13 @@ export default function TripDetails({ route, navigation }) {
 
   const sendRatingToDriver = async (navigation) => {
     const token = await SecureStore.getItemAsync("token");
-    return patch(`http://10.0.2.2:5000/drivers/${driver}}`, token, { score: rating }, functionError(navigation))
+    return patch(`http://10.0.2.2:5000/drivers/${driver}}`, token, { score: rating })
       .then(() => {
         return patch(`http://10.0.2.2:5000/travels/${travelId}`, token, { driverScore: rating }, functionError(navigation))
           .then(() => {
             navigation.navigate("Home");
-          });
-      });
+          }).catch(error => functionError(navigation, error));
+      }).catch(error => functionError(navigation, error));
   }
 
   const months = {

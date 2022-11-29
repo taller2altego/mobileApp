@@ -38,14 +38,15 @@ export default function LoginGoogleButton({ setErrorMessage, ...props }) {
   }, [response, accessToken]);
 
   const fetchUserInfo = authentication => {
-    return authPost(`${API_URL}/login/oauth`, authentication.idToken, unctionError(navigation))
+    return authPost(`${API_URL}/login/oauth`, authentication.idToken)
       .then(async info => {
         const { data: { id, token } } = info;
         await SecureStore.setItemAsync("token", token);
         await SecureStore.setItemAsync("id", id.toString());
         props.navigation.navigate("Home");
       })
-      .catch(e => {
+      .catch(
+        e => {
         const errMessage = e.response && e.response.data && e.response.data.message || e.message;
         setErrorMessage(errMessage);
       });

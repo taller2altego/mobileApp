@@ -20,12 +20,13 @@ export default function ProfileTab({ navigation }) {
 
   const logOut = async ( navigation ) => {
     const token = await SecureStore.getItemAsync("token");
-    return authPost(`${API_URL}/logout`, token, functionError(navigation))
+    return authPost(`${API_URL}/logout`, token)
       .then(async () => {
         await SecureStore.deleteItemAsync("token");
         navigation.navigate("Landing");
       })
-      .catch(e => {
+      .catch(
+        e => {
         const errMessage = e.response && e.response.data && e.response.data || e.message;
         setErrorMessage(errMessage);
       });
@@ -46,7 +47,7 @@ export default function ProfileTab({ navigation }) {
       name: nameText,
       lastname: lastnameText,
       phoneNumber: Number(phoneText),
-    }, functionError(navigation)).then(() => {
+    }).then(() => {
       dispatch(
         setUserData({
           name: nameText,
@@ -55,7 +56,7 @@ export default function ProfileTab({ navigation }) {
           email: emailText,
         })
       );
-    });
+    }).catch(error => functionError(navigation, error))
     setIsEditing(false);
   };
 

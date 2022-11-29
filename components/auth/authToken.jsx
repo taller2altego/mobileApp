@@ -18,10 +18,10 @@ export default function AuthToken({ navigation }) {
     });
 
     const validateToken = (navigation) => {
-        return authPost(`${API_URL}/auth`, token, functionError(navigation))
+        return authPost(`${API_URL}/auth`, token)
             .then(() => {
                 navigation.navigate("ResetPassword", { token: token });
-            })
+            }).catch(error => functionError(navigation, error))
     };
 
     const comeBack = (navigation) => {

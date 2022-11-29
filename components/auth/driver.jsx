@@ -22,7 +22,7 @@ export default function Driver({ navigation }) {
       license,
       model,
       licensePlate,
-    }, functionError(navigation))
+    })
       .then(() => {
         dispatch(
           setDriverData({
@@ -32,8 +32,11 @@ export default function Driver({ navigation }) {
           })
         );
         navigation.navigate("Home");
-      })
-      .catch((error) => setErrorMessage(error.response.data.message));
+      })//ACA
+      .catch(error => 
+        {functionError(navigation, error)();
+        setErrorMessage(error)}
+        )
   };
 
   return (

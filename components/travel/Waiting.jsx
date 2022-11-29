@@ -22,14 +22,14 @@ export default function WaitingDriverModal({ navigation, ...props }) {
     const interval = setInterval(async () => {
       const token = await SecureStore.getItemAsync("token");
 
-      await get(`${API_URL}/travels/${id}/driver`, token, functionError(navigation))
+      await get(`${API_URL}/travels/${id}/driver`, token)
         .then(({ data }) => {
           if (data.data.driverId) {
             dispatch(setDriverId({ driverId: data.data.driverId }));
             navigation.navigate("DriverIncoming");
             clearInterval(interval);
           }
-        });
+        }).catch(error => functionError(navigation, error));
 
     }, 10000);
   }, []);

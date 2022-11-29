@@ -17,9 +17,9 @@ export default function LoginModal({ ...props }) {
   const { API_URL, _ } = envs;
 
   const getUserInfo = async (id, token) => {
-    return get(`${API_URL}/users/${id}`, token, functionError(props.navigation)).then(
+    return get(`${API_URL}/users/${id}`, token).then(
       ({ data }) => data
-    );
+    ).catch(error => functionError(navigation, error));
   };
 
   const onSignIn = () => {

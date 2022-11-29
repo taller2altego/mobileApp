@@ -119,7 +119,7 @@ export default function TravelInProgressDriver({ navigation }) {
   };
 
   const finishTravel = (navigation) => {
-    return post(`/travels/${tripData._id}/finish`, functionError(navigation)).then(
+    return post(`/travels/${tripData._id}/finish`, errorFunction=functionError(navigation)).then(
       navigation.navigate("Home")
     )
   };
@@ -127,9 +127,9 @@ export default function TravelInProgressDriver({ navigation }) {
   const cancelTravel = (navigation) => {
     // request para eliminar el driver del tralel
     // limpiar inputs de destino y origen en main
-    return post(`/travels/${tripData._id}/reject?isTravelCancelled='true'`, functionError(navigation)).then(
+    return post(`/travels/${tripData._id}/reject?isTravelCancelled='true'`).then(
       navigation.navigate("Home")
-    )
+    ).catch(error => functionError(navigation, error))
   };
 
   if (!fontsLoaded) {

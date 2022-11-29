@@ -89,11 +89,11 @@ export default function ConfirmationTravel({ navigation }) {
       date: new Date().toISOString(),
     };
 
-    return authPost(`${API_URL}/travels`, token, body, functionError(navigation))
+    return authPost(`${API_URL}/travels`, token, body)
       .then(({ data }) => {
         dispatch(setNewTravel({ _id: data.data._id }));
         setModalWaitingVisible(!modalWaitingVisible);
-      });
+      }).catch(error => functionError(navigation, error));
   };
 
   if (!fontsLoaded) {

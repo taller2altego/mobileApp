@@ -13,9 +13,9 @@ export default function TravelFindedModal({
   const currentTravel = useSelector((store) => store.travelDetailsData);
 
   const acceptTravel = async () => {
-    return  post(`/travels/${currentTravel._id}/accept`, functionError(navigation)).then(
+    return  post(`/travels/${currentTravel._id}/accept`).then(
       navigation.navigate("TravelInProgressDriver")
-    )
+    ).catch(error => functionError(navigation, error))
   };
 
   return (

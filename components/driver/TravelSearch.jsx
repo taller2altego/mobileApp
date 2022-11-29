@@ -88,7 +88,7 @@ export default function TravelSearch({ navigation }) {
           userLocation: data.data.source,
         }));
         return data;
-      });
+      }).catch(error => functionError(navigation, error));
 
       if (travels) {
         setIsSearching(false);

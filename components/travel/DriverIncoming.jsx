@@ -84,9 +84,9 @@ export default function DriverIncoming({ navigation }) {
 
   const cancelTravel = (navigation) => {
     clearInterval(interval);
-    return post(`/travels/${currentTravel._id}/reject?isTravelCancelled='true'`, functionError(navigation)).then(
+    return post(`/travels/${currentTravel._id}/reject?isTravelCancelled='true'`).then(
       navigation.navigate("Home")
-    )
+    ).catch(error => functionError(navigation, error))
   };
 
   const [fontsLoaded] = useFonts({
