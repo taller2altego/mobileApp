@@ -431,5 +431,5 @@ export {
   MapStyles,
   TravelStyles,
   RecoverStyles,
-  ReportStyles
+  ReportStyles,
 };
