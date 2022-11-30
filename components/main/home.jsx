@@ -2,7 +2,11 @@ import React, { useEffect } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { get } from "../../utils/requests";
 import { useDispatch, useSelector } from "react-redux";
-import { setIsDriver, setUserData } from "../../redux/actions/UpdateUserData";
+import {
+  setDefaultLocation,
+  setIsDriver,
+  setUserData,
+} from "../../redux/actions/UpdateUserData";
 import { Ionicons } from "@expo/vector-icons";
 
 import * as SecureStore from "expo-secure-store";
@@ -25,7 +29,15 @@ export default function Home({ navigation }) {
       await get(`${API_URL}/users/${id}`, token)
         .then(
           async ({
-            data: { name, lastname, email, phoneNumber, isDriver, driverId },
+            data: {
+              name,
+              lastname,
+              email,
+              phoneNumber,
+              isDriver,
+              driverId,
+              defaultAddress,
+            },
           }) => {
             if (driverId) {
               await SecureStore.setItemAsync("driverId", driverId.toString());
@@ -38,6 +50,7 @@ export default function Home({ navigation }) {
                 phoneNumber: phoneNumber.toString(),
               })
             );
+            dispatch(setDefaultLocation({ defaultLocation: defaultAddress }));
             dispatch(setIsDriver({ isDriver }));
           }
         )
