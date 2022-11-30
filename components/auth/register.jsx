@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Modal, Pressable, Text, TextInput, View } from "react-native";
 import { post } from "../../utils/requests";
 import { LandingStyles, modalStyles } from "../styles";
-import { Picker } from "@react-native-picker/picker";
 import { Entypo } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";
 import { setIsDriver, setUserData } from "../../redux/actions/UpdateUserData";
@@ -15,7 +14,6 @@ export default function RegisterModal({ ...props }) {
   const [phone, setPhone] = useState("");
   const [name, setName] = useState("");
   const [lastname, setLastName] = useState("");
-  const [driverSelected, setDriverSelected] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const { API_URL, _ } = envs;
 
@@ -40,11 +38,7 @@ export default function RegisterModal({ ...props }) {
       .then((data) => SecureStore.setItemAsync("id", data.id.toString()))
       .then(() => {
         props.toggle();
-        if (driverSelected) {
-          props.navigation.navigate("Driver");
-        } else {
-          props.navigation.navigate("Home");
-        }
+        props.navigation.navigate("DefaultLocationRequest");
       })
       .catch((error) => {
         setErrorMessage(JSON.stringify(error.response.data.message));
@@ -93,16 +87,6 @@ export default function RegisterModal({ ...props }) {
               secureTextEntry={true}
               onChangeText={(password) => setPassword(password)}
             />
-            <Picker
-              selectedValue={driverSelected}
-              onValueChange={(driverSelected, ItemIndex) =>
-                setDriverSelected(driverSelected)
-              }
-              style={[modalStyles.modal_picker, { fontFamily: "poppins" }]}
-            >
-              <Picker.Item label="Conductor" value={true} />
-              <Picker.Item label="Pasajero" value={false} />
-            </Picker>
             <Pressable
               style={modalStyles.modal_button}
               onPress={() => onSignUp()}
