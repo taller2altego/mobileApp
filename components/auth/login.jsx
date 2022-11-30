@@ -14,10 +14,16 @@ export default function LoginModal({ ...props }) {
   const { API_URL, _ } = envs;
 
   const onSignIn = () => {
-    return post(`${API_URL}/login`, {
-      email,
-      password
-    })
+    // return post(`${API_URL}/login`, {
+    //   email,
+    //   password
+    // })
+    return post(`${API_URL}/login`,
+      {
+        email: "A@b",
+        password: "12"
+      }
+    )
       .then(async (info) => {
         const { data: { id, token } } = info;
         await SecureStore.setItemAsync("token", token);

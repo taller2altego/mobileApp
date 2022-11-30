@@ -21,6 +21,7 @@ import TripDetailsScreen from "./components/main/TripDetails";
 import RecoverPassword from "./components/auth/recoverPassword";
 import ResetPassword from "./components/auth/resetPassword";
 import AuthToken from "./components/auth/authToken";
+import WalletVisualization from "./components/driver/WalletVisualization";
 
 const Stack = createNativeStackNavigator();
 
@@ -103,8 +104,12 @@ export default function App(props) {
             name="ReportTravel"
             component={ReportTravel}
             options={{ headerShown: false }}
-          />     
-          
+          />
+          <Stack.Screen
+            name="WalletVisualization"
+            component={WalletVisualization}
+            options={{ headerShown: false }}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>
