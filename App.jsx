@@ -50,9 +50,6 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
     }
 
     if (location) {
-
-      console.log(location);
-
       interval = setInterval(async () => {
         const flag = await SecureStore.getItemAsync('askForTravel');
 
