@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 import { useDispatch } from "react-redux";
 import { setDriverData } from "../../redux/actions/UpdateDriverData";
+import { setIsDriver } from "../../redux/actions/UpdateUserData";
 import { authPost } from "../../utils/requests";
 import { DriverStyles } from "../styles";
 import * as SecureStore from "expo-secure-store";
@@ -23,7 +24,9 @@ export default function Driver({ navigation }) {
       model,
       licensePlate,
     })
-      .then(() => {
+      .then(async ({ data }) => {
+        console.log(data);
+        await SecureStore.setItemAsync("driverId", data.id.toString());
         dispatch(
           setDriverData({
             license: license,
@@ -31,7 +34,8 @@ export default function Driver({ navigation }) {
             licensePlate: licensePlate,
           })
         );
-        navigation.navigate("Home");
+        dispatch(setIsDriver({ isDriver: true }));
+        navigation.replace("Home");
       })
       .catch((error) => setErrorMessage(error.response.data.message));
   };

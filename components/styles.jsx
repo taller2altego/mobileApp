@@ -196,7 +196,7 @@ const RecoverStyles = StyleSheet.create({
 
 const Profilestyles = StyleSheet.create({
   profile_text: {
-    fontSize: 15,
+    fontSize: 35,
   },
   profile_container: {
     flex: 1,
@@ -209,20 +209,17 @@ const Profilestyles = StyleSheet.create({
     paddingTop: 30,
   },
   profile_inputs: {
-    flex: 2,
+    flex: 3,
     justifyContent: "space-evenly",
   },
   profile_input: {
     fontSize: 15,
-    marginLeft: 50,
     width: 300,
     borderWidth: 1,
     borderColor: "#343437",
     borderRadius: 10,
     height: 50,
     paddingLeft: 10,
-    marginLeft: 30,
-    marginRight: 30,
     outlineStyle: "none",
   },
   profile_visualization: {
