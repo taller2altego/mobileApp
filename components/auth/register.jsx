@@ -17,7 +17,6 @@ export default function RegisterModal({ ...props }) {
   const [lastname, setLastName] = useState("");
   const [driverSelected, setDriverSelected] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const dispatch = useDispatch();
   const { API_URL, _ } = envs;
 
   const onSignUp = () => {
@@ -27,7 +26,7 @@ export default function RegisterModal({ ...props }) {
       phoneNumber: Number(phone),
       email,
       password,
-      role: "user"
+      role: "user",
     };
 
     const loginBody = { email, password };
@@ -38,10 +37,8 @@ export default function RegisterModal({ ...props }) {
         await SecureStore.setItemAsync("token", data.token);
         return data;
       })
-      .then(( data ) => SecureStore.setItemAsync("id", data.id.toString()))
+      .then((data) => SecureStore.setItemAsync("id", data.id.toString()))
       .then(() => {
-        dispatch(setUserData({ name, lastname, email, phoneNumber: phone }));
-        dispatch(setIsDriver({ isDriver: driverSelected }));
         props.toggle();
         if (driverSelected) {
           props.navigation.navigate("Driver");
@@ -50,9 +47,8 @@ export default function RegisterModal({ ...props }) {
         }
       })
       .catch((error) => {
-          setErrorMessage(JSON.stringify(error.response.data.message))
-        }
-      );
+        setErrorMessage(JSON.stringify(error.response.data.message));
+      });
   };
 
   return (

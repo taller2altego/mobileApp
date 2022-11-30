@@ -1,4 +1,3 @@
-
 import {
   View,
   ScrollView,
@@ -17,17 +16,14 @@ import * as SecureStore from "expo-secure-store";
 
 import envs from "../../config/env";
 
-
 export default function LoginGoogleButton({ setErrorMessage, ...props }) {
   const { API_URL, _env } = envs;
 
-  const dispatch = useDispatch();
   const [accessToken, setAccessToken] = useState(null);
   const [_, response, promptAsync] = Google.useIdTokenAuthRequest({
     clientId:
       "1048799441742-pfgd2bp87dl12uj40ug0c1q5ltc38ser.apps.googleusercontent.com",
   });
-
 
   useEffect(() => {
     if (response && response.type === "success") {
@@ -37,16 +33,20 @@ export default function LoginGoogleButton({ setErrorMessage, ...props }) {
     }
   }, [response, accessToken]);
 
-  const fetchUserInfo = authentication => {
+  const fetchUserInfo = (authentication) => {
     return authPost(`${API_URL}/login/oauth`, authentication.idToken)
-      .then(async info => {
-        const { data: { id, token } } = info;
+      .then(async (info) => {
+        const {
+          data: { id, token },
+        } = info;
         await SecureStore.setItemAsync("token", token);
         await SecureStore.setItemAsync("id", id.toString());
         props.navigation.navigate("Home");
       })
-      .catch(e => {
-        const errMessage = e.response && e.response.data && e.response.data.message || e.message;
+      .catch((e) => {
+        const errMessage =
+          (e.response && e.response.data && e.response.data.message) ||
+          e.message;
         setErrorMessage(errMessage);
       });
   };
