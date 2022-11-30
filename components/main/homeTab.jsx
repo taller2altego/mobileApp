@@ -68,10 +68,9 @@ export default function HomeTab({ navigation }) {
     })();
   }, []);
 
-  const onConfirmationTravel = () => {
-    dispatch(
-      setTravelDetails({ origin: srcDetails, destination: destDetails })
-    );
+  const onConfirmationTravel = async () => {
+    dispatch(setOrigin({ origin: srcDetails }));
+    dispatch(setDestination({ destination: destDetails }));
     navigation.navigate("ConfirmationTravel");
   };
 
