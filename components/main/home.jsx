@@ -4,6 +4,8 @@ import { get } from "../../utils/requests";
 import { useDispatch } from "react-redux";
 import { setIsDriver, setUserData } from "../../redux/actions/UpdateUserData";
 import { Platform } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+
 import * as SecureStore from "expo-secure-store";
 import HomeTab from "./homeTab";
 import ProfileTab from "./profileTab";
@@ -29,7 +31,7 @@ export default function Home({ navigation }) {
     registerForPushNotificationsAsync()
       .then(token => SecureStore.setItemAsync("pushToken", token));
 
-    const setIinitialData = async () => {
+    (async () => {
       const id = await SecureStore.getItemAsync("id");
       const token = await SecureStore.getItemAsync("token");
       get(`${API_URL}/users/${id}`, token).then(
@@ -38,9 +40,8 @@ export default function Home({ navigation }) {
           dispatch(setIsDriver({ isDriver }));
         }
       );
-    };
+    })();
 
-    setIinitialData();
   }, []);
 
   const registerForPushNotificationsAsync = async () => {
@@ -74,16 +75,34 @@ export default function Home({ navigation }) {
   return (
     <Tab.Navigator>
       <Tab.Screen
-        name="Main"
+        name="Home"
         component={HomeTab}
-        options={{ headerShown: false }}
+        options={{
+          headerShown: false,
+          tabBarShowLabel: false,
+          tabBarIcon: ({ focused }) => (
+            <Ionicons
+              name={focused ? "home-sharp" : "home-outline"}
+              size={24}
+              color="black"
+            />
+          ),
+        }}
       />
       <Tab.Screen
-        name="Perfil"
+        name="Profile"
         component={ProfileTab}
-        options={({ navigation }) => ({
+        options={{
           headerShown: false,
-        })}
+          tabBarShowLabel: false,
+          tabBarIcon: ({ focused }) => (
+            <Ionicons
+              name={focused ? "person" : "person-outline"}
+              size={24}
+              color="black"
+            />
+          ),
+        }}
       />
     </Tab.Navigator>
   );
