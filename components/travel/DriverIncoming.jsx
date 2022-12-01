@@ -5,7 +5,7 @@ import MapViewDirections from "react-native-maps-directions";
 import { View, Text, Pressable, Image } from "react-native";
 import { useSelector } from "react-redux";
 import { useFonts } from "expo-font";
-import { get, functionError } from "../../utils/requests";
+import { get, handlerUnauthorizedError } from "../../utils/requests";
 import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
 
@@ -55,10 +55,7 @@ export default function DriverIncoming({ navigation }) {
           const fullname = `${name} ${lastname}`;
           setDriver(fullname);
         })
-        .catch(err => {
-          console.log(err);
-          return err;
-        });
+        .catch(err => handlerUnauthorizedError(navigation, err));
     })();
   }, []);
 

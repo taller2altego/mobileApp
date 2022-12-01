@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { useEffect, useState } from "react";
 import * as Google from "expo-auth-session/providers/google";
-import { authPost, get, functionError } from "../../utils/requests";
+import { authPost } from "../../utils/requests";
 import { AntDesign } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";
 import { setUserData } from "../../redux/actions/UpdateUserData";
@@ -45,8 +45,7 @@ export default function LoginGoogleButton({ setErrorMessage, ...props }) {
         await SecureStore.setItemAsync("id", id.toString());
         props.navigation.navigate("Home");
       })
-      .catch(
-        e => {
+      .catch(e => {
         const errMessage = e.response && e.response.data && e.response.data.message || e.message;
         setErrorMessage(errMessage);
       });

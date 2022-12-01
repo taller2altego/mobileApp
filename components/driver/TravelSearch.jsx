@@ -1,4 +1,3 @@
-import { getItemAsync } from "expo-secure-store";
 import { useEffect, useState } from "react";
 import { View, Text, ActivityIndicator, Pressable } from "react-native";
 import TravelFindedModal from "./TravelFindedModal";
@@ -7,14 +6,13 @@ import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
 
 // modules
-import { LandingStyles, modalStyles } from "../styles";
-import { get, functionError } from "../../utils/requests";
+import { get, handlerUnauthorizedError } from "../../utils/requests";
 import {
   setTravelDetails,
   setTravelInfo,
   setUserLocation,
 } from "../../redux/actions/UpdateTravelDetails";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 export default function TravelSearch({ navigation }) {
   const [modalTravelFindedVisible, setModalTravelFindedVisible] =
@@ -88,7 +86,7 @@ export default function TravelSearch({ navigation }) {
           userLocation: data.data.source,
         }));
         return data;
-      }).catch(error => functionError(navigation, error));
+      }).catch(error => handlerUnauthorizedError(navigation, error));
 
       if (travels) {
         setIsSearching(false);

@@ -1,11 +1,11 @@
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 
-const functionError = (navigation, error) => {
+const handlerUnauthorizedError = (navigation, error) => {
   if (error.response.status == 401) {
-    await SecureStore.deleteItemAsync("token");
+    SecureStore.deleteItemAsync("token");
     navigation.navigate("Landing");
-    return error
+    return error;
   }
 };
 
@@ -43,4 +43,4 @@ const patch = (url, token, body, extraHeaders, errorFunction) => {
   })
 };
 
-export { authPost, get, patch, post, functionError };
+export { authPost, get, patch, post, handlerUnauthorizedError };

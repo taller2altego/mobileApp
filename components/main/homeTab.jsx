@@ -16,7 +16,7 @@ import envs from "../../config/env";
 import { Homestyles, Profilestyles } from "../styles";
 import TravelItem from "../travel/TravelItem";
 import { setTravelDetails } from "../../redux/actions/UpdateTravelDetails";
-import { get, functionError } from "../../utils/requests";
+import { get, handlerUnauthorizedError } from "../../utils/requests";
 
 export default function HomeTab({ navigation }) {
   const currentUserData = useSelector((store) => store.userData);
@@ -58,7 +58,7 @@ export default function HomeTab({ navigation }) {
           console.log(data);
           setData(data);
         }
-      ).catch(error => functionError(navigation, error))
+      ).catch(error => handlerUnauthorizedError(navigation, error))
     })();
   }, []);
 

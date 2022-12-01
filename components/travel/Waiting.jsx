@@ -4,7 +4,7 @@ import * as SecureStore from "expo-secure-store";
 import { useSelector, useDispatch } from "react-redux";
 
 // modules
-import { get, functionError } from "../../utils/requests";
+import { get, handlerUnauthorizedError } from "../../utils/requests";
 import { setDriverId } from "../../redux/actions/UpdateCurrentTravel";
 import { modalStyles } from "../styles";
 import envs from "../../config/env";
@@ -29,7 +29,7 @@ export default function WaitingDriverModal({ navigation, ...props }) {
             navigation.navigate("DriverIncoming");
             clearInterval(interval);
           }
-        }).catch(error => functionError(navigation, error));
+        }).catch(error => handlerUnauthorizedError(navigation, error));
 
     }, 10000);
   }, []);

@@ -3,7 +3,7 @@ import { MapStyles, TravelStyles, Profilestyles } from "../styles";
 import { View, Text, Pressable, Image } from "react-native";
 import { useFonts } from "expo-font";
 import { Rating } from "react-native-ratings";
-import { get, patch, functionError } from "../../utils/requests";
+import { get, patch, handlerUnauthorizedError } from "../../utils/requests";
 import * as SecureStore from "expo-secure-store";
 import moment from "moment";
 
@@ -36,7 +36,8 @@ export default function TripDetails({ route, navigation }) {
             setPrice(data.price);
             setDate(data.date);
             setDriverScore(data.driverScore);
-          });
+          })
+          .then(err => handlerUnauthorizedError(navigation, err));
     })();
   }, []);
 

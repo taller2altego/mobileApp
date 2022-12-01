@@ -2,16 +2,9 @@ import { useState } from "react";
 import { MapStyles, TravelStyles, Profilestyles, RecoverStyles } from "../styles";
 import { View, Text, TextInput, Pressable } from "react-native";
 import { useFonts } from "expo-font";
-import { post, functionError } from "../../utils/requests";
+import { post } from "../../utils/requests";
 import validator from 'validator';
 import envs from "../../config/env";
-
-const edgePadding = {
-    top: 100,
-    right: 100,
-    bottom: 100,
-    left: 100,
-};
 
 export default function RecoverPassword({ navigation }) {
     // redux

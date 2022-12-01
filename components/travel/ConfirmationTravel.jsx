@@ -8,7 +8,7 @@ import { View, Text, Pressable, Image } from "react-native";
 import WaitingModal from "./Waiting";
 import { useDispatch, useSelector } from "react-redux";
 import { useFonts } from "expo-font";
-import { authPost, functionError } from "../../utils/requests";
+import { authPost, handlerUnauthorizedError } from "../../utils/requests";
 import { setNewTravel } from "../../redux/actions/UpdateCurrentTravel";
 const API_KEY = "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ";
 import envs from "../../config/env";
@@ -69,16 +69,15 @@ export default function ConfirmationTravel({ navigation }) {
   const createTravel = async (navigation) => {
     const id = await SecureStore.getItemAsync("id");
     const token = await SecureStore.getItemAsync("token");
+
     const srcAddress = await fetch('https://maps.googleapis.com/maps/api/geocode/json?address=' + origin.latitude + ',' + origin.longitude + '&key=' + API_KEY)
       .then((response) => response.json())
-      .then((responseJson) => {
-        return responseJson.results[0].formatted_address
-      });
+      .then((responseJson) => responseJson.results[0].formatted_address);
+
     const dstAddress = await fetch('https://maps.googleapis.com/maps/api/geocode/json?address=' + destination.latitude + ',' + destination.longitude + '&key=' + API_KEY)
       .then((response) => response.json())
-      .then((responseJson) => {
-        return responseJson.results[0].formatted_address
-      });
+      .then((responseJson) => responseJson.results[0].formatted_address);
+
     const body = {
       userId: id,
       price: price,
@@ -93,7 +92,8 @@ export default function ConfirmationTravel({ navigation }) {
       .then(({ data }) => {
         dispatch(setNewTravel({ _id: data.data._id }));
         setModalWaitingVisible(!modalWaitingVisible);
-      }).catch(error => functionError(navigation, error));
+      })
+      .catch(error => handlerUnauthorizedError(navigation, error));
   };
 
   if (!fontsLoaded) {

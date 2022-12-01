@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState } from "react";
 import { Modal, Pressable, Text, TextInput, View } from "react-native";
-import { post, functionError} from "../../utils/requests";
+import { post } from "../../utils/requests";
 import { LandingStyles, modalStyles } from "../styles";
 import { Picker } from "@react-native-picker/picker";
 import { Entypo } from "@expo/vector-icons";

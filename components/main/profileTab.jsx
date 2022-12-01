@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import * as SecureStore from "expo-secure-store";
-import { patch, authPost, functionError } from "../../utils/requests";
+import { patch, authPost, handlerUnauthorizedError } from "../../utils/requests";
 import { setUserData } from "../../redux/actions/UpdateUserData";
 import { Profilestyles } from "../styles";
 import envs from "../../config/env";
@@ -43,20 +43,24 @@ export default function ProfileTab({ navigation }) {
   const handleUpdate = async () => {
     const id = await SecureStore.getItemAsync("id");
     const token = await SecureStore.getItemAsync("token");
-    patch(`${API_URL}/users/${id}`, token, {
+    const body = {
       name: nameText,
       lastname: lastnameText,
       phoneNumber: Number(phoneText),
-    }).then(() => {
-      dispatch(
-        setUserData({
-          name: nameText,
-          lastname: lastnameText,
-          phoneNumber: Number(phoneText),
-          email: emailText,
-        })
-      );
-    }).catch(error => functionError(navigation, error))
+    };
+    patch(`${API_URL}/users/${id}`, token, body)
+      .then(() => {
+        dispatch(
+          setUserData({
+            name: nameText,
+            lastname: lastnameText,
+            phoneNumber: Number(phoneText),
+            email: emailText,
+          })
+        );
+      })
+      .catch(error => handlerUnauthorizedError(navigation, error));
+
     setIsEditing(false);
   };
 

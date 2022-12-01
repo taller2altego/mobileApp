@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { get, functionError } from "../../utils/requests";
+import { get, handlerUnauthorizedError } from "../../utils/requests";
 import { useDispatch } from "react-redux";
 import { setIsDriver, setUserData } from "../../redux/actions/UpdateUserData";
 
@@ -18,11 +18,12 @@ export default function Home({ navigation }) {
     (async () => {
       const id = await SecureStore.getItemAsync("id");
       const token = await SecureStore.getItemAsync("token");
-      get(`${API_URL}/users/${id}`, token).then(
-        ({ data: { name, lastname, email, phoneNumber, isDriver } }) => {
-          dispatch(setUserData({ name, lastname, email, phoneNumber }))
+      get(`${API_URL}/users/${id}`, token)
+        .then(({ data: { name, lastname, email, phoneNumber, isDriver } }) => {
+          dispatch(setUserData({ name, lastname, email, phoneNumber }));
           dispatch(setIsDriver({ isDriver }));
-        }).catch(error => functionError(navigation, error))
+        })
+        .catch(error => handlerUnauthorizedError(navigation, error));
     })();
   }, []);
 

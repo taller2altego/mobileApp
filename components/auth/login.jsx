@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Modal, Pressable, Text, TextInput, View } from "react-native";
-import { get, post, functionError } from "../../utils/requests";
+import { get, post, handlerUnauthorizedError } from "../../utils/requests";
 import { LandingStyles, modalStyles } from "../styles";
 import { Entypo } from "@expo/vector-icons";
 import * as SecureStore from "expo-secure-store";
@@ -19,11 +19,11 @@ export default function LoginModal({ ...props }) {
   const getUserInfo = async (id, token) => {
     return get(`${API_URL}/users/${id}`, token).then(
       ({ data }) => data
-    ).catch(error => functionError(navigation, error));
+    ).catch(error => handlerUnauthorizedError(navigation, error));
   };
 
   const onSignIn = () => {
-    const body = { email, password };
+    const body = { email: 'driver@fiuber.com', password: '1234' };
     return post(`${API_URL}/login`, body, () => { })
       .then(async ({ data: { id, token } }) => {
         await SecureStore.setItemAsync("token", token);
@@ -60,7 +60,7 @@ export default function LoginModal({ ...props }) {
             <TextInput
               style={[modalStyles.modal_input, { fontFamily: "poppins" }]}
               placeholder="Email"
-              value={email}
+              value="driver@fiuber.com"
               placeholderTextColor="#343437"
               onChangeText={(email) => setEmail(email)}
             />
@@ -68,7 +68,7 @@ export default function LoginModal({ ...props }) {
               style={[modalStyles.modal_input, { fontFamily: "poppins" }]}
               placeholder="Contraseña"
               placeholderTextColor="#343437"
-              value={password}
+              value="1234"
               secureTextEntry={true}
               onChangeText={(password) => setPassword(password)}
             />
