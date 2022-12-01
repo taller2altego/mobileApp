@@ -47,42 +47,27 @@ export default function DriverIncoming({ navigation }) {
   const mapRef = useRef(null);
 
   useEffect(() => {
-    (async () => {
+    let interval = setInterval(async () => {
       const token = await SecureStore.getItemAsync("token");
-      return get(`${API_URL}/users/${driverId}`, token)
-        .then(({ data }) => {
-          const { name, lastname } = data;
-          const fullname = `${name} ${lastname}`;
-          setDriver(fullname);
-        })
-        .catch((err) => {
-          console.log(err);
-          return err;
-        });
-    })();
-  }, []);
-
-  useEffect(() => {
-    setRequestInterval(
-      setInterval(async () => {
-        const token = await SecureStore.getItemAsync("token");
 
         await get(`${API_URL}/travels/${travelId}/driver`, token).then(
           ({ data }) => {
             const position = data.data.currentDriverPosition;
             setCurrentOrigin(position);
 
-            // TODO: seguro la posicion final, no sea igual... calcular un aproximado
-            const isSameLat = position.latitude == destination.latitude;
-            const isSameLong = position.longitude == destination.longitude;
-            if (isSameLat && isSameLong) {
-              navigation.navigate("TravelInProgress");
-              clearInterval(interval);
-            }
+          // TODO: seguro la posicion final, no sea igual... calcular un aproximado
+          const isSameLat = position.latitude == destination.latitude;
+          const isSameLong = position.longitude == destination.longitude;
+          if (isSameLat && isSameLong) {
+            navigation.replace("TravelInProgress");
+            clearInterval(interval);
           }
-        );
-      }, 10000)
-    );
+        }
+      );
+    }, 10000);
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
   const cancelTravel = async () => {
@@ -188,7 +173,7 @@ export default function DriverIncoming({ navigation }) {
         <View style={TravelStyles.buttonContainer}>
           <Pressable
             style={MapStyles.confirmTripButton}
-            onPress={() => navigation.navigate("ProfileVisualization")}
+            onPress={() => navigation.push("ProfileVisualization")}
           >
             <Text
               style={{

@@ -10,6 +10,8 @@ import RegisterModal from "./components/auth/register";
 import LoginModal from "./components/auth/login";
 import HomeScreen from "./components/main/home";
 import DriverScreen from "./components/auth/driver";
+import TravelInProgress from "./components/travel/TravelInProgress";
+import ReportTravel from "./components/travel/ReportTravel";
 import TravelSearch from "./components/driver/TravelSearch";
 import ProfileVisualization from "./components/main/profileVisualization";
 import store from "./redux/store/store";
@@ -22,6 +24,7 @@ import TripDetailsScreen from "./components/main/TripDetails";
 import RecoverPassword from "./components/auth/recoverPassword";
 import ResetPassword from "./components/auth/resetPassword";
 import AuthToken from "./components/auth/authToken";
+import DefaultLocationRequest from "./components/auth/DefaultLocationRequest";
 
 const Stack = createNativeStackNavigator();
 
@@ -38,6 +41,11 @@ export default function App() {
           <Stack.Screen
             name="Register"
             component={RegisterModal}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="DefaultLocationRequest"
+            component={DefaultLocationRequest}
             options={{ headerShown: false }}
           />
           <Stack.Screen

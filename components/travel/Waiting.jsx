@@ -25,7 +25,7 @@ export default function WaitingDriverModal({ navigation, ...props }) {
         ({ data }) => {
           if (data.data.driverId) {
             dispatch(setDriverId({ driverId: data.data.driverId }));
-            navigation.navigate("DriverIncoming");
+            navigation.replace("DriverIncoming");
           }
         }
       );
