@@ -31,8 +31,12 @@ export default function HomeTab({ navigation }) {
   const [destDetails, setDestDetails] = useState("");
   const [data_travels, setData] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
-  const [correctSrcInput, setCorrectSrcInput] = useState(false);
+  const [correctSrcInput, setCorrectSrcInput] = useState(true);
   const [correctDestInput, setCorrectDestInput] = useState(false);
+  const [originInput, setOriginInput] = useState(
+    currentUserData.defaultLocation
+  );
+  const [firstTimeChange, setFirstTimeChange] = useState(true);
 
   const handleSelectedTrip = (item) => {
     setSelectedId(item.id);
@@ -85,7 +89,14 @@ export default function HomeTab({ navigation }) {
         <ScrollView keyboardShouldPersistTaps={"handled"}>
           <View style={[{ flex: 0.3 }]}></View>
           <View style={[{ flex: 0.5 }]}>
-            <Text style={{ fontSize: 32, padding: 25, paddingBottom: 10 }}>
+            <Text
+              style={{
+                fontSize: 32,
+                padding: 25,
+                paddingBottom: 10,
+                fontFamily: "poppins",
+              }}
+            >
               Actividades
             </Text>
           </View>
@@ -107,9 +118,14 @@ export default function HomeTab({ navigation }) {
               fetchDetails
               enablePoweredByContainer={false}
               textInputProps={{
-                onChangeText: (_) => {
-                  setCorrectSrcInput(false);
+                onChangeText: (text) => {
+                  if (text != "" || !firstTimeChange) {
+                    setCorrectSrcInput(false);
+                    setOriginInput(text);
+                    setFirstTimeChange(false);
+                  }
                 },
+                value: originInput,
               }}
               listEmptyComponent={() => (
                 <View style={{ flex: 1 }}>
@@ -117,6 +133,7 @@ export default function HomeTab({ navigation }) {
                 </View>
               )}
               onPress={(data, details) => {
+                setOriginInput(data.description);
                 setCorrectSrcInput(true);
                 setSrcDetails({
                   latitude: details.geometry.location.lat,

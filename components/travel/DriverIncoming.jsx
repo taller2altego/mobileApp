@@ -47,23 +47,7 @@ export default function DriverIncoming({ navigation }) {
   const mapRef = useRef(null);
 
   useEffect(() => {
-    (async () => {
-      const token = await SecureStore.getItemAsync("token");
-      return get(`${API_URL}/users/${driverId}`, token)
-        .then(({ data }) => {
-          const { name, lastname } = data;
-          const fullname = `${name} ${lastname}`;
-          setDriver(fullname);
-        })
-        .catch(err => {
-          console.log(err);
-          return err;
-        });
-    })();
-  }, []);
-
-  useEffect(() => {
-    setRequestInterval(setInterval(async () => {
+    let interval = setInterval(async () => {
       const token = await SecureStore.getItemAsync("token");
 
       await get(`${API_URL}/travels/${travelId}/driver`, token)
@@ -75,15 +59,18 @@ export default function DriverIncoming({ navigation }) {
           const isSameLat = position.latitude == destination.latitude;
           const isSameLong = position.longitude == destination.longitude;
           if (isSameLat && isSameLong) {
-            navigation.navigate("TravelInProgress");
+            navigation.replace("TravelInProgress");
             clearInterval(interval);
           }
-        });
-    }, 10000));
+        }
+      );
+    }, 10000);
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
   const cancelTravel = (navigation) => {
-    clearInterval(interval);
     navigation.navigate("Home");
   };
 
@@ -116,11 +103,15 @@ export default function DriverIncoming({ navigation }) {
         ref={mapRef}
         style={MapStyles.map}
         provider={PROVIDER_GOOGLE}
-        onMapLoaded={() => { zoomOnDirections(); }}
+        onMapLoaded={() => {
+          zoomOnDirections();
+        }}
         initialRegion={INITIAL_POSITION}
       >
         {origin && <Marker coordinate={origin} identifier="originMark" />}
-        {destination && <Marker coordinate={destination} identifier="destMark" />}
+        {destination && (
+          <Marker coordinate={destination} identifier="destMark" />
+        )}
         {currentOrigin && <Marker coordinate={currentOrigin} identifier="s" />}
         {origin && destination && (
           <MapViewDirections
@@ -177,7 +168,7 @@ export default function DriverIncoming({ navigation }) {
         <View style={TravelStyles.buttonContainer}>
           <Pressable
             style={MapStyles.confirmTripButton}
-            onPress={() => navigation.navigate("ProfileVisualization")}
+            onPress={() => navigation.push("ProfileVisualization")}
           >
             <Text
               style={{
