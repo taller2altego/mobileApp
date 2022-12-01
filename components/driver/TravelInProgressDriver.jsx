@@ -29,6 +29,7 @@ export default function TravelInProgressDriver({ navigation }) {
 
   // redux
   const tripData = useSelector((store) => store.travelDetailsData);
+  const currentTravelData = useSelector((store) => store.currentTravel);
   const [locationSubscription, setLocationSubscription] = useState(null);
 
   // state
@@ -116,15 +117,13 @@ export default function TravelInProgressDriver({ navigation }) {
     const token = await SecureStore.getItemAsync("token");
     setRoadTofinalDestination(true);
     setArriveOnUserLocation(false);
-    // FIXME sacar el id del viaje hardcodeado
-    authPost(`${API_URL}/travels/637ecde3d6c43a5791361204/start`, token)
+    authPost(`${API_URL}/travels/${currentTravelData._id}/start`, token)
   };
 
   const finishTravel = async () => {
     const id = await SecureStore.getItemAsync("id");
     const token = await SecureStore.getItemAsync("token");
-    // FIXME sacar el id del viaje hardcodeado
-    return authPost(`${API_URL}/travels/637ecde3d6c43a5791361204/finish`, token).then(
+    return authPost(`${API_URL}/travels/${currentTravelData._id}/finish`, token).then(
       navigation.navigate("Home")
     );
   };
@@ -132,9 +131,8 @@ export default function TravelInProgressDriver({ navigation }) {
   const cancelTravel = () => {
     // request para eliminar el driver del tralel
     // limpiar inputs de destino y origen en main
-    // FIXME sacar el id del viaje hardcodeado
     return post(
-      `${API_URL}/travels/637ecde3d6c43a5791361204/reject?isTravelCancelled='true'`
+      `${API_URL}/travels/${currentTravelData._id}/reject?isTravelCancelled='true'`
     ).then(navigation.navigate("Home"));
   };
 
