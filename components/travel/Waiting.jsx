@@ -8,6 +8,7 @@ import { get, authPost } from "../../utils/requests";
 import { setDriverId } from "../../redux/actions/UpdateCurrentTravel";
 import { LandingStyles, modalStyles } from "../styles";
 import envs from "../../config/env";
+import { current } from "@reduxjs/toolkit";
 
 export default function WaitingDriverModal({ navigation, ...props }) {
   // redux
@@ -37,11 +38,21 @@ export default function WaitingDriverModal({ navigation, ...props }) {
   }, []);
 
   const cancelSearch = async () => {
-    let token = await SecureStore.getItemAsync("token");
-    return authPost(
-      `${API_URL}/travels/${travelId}/reject?isTravelCancelled='true'`,
-      token
-    ).then(navigation.navigate("Home"));
+    const token = await SecureStore.getItemAsync("token");
+    const travel = await get(`${API_URL}/travels/${travelId}`, token).catch(err => {
+      console.log(err);
+    });
+    return get(`${API_URL}/drivers/${travel.data.driverId}`, token)
+      .then((driver) => {
+        return get(`${API_URL}/users/${driver.data.userId}`, token)
+          .then((user) => {
+            const body = {
+              email: user.data.email,
+              price: travel.data.price,
+            };
+            return authPost(`${API_URL}/travels/${travelId}/reject?isTravelCancelled='true'`, token, body).then(navigation.navigate("Home"));
+          })
+      })
   };
 
   return (

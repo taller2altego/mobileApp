@@ -9,11 +9,9 @@ const API_KEY = "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ";
 import envs from "../../config/env";
 
 export default function WalletVisualization({ navigation }) {
-    const currentUserData = useSelector((store) => store.userData);
-
     const [balance, setBalance] = useState(0);
     const [actualBalance, setActualBalance] = useState(0);
-
+    const [isDriver, setIsDriver] = useState(false)
     // states
     const { API_URL } = envs;
     const [fontsLoaded] = useFonts({
@@ -26,14 +24,16 @@ export default function WalletVisualization({ navigation }) {
             const id = await SecureStore.getItemAsync("id");
             const token = await SecureStore.getItemAsync("token");
             await get(`${API_URL}/users/${id}`, token).then(async (user) => {
-                console.log(user);
+                if (user.data.driverId) {
+                    setIsDriver(true);
+                }
                 await get(`${API_URL}/drivers/${user.data.driverId}`, token)
                     .then((data) => {
-                        setActualBalance(data.balance);
+                        setActualBalance(data.data.balance);
                     });
             });
         })();
-      }, []);
+    }, []);
 
     const withdrawFunds = async (navigation) => {
         const id = await SecureStore.getItemAsync("id");
@@ -42,9 +42,7 @@ export default function WalletVisualization({ navigation }) {
             withdrawFunds: true,
             balance: balance
         };
-        console.log(balance);
         const token = await SecureStore.getItemAsync("token");
-        console.log(currentUserData)
         return patch(`${API_URL}/drivers/${id}/payment`, token, body)
             .then(() => {
                 navigation.navigate("Home");
@@ -64,10 +62,10 @@ export default function WalletVisualization({ navigation }) {
             </View>
             <View style={Profilestyles.profile_container}>
                 <Text style={Profilestyles.profile_visualization}>
-                    Saldo actual: {actualBalance}
+                    Saldo actual: {actualBalance} ethers
                 </Text>
             </View>
-            <TextInput
+            {(isDriver) && <TextInput
                 style={[modalStyles.modal_input, { fontFamily: "poppins", width: 200, textAlign: "center" }]}
                 placeholder="Cantidad"
                 placeholderTextColor="#343437"
@@ -75,7 +73,7 @@ export default function WalletVisualization({ navigation }) {
                 onChangeText={(balance) => {
                     setBalance(balance);
                 }}
-            />
+            />}
             <View style={TravelStyles.travelContainer}>
                 <View style={TravelStyles.buttonContainer}>
                     <Pressable
@@ -94,7 +92,7 @@ export default function WalletVisualization({ navigation }) {
                         </Text>
                     </Pressable>
                 </View>
-                <View style={TravelStyles.buttonContainer}>
+                {(isDriver) && <View style={TravelStyles.buttonContainer}>
                     <Pressable
                         style={MapStyles.confirmTripButton}
                         onPress={() => withdrawFunds(navigation)}
@@ -110,7 +108,7 @@ export default function WalletVisualization({ navigation }) {
                             Retirar Fondos
                         </Text>
                     </Pressable>
-                </View>
+                </View>}
             </View>
 
         </View>

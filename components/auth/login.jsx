@@ -20,7 +20,7 @@ export default function LoginModal({ ...props }) {
     // })
     return post(`${API_URL}/login`,
       {
-        email: "A@b",
+        email: "A@n",
         password: "12"
       }
     )

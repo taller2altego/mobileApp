@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import CheckBox from 'expo-checkbox';
 import { MapStyles, TravelStyles } from "../styles";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import * as SecureStore from "expo-secure-store";
@@ -28,15 +29,17 @@ const INITIAL_POSITION = {
 };
 
 export default function ConfirmationTravel({ navigation }) {
-  // export default function ConfirmationTravel({ navigation }) {
   // redux
   const currentTravelData = useSelector((store) => store.travelDetailsData);
+  const currentUserData = useSelector((store) => store.userData);
+
   const origin = currentTravelData.origin;
   const destination = currentTravelData.destination;
 
   const dispatch = useDispatch();
 
   // states
+  const [payWithCreditsBox, setPayWithCredits] = useState(false)
   const [distance, setDistance] = useState(0);
   const [duration, setDuration] = useState(0);
   const [price, setPrice] = useState(0);
@@ -95,15 +98,24 @@ export default function ConfirmationTravel({ navigation }) {
       .then((responseJson) => {
         return responseJson.results[0].formatted_address
       });
+
+
     const body = {
       userId: id,
-      price: price,
+      email: currentUserData.email,
+      price: 0.001,
       source: origin,
       sourceAddress: srcAddress,
       destination: destination,
       destinationAddress: dstAddress,
       date: date,
+      paidWithCredits: payWithCreditsBox,
     };
+
+    console.log("Body Request: ");
+    console.log("Body Request: ");
+    console.log("Body Request: ");
+    console.log(body);
 
     return authPost(`${API_URL}/travels`, token, body)
       .then(({ data }) => {
@@ -150,6 +162,24 @@ export default function ConfirmationTravel({ navigation }) {
             source={{
               uri: "https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,w_896,h_504/f_auto,q_auto/products/carousel/UberX.png",
             }}
+          />
+        </View>
+        <View style={{
+          right: 0,
+          width: 75,
+          height: 50,
+          margin: 10,
+          marginTop: 12,
+          zIndex: 100,
+        }}>
+          <Text>
+            FIUCreditos
+          </Text>
+          <CheckBox
+            tintColors={{ true: '#F15927', false: 'black' }}
+            style={{left: 25, marginTop: 10}}
+            value={payWithCreditsBox}
+            onValueChange={(newValue) => setPayWithCredits(newValue)}
           />
         </View>
         <View style={{ paddingRight: 20 }}>
@@ -201,6 +231,8 @@ export default function ConfirmationTravel({ navigation }) {
               Iniciar Viaje
             </Text>
           </Pressable>
+        </View>
+        <View>
         </View>
       </View>
     </View>
