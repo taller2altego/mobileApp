@@ -36,7 +36,8 @@ export default function HomeTab({ navigation }) {
   const [selectedId, setSelectedId] = useState(null);
   const [correctSrcInput, setCorrectSrcInput] = useState(true);
   const [correctDestInput, setCorrectDestInput] = useState(false);
-  const [originInput, setOriginInput] = useState(undefined);
+  const [originInput, setOriginInput] = useState(currentUserData.defaultLocation);
+  const [firstTimeChange, setFirstTimeChange] = useState(true);
 
   const handleSelectedTrip = (item) => {
     setSelectedId(item.id);
@@ -111,13 +112,13 @@ export default function HomeTab({ navigation }) {
               enablePoweredByContainer={false}
               textInputProps={{
                 onChangeText: (text) => {
-                  if (text != "") {
+                  if (text != "" || !firstTimeChange) {
                     setCorrectSrcInput(false);
                     setOriginInput(text);
+                    setFirstTimeChange(false);
                   }
                 },
                 value: originInput,
-                defaultValue: currentUserData.defaultLocation,
               }}
               listEmptyComponent={() => (
                 <View style={{ flex: 1 }}>
