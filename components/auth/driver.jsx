@@ -25,7 +25,6 @@ export default function Driver({ navigation }) {
       licensePlate,
     })
       .then(async ({ data }) => {
-        console.log(data);
         await SecureStore.setItemAsync("driverId", data.id.toString());
         dispatch(
           setDriverData({
