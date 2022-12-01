@@ -1,19 +1,18 @@
 import React, { useEffect } from "react";
-import { ActivityIndicator, Modal, Text, View } from "react-native";
+import { ActivityIndicator, Modal, Pressable, Text, View } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import { useSelector, useDispatch } from "react-redux";
 
 // modules
-import { get, handlerUnauthorizedError } from "../../utils/requests";
+import { get,authPost, handlerUnauthorizedError } from "../../utils/requests";
 import { setDriverId } from "../../redux/actions/UpdateCurrentTravel";
-import { modalStyles } from "../styles";
+import { LandingStyles, modalStyles } from "../styles";
 import envs from "../../config/env";
 
 export default function WaitingDriverModal({ navigation, ...props }) {
-
   // redux
   const currentTravelData = useSelector((store) => store.currentTravel);
-  const id = currentTravelData._id;
+  const travelId = currentTravelData._id;
   const dispatch = useDispatch();
 
   const { API_URL, GOOGLE_API_KEY } = envs;
@@ -22,36 +21,62 @@ export default function WaitingDriverModal({ navigation, ...props }) {
     const interval = setInterval(async () => {
       const token = await SecureStore.getItemAsync("token");
 
-      await get(`${API_URL}/travels/${id}/driver`, token)
-        .then(({ data }) => {
+      await get(`${API_URL}/travels/${travelId}/driver`, token).then(
+        ({ data }) => {
           if (data.data.driverId) {
             dispatch(setDriverId({ driverId: data.data.driverId }));
             navigation.navigate("DriverIncoming");
-            clearInterval(interval);
           }
         }).catch(error => handlerUnauthorizedError(navigation, error));
 
     }, 10000);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
+
+  const cancelSearch = async () => {
+    let token = await SecureStore.getItemAsync("token");
+    return authPost(
+      `${API_URL}/travels/${travelId}/reject?isTravelCancelled='true'`,
+      token
+    ).then(navigation.navigate("Home"));
+  };
 
   return (
     <Modal animationType="slide" transparent={true} visible={props.visible}>
       <View style={modalStyles.modal_extern_view}>
         <View style={[modalStyles.modal_view]}>
           <View style={{ flex: 1, flexDirection: "column" }}>
-            <View style={[{ flex: 0.5 }]}>
+            <View style={[{ flex: 1 }]}>
               <Text
                 style={{
                   fontSize: 32,
-                  padding: 60,
-                  paddingBottom: 10,
+                  padding: 50,
                   textAlign: "center",
+                  fontFamily: "poppins",
                 }}
               >
                 Buscando conductor para su viaje
               </Text>
+              <ActivityIndicator
+                size={50}
+                color="#000000"
+                style={{ marginTop: 50 }}
+              />
+              <Pressable onPress={cancelSearch} style={{ marginTop: 100 }}>
+                <Text
+                  style={[
+                    LandingStyles.textButton,
+                    { fontFamily: "poppins", color: "black" },
+                  ]}
+                >
+                  {" "}
+                  Cancelar Busqueda
+                </Text>
+              </Pressable>
             </View>
-            <ActivityIndicator size={80} color="#000000" />
           </View>
         </View>
       </View>

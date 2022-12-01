@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Modal, Pressable, Text, TextInput, View } from "react-native";
 import { post } from "../../utils/requests";
 import { LandingStyles, modalStyles } from "../styles";
-import { Picker } from "@react-native-picker/picker";
 import { Entypo } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";
 import { setIsDriver, setUserData } from "../../redux/actions/UpdateUserData";
@@ -15,9 +14,7 @@ export default function RegisterModal({ ...props }) {
   const [phone, setPhone] = useState("");
   const [name, setName] = useState("");
   const [lastname, setLastName] = useState("");
-  const [driverSelected, setDriverSelected] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const dispatch = useDispatch();
   const { API_URL, _ } = envs;
 
   const onSignUp = () => {
@@ -27,27 +24,25 @@ export default function RegisterModal({ ...props }) {
       phoneNumber: Number(phone),
       email,
       password,
+      role: "user",
     };
 
     const loginBody = { email, password };
 
     return post(`${API_URL}/users`, signUpBody)
-      .then(post(`${API_URL}/login`, loginBody))
-      .then(({ data: { id, token } }) => {
-        SecureStore.setItemAsync("token", token);
-        SecureStore.setItemAsync("id", id.toString());
-        dispatch(setUserData({ name, lastname, email, phone }));
-        dispatch(setIsDriver({ isDriver: driverSelected }));
-        props.toggle();
-        if (driverSelected) {
-          props.navigation.navigate("Driver");
-        } else {
-          props.navigation.navigate("Home");
-        }
+      .then(() => post(`${API_URL}/login`, loginBody))
+      .then(async ({ data }) => {
+        await SecureStore.setItemAsync("token", data.token);
+        return data;
       })
-      .catch((error) =>
-        setErrorMessage(JSON.stringify(error.response.data.message))
-      );
+      .then((data) => SecureStore.setItemAsync("id", data.id.toString()))
+      .then(() => {
+        props.toggle();
+        props.navigation.navigate("DefaultLocationRequest");
+      })
+      .catch((error) => {
+        setErrorMessage(JSON.stringify(error.response.data.message));
+      });
   };
 
   return (
@@ -92,16 +87,6 @@ export default function RegisterModal({ ...props }) {
               secureTextEntry={true}
               onChangeText={(password) => setPassword(password)}
             />
-            <Picker
-              selectedValue={driverSelected}
-              onValueChange={(driverSelected, ItemIndex) =>
-                setDriverSelected(driverSelected)
-              }
-              style={[modalStyles.modal_picker, { fontFamily: "poppins" }]}
-            >
-              <Picker.Item label="Conductor" value={true} />
-              <Picker.Item label="Pasajero" value={false} />
-            </Picker>
             <Pressable
               style={modalStyles.modal_button}
               onPress={() => onSignUp()}

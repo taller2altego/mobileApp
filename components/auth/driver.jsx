@@ -3,6 +3,7 @@ import { Pressable, Text, TextInput, View } from "react-native";
 import { useDispatch } from "react-redux";
 import { setDriverData } from "../../redux/actions/UpdateDriverData";
 import { authPost, handlerUnauthorizedError } from "../../utils/requests";
+import { setIsDriver } from "../../redux/actions/UpdateUserData";
 import { DriverStyles } from "../styles";
 import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
@@ -18,14 +19,15 @@ export default function Driver({ navigation }) {
   const confirmData = async () => {
     const id = await SecureStore.getItemAsync("id");
     const token = await SecureStore.getItemAsync("token");
-    const body = { license, model, licensePlate };
-    authPost(`${API_URL}/users/${id}/driver`, token, body)
-      .then(() => {
+    authPost(`${API_URL}/users/${id}/driver`, token, { license, model, licensePlate })
+      .then(async ({ data }) => {
+        await SecureStore.setItemAsync("driverId", data.id.toString());
         dispatch(setDriverData({ license, model, licensePlate }));
-        navigation.navigate("Home");
+        dispatch(setIsDriver({ isDriver: true }));
+        navigation.replace("Home");
       })
       .catch(error => {
-        handlerUnauthorizedError(navigation, error)();
+        handlerUnauthorizedError(navigation, error);
         setErrorMessage(error);
       });
   };
