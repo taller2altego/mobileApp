@@ -43,6 +43,7 @@ export default function ConfirmationTravel({ navigation }) {
   const [distance, setDistance] = useState(0);
   const [duration, setDuration] = useState(0);
   const [price, setPrice] = useState(0);
+  const [insufficientFunds, setInsufficientFunds] = useState(false);
   const date = new Date().toISOString();
 
   const [modalWaitingVisible, setModalWaitingVisible] = useState(false);
@@ -99,11 +100,12 @@ export default function ConfirmationTravel({ navigation }) {
         return responseJson.results[0].formatted_address
       });
 
-
+    // TODO : Arreglar el price de los travels asi no toma valores muy altos, algo logico es por abajo de 1
     const body = {
       userId: id,
       email: currentUserData.email,
       price: 0.001,
+      // price: price,
       source: origin,
       sourceAddress: srcAddress,
       destination: destination,
@@ -112,15 +114,13 @@ export default function ConfirmationTravel({ navigation }) {
       paidWithCredits: payWithCreditsBox,
     };
 
-    console.log("Body Request: ");
-    console.log("Body Request: ");
-    console.log("Body Request: ");
-    console.log(body);
-
     return authPost(`${API_URL}/travels`, token, body)
       .then(({ data }) => {
         dispatch(setNewTravel({ _id: data.data._id }));
         setModalWaitingVisible(!modalWaitingVisible);
+      })
+      .catch(() => {
+        setInsufficientFunds(true);
       });
   };
 
@@ -177,7 +177,7 @@ export default function ConfirmationTravel({ navigation }) {
           </Text>
           <CheckBox
             tintColors={{ true: '#F15927', false: 'black' }}
-            style={{left: 25, marginTop: 10}}
+            style={{ left: 25, marginTop: 10 }}
             value={payWithCreditsBox}
             onValueChange={(newValue) => setPayWithCredits(newValue)}
           />
@@ -197,6 +197,11 @@ export default function ConfirmationTravel({ navigation }) {
           </Text>
         </View>
       </View>
+      {(insufficientFunds) && <View style={[TravelStyles.travelContainer]}>
+        <Text style={[TravelStyles.buttonContainer, { color: "red" }]}>
+          Fondos Insuficientes
+        </Text>
+      </View>}
       <View style={TravelStyles.travelContainer}>
         <View style={TravelStyles.buttonContainer}>
           <Pressable

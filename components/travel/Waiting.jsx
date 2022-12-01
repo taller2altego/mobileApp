@@ -37,21 +37,20 @@ export default function WaitingDriverModal({ navigation, ...props }) {
     };
   }, []);
 
-  const cancelSearch = async () => {
+  const cancelSearch = async (navigate) => {
+    const id = await SecureStore.getItemAsync("id");
     const token = await SecureStore.getItemAsync("token");
-    const travel = await get(`${API_URL}/travels/${travelId}`, token).catch(err => {
-      console.log(err);
-    });
-    return get(`${API_URL}/drivers/${travel.data.driverId}`, token)
-      .then((driver) => {
-        return get(`${API_URL}/users/${driver.data.userId}`, token)
-          .then((user) => {
-            const body = {
-              email: user.data.email,
-              price: travel.data.price,
-            };
-            return authPost(`${API_URL}/travels/${travelId}/reject?isTravelCancelled='true'`, token, body).then(navigation.navigate("Home"));
-          })
+    const travel = await get(`${API_URL}/travels/${travelId}`, token);
+    return get(`${API_URL}/users/${id}`, token)
+      .then((user) => {
+        const body = {
+          userId: id,
+          email: user.data.email,
+          price: travel.data.data.price,
+          paidWithCredits: travel.data.data.paidWithCredits,
+          payToDriver: false,
+        };
+        return authPost(`${API_URL}/travels/${travelId}/reject?isTravelCancelled='true'`, token, body).then(navigation.navigate("Home"));
       })
   };
 
