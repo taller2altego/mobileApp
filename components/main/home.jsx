@@ -23,7 +23,6 @@ export default function Home({ navigation }) {
 
   useEffect(() => {
     (async () => {
-      console.log("ENTRO ACA");
       const id = await SecureStore.getItemAsync("id");
       const token = await SecureStore.getItemAsync("token");
       await get(`${API_URL}/users/${id}`, token)

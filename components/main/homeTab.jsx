@@ -36,7 +36,9 @@ export default function HomeTab({ navigation }) {
   const [selectedId, setSelectedId] = useState(null);
   const [correctSrcInput, setCorrectSrcInput] = useState(true);
   const [correctDestInput, setCorrectDestInput] = useState(false);
-  const [originInput, setOriginInput] = useState(currentUserData.defaultLocation);
+  const [originInput, setOriginInput] = useState(
+    currentUserData.defaultLocation
+  );
   const [firstTimeChange, setFirstTimeChange] = useState(true);
 
   const handleSelectedTrip = (item) => {
@@ -89,7 +91,14 @@ export default function HomeTab({ navigation }) {
         <ScrollView keyboardShouldPersistTaps={"handled"}>
           <View style={[{ flex: 0.3 }]}></View>
           <View style={[{ flex: 0.5 }]}>
-            <Text style={{ fontSize: 32, padding: 25, paddingBottom: 10 }}>
+            <Text
+              style={{
+                fontSize: 32,
+                padding: 25,
+                paddingBottom: 10,
+                fontFamily: "poppins",
+              }}
+            >
               Actividades
             </Text>
           </View>

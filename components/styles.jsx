@@ -224,7 +224,6 @@ const Profilestyles = StyleSheet.create({
   },
   profile_visualization: {
     fontSize: 15,
-    fontWeight: "bold",
     marginLeft: 50,
     width: 300,
     height: 50,
@@ -366,7 +365,7 @@ const MapStyles = StyleSheet.create({
     backgroundColor: "black",
     marginBottom: 10,
     marginTop: 10,
-    borderRadius: 15,
+    borderRadius: 5,
   },
 });
 const TravelStyles = StyleSheet.create({
