@@ -20,8 +20,7 @@ export default function TravelFindedModal({
   const acceptTravel = async () => {
     const id = await SecureStore.getItemAsync("id");
     const token = await SecureStore.getItemAsync("token");
-    // FIXME sacar el id del viaje hardcodeado
-    return authPost(`${API_URL}/travels/637ecde3d6c43a5791361204/accept`, token, {
+    return authPost(`${API_URL}/travels/${currentTravel._id}/accept`, token, {
       driverId: id,
       currentDriverPosition: travelDetailsData.origin
     }).then(
