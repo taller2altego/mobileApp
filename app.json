@@ -7,7 +7,8 @@
       "**/*"
     ],
     "android": {
-      "package": "com.altego.fiuber"
+      "package": "com.altego.fiuber",
+      "config": {"googleMaps": {"apiKey": "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ"}}
     },
     "ios": {
       "bundleIdentifier": "com.altego.fiuber"
