@@ -28,9 +28,6 @@ export default function Home({ navigation }) {
   const { API_URL, _ } = envs;
 
   useEffect(() => {
-    registerForPushNotificationsAsync()
-      .then(token => SecureStore.setItemAsync("pushToken", token));
-
     (async () => {
       const id = await SecureStore.getItemAsync("id");
       const token = await SecureStore.getItemAsync("token");
@@ -43,34 +40,6 @@ export default function Home({ navigation }) {
     })();
 
   }, []);
-
-  const registerForPushNotificationsAsync = async () => {
-    try {
-      const { status: existingStatus } =
-        await Notifications.getPermissionsAsync();
-      let finalStatus = existingStatus;
-      if (existingStatus !== "granted") {
-        const { status } = await Notifications.requestPermissionsAsync();
-        finalStatus = status;
-      }
-      if (finalStatus !== "granted") {
-        throw new Error("Permission not granted!");
-      }
-      const token = (await Notifications.getExpoPushTokenAsync()).data;
-      return token;
-    } catch (error) {
-      console.error(error);
-    }
-
-    if (Platform.OS === "android") {
-      Notifications.setNotificationChannelAsync("default", {
-        name: "default",
-        importance: Notifications.AndroidImportance.MAX,
-        vibrationPattern: [0, 250, 250, 250],
-        lightColor: "#FF231F7C"
-      });
-    }
-  };
 
   return (
     <Tab.Navigator>

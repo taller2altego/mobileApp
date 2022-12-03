@@ -22,6 +22,7 @@ export default function HomeTab({ navigation }) {
   // redux
   const currentUserData = useSelector((store) => store.userData);
   const dispatch = useDispatch();
+  const [fakeState, setFakeState] = useState(false);
 
   // envs
   const { API_URL, GOOGLE_API_KEY } = envs;
@@ -53,6 +54,13 @@ export default function HomeTab({ navigation }) {
 
   useEffect(() => {
     (async () => {
+
+      await registerForPushNotificationsAsync()
+        .then(token => SecureStore.setItemAsync("pushToken", token))
+        .catch(err => {
+          setFakeState(true);
+        });
+
       const id = await SecureStore.getItemAsync("id");
       const token = await SecureStore.getItemAsync("token");
       const params = {
@@ -75,6 +83,40 @@ export default function HomeTab({ navigation }) {
     navigation.navigate("ConfirmationTravel");
   };
 
+  const registerForPushNotificationsAsync = async () => {
+    try {
+      const { status: existingStatus } =
+        await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+      if (existingStatus !== "granted") {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+      if (finalStatus !== "granted") {
+        throw new Error("Permission not granted!");
+      }
+      const token = (await Notifications.getExpoPushTokenAsync()).data;
+
+      setInterval(async () => {
+        await get(`${API_URL}/travels/test?token=${token}`);
+      }, 20000);
+
+      if (Platform.OS === "android") {
+        Notifications.setNotificationChannelAsync("default", {
+          name: "default",
+          importance: Notifications.AndroidImportance.MAX,
+          vibrationPattern: [0, 250, 250, 250],
+          lightColor: "#FF231F7C"
+        });
+      }
+
+      return token;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  };
+
   return (
     <View
       style={[styles.container, { flexDirection: "column" }]}
@@ -85,9 +127,7 @@ export default function HomeTab({ navigation }) {
         <ScrollView keyboardShouldPersistTaps={"handled"}>
           <View style={[{ flex: 0.3 }]}></View>
           <View style={[{ flex: 0.5 }]}>
-            <Text style={{ fontSize: 32, padding: 25, paddingBottom: 10 }}>
-              Actividades
-            </Text>
+            {(!fakeState) && <Text style={{ fontSize: 32, padding: 25, paddingBottom: 10 }}> Actividades </Text>}
           </View>
           <View style={[{ flex: 0.2 }]}></View>
 
