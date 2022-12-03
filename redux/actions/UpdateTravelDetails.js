@@ -1,10 +1,15 @@
-export const SET_ORIGIN = "SET_ORIGIN";
-export const SET_DESTINATION = "SET_DESTINATION";
+export const SET_TRAVEL_DETAILS = "SET_TRAVEL_DETAILS";
+export const SET_TRAVEL_INFO = "SET_TRAVEL_INFO";
+export const SET_USER_LOCATION = "SET_USER_LOCATION";
 
-export const setOrigin = (payload) => {
-  return { type: SET_ORIGIN, payload };
+export const setTravelDetails = (payload) => {
+  return { type: SET_TRAVEL_DETAILS, payload };
 };
 
-export const setDestination = (payload) => {
-  return { type: SET_DESTINATION, payload };
+export const setTravelInfo = (payload) => {
+  return { type: SET_TRAVEL_INFO, payload };
+};
+
+export const setUserLocation = (payload) => {
+  return { type: SET_USER_LOCATION, payload };
 };

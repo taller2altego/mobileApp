@@ -3,8 +3,14 @@ import { Pressable, Modal, Text, View } from "react-native";
 import { Entypo } from "@expo/vector-icons";
 
 import { LandingStyles, modalStyles } from "../styles";
+import { useSelector } from "react-redux";
 
-export default function WaitingDriverModal({ navigation, setModalTravelFindedVisible, ...props }) {
+export default function TravelFindedModal({
+  navigation,
+  setModalTravelFindedVisible,
+  ...props
+}) {
+  const currentTravel = useSelector((store) => store.travelDetailsData);
 
   return (
     <Modal animationType="slide" transparent={false} visible={props.visible}>
@@ -14,18 +20,25 @@ export default function WaitingDriverModal({ navigation, setModalTravelFindedVis
             <Entypo name="cross" size={24} color="black" />
           </Pressable>
           <View style={[modalStyles.flex_modal]}>
+            <Text style={{ fontSize: 25, alignSelf: "center" }}>
+              {" "}
+              {currentTravel.originAddress}
+            </Text>
+            <Text style={{ fontSize: 25, alignSelf: "center" }}>
+              {" "}
+              {currentTravel.destinationAddress}{" "}
+            </Text>
             <Pressable
-              style={modalStyles.modal_button}
-              onPress={() => { navigation.navigate("TravelInProgressDriver"); }}>
-              <Text> Aceptar Viaje </Text>
+              style={{ alignSelf: "center" }}
+              onPress={() => {
+                navigation.navigate("TravelInProgressDriver");
+              }}
+            >
+              <Text style={{ fontSize: 25 }}> Aceptar Viaje </Text>
             </Pressable>
 
-            <Pressable
-              style={modalStyles.modal_button}
-              onPress={props.toggle}>
-              <Text>
-                Volver
-              </Text>
+            <Pressable style={{ alignSelf: "center" }} onPress={props.toggle}>
+              <Text style={{ fontSize: 25 }}>Volver</Text>
             </Pressable>
           </View>
         </View>
@@ -33,9 +46,3 @@ export default function WaitingDriverModal({ navigation, setModalTravelFindedVis
     </Modal>
   );
 }
-
-
-
-
-
-

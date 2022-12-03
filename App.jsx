@@ -4,6 +4,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
+import ReportTravel from "./components/travel/ReportTravel";
 import LandingScreen from "./components/auth/landing";
 import RegisterModal from "./components/auth/register";
 import LoginModal from "./components/auth/login";
@@ -17,6 +18,8 @@ import store from "./redux/store/store";
 import { Provider } from "react-redux";
 import ConfirmationTravel from "./components/travel/ConfirmationTravel";
 import DriverIncoming from "./components/travel/DriverIncoming";
+import TravelFindedModal from "./components/driver/TravelFindedModal";
+import TravelInProgressDriver from "./components/driver/TravelInProgressDriver";
 import TripDetailsScreen from "./components/main/TripDetails";
 import RecoverPassword from "./components/auth/recoverPassword";
 import ResetPassword from "./components/auth/resetPassword";
@@ -25,7 +28,7 @@ import DefaultLocationRequest from "./components/auth/DefaultLocationRequest";
 
 const Stack = createNativeStackNavigator();
 
-export default function App(props) {
+export default function App() {
   return (
     <Provider store={store}>
       <NavigationContainer>
@@ -66,8 +69,8 @@ export default function App(props) {
             options={{ headerShown: false }}
           />
           <Stack.Screen
-            name="TravelInProgress"
-            component={TravelInProgress}
+            name="TravelInProgressDriver"
+            component={TravelInProgressDriver}
             options={{ headerShown: false }}
           />
           <Stack.Screen
@@ -83,6 +86,11 @@ export default function App(props) {
           <Stack.Screen
             name="TravelSearch"
             component={TravelSearch}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="TravelFindedModal"
+            component={TravelFindedModal}
             options={{ headerShown: false }}
           />
           <Stack.Screen

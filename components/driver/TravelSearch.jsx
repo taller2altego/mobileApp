@@ -2,51 +2,93 @@ import { getItemAsync } from "expo-secure-store";
 import { useEffect, useState } from "react";
 import { View, Text, ActivityIndicator, Pressable } from "react-native";
 import TravelFindedModal from "./TravelFindedModal";
-import * as Location from 'expo-location';
+import * as Location from "expo-location";
+import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
 
 // modules
 import { LandingStyles, modalStyles } from "../styles";
 import { get } from "../../utils/requests";
+import {
+  setTravelDetails,
+  setTravelInfo,
+  setUserLocation,
+} from "../../redux/actions/UpdateTravelDetails";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function TravelSearch({ navigation }) {
-  const [modalTravelFindedVisible, setModalTravelFindedVisible] = useState(false);
+  const [modalTravelFindedVisible, setModalTravelFindedVisible] =
+    useState(false);
+  const dispatch = useDispatch();
   const [isSearching, setIsSearching] = useState(true);
-  const [currentLocation, setCurrentLocation] = useState({ location: undefined, reload: false });
+  const [currentLocation, setCurrentLocation] = useState({ location: null });
+  const [locationSubscription, setLocationSubscription] = useState(null);
+
   const { API_URL, _ } = envs;
 
   useEffect(() => {
     (async () => {
-      console.log('init');
       const { status } = await Location.requestForegroundPermissionsAsync();
-
-      console.log(status);
-      if (status !== 'granted') {
-        throw new Error('No tiene permisos, consulte con altego para mas información');
+      if (status !== "granted") {
+        throw new Error(
+          "No tiene permisos, consulte con altego para mas información"
+        );
       } else {
-        console.log('Approved!');
-        const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
-        setCurrentLocation({
-          location: [location.coords.latitude, location.coords.longitude],
-          reload: false
-        });
+        await updateDriverPosition();
       }
     })();
   }, []);
 
-  useEffect(() => {
+  const updateDriverPosition = async () => {
+    const options = { accuracy: Location.Accuracy.High, distanceInterval: 10 };
+    const success = (location) => {
+      const obj = {
+        location: {
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+        },
+      };
+      setCurrentLocation(obj);
+    };
 
+    const error = (error) => {
+      console.log(error);
+    };
+
+    setLocationSubscription(
+      await Location.watchPositionAsync(options, success, error)
+    );
+  };
+
+  useEffect(() => {
     // TODO: agregar un estado para diferenciar el cambio del modal del cierre del modal.
     setIsSearching(true);
+
+    if (currentLocation.location === null) {
+      return;
+    }
+
     const interval = setInterval(async () => {
-      if (currentLocation.location === undefined) {
-        return;
-      }
-
-      const token = await getItemAsync("token");
-
-      const travels = await get(`${API_URL}/travels?latitude=${currentLocation.location[0]}&longitude=${currentLocation.location[1]}`, token)
-        .then(({ data }) => data.data);
+      const token = await SecureStore.getItemAsync("token");
+      const url = `${API_URL}/travels?latitude=${currentLocation.location.latitude}&longitude=${currentLocation.location.longitude}`;
+      const travels = await get(url, token).then(({ data }) => {
+        dispatch(
+          setTravelDetails({
+            origin: currentLocation.location,
+            destination: data.data.destination,
+          })
+        );
+        dispatch(
+          setTravelInfo({
+            originAddress: data.data.sourceAddress,
+            destinationAddress: data.data.destinationAddress,
+          })
+        );
+        dispatch(setUserLocation({
+          userLocation: data.data.source,
+        }));
+        return data;
+      });
 
       if (travels) {
         setIsSearching(false);
@@ -54,42 +96,41 @@ export default function TravelSearch({ navigation }) {
         clearInterval(interval);
       }
     }, 10000);
+    return () => {
+      clearInterval(interval);
+      locationSubscription.remove();
+    };
   }, [currentLocation]);
 
   const toggleTravelFindedModal = () => {
     setModalTravelFindedVisible(!modalTravelFindedVisible);
-    setCurrentLocation({ ...currentLocation, reload: !currentLocation.reload });
+    setCurrentLocation({ ...currentLocation });
   };
 
   const onCancelSearch = () => {
     navigation.navigate("Home");
-  }
+  };
 
   return (
-    <View style={{ flex: 1, flexDirection: "column" }}>
-      {modalTravelFindedVisible && <TravelFindedModal
-        navigation={navigation}
-        toggle={toggleTravelFindedModal}
-        visible={modalTravelFindedVisible}
-      >
-      </TravelFindedModal>}
-      <View style={[{ flex: 0.5, padding: 50 }]}>
-        <Text style={{ fontSize: 32, padding: 25, paddingBottom: 10 }}>
+    <View style={{ flex: 1 }}>
+      {modalTravelFindedVisible && (
+        <TravelFindedModal
+          navigation={navigation}
+          toggle={toggleTravelFindedModal}
+          visible={modalTravelFindedVisible}
+        ></TravelFindedModal>
+      )}
+      <View style={[{ flex: 1, top: 200 }]}>
+        <Text style={{ fontSize: 32, alignSelf: "center", paddingBottom: 50 }}>
           Buscando Viaje
         </Text>
-        <View>
-          {isSearching && <ActivityIndicator size={80} color="#000000" />}
-        </View>
+        {isSearching && <ActivityIndicator size={80} color="#000000" />}
       </View>
-      <View>
-        <Pressable
-          style={modalStyles.modal_button}
-          onPress={onCancelSearch}>
-          <Text>
-            Volver
-          </Text>
+      <View style={{ bottom: 200, alignSelf: "center" }}>
+        <Pressable onPress={onCancelSearch}>
+          <Text style={{ fontSize: 25, fontFamily: "poppins" }}>Cancelar</Text>
         </Pressable>
       </View>
-    </View >
+    </View>
   );
 }

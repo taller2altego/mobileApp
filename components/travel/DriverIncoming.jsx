@@ -50,9 +50,8 @@ export default function DriverIncoming({ navigation }) {
     let interval = setInterval(async () => {
       const token = await SecureStore.getItemAsync("token");
 
-      await get(`${API_URL}/travels/${travelId}/driver`, token).then(
-        ({ data }) => {
-          console.log(data.data);
+      await get(`${API_URL}/travels/${travelId}/driver`, token)
+        .then(({ data }) => {
           const position = data.data.currentDriverPosition;
           setCurrentOrigin(position);
 

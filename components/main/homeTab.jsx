@@ -15,10 +15,7 @@ import envs from "../../config/env";
 
 import { Homestyles, Profilestyles } from "../styles";
 import TravelItem from "../travel/TravelItem";
-import {
-  setDestination,
-  setOrigin,
-} from "../../redux/actions/UpdateTravelDetails";
+import { setTravelDetails } from "../../redux/actions/UpdateTravelDetails";
 import { get } from "../../utils/requests";
 
 export default function HomeTab({ navigation }) {
@@ -75,9 +72,10 @@ export default function HomeTab({ navigation }) {
     })();
   }, []);
 
-  const onConfirmationTravel = async () => {
-    dispatch(setOrigin({ origin: srcDetails }));
-    dispatch(setDestination({ destination: destDetails }));
+  const onConfirmationTravel = () => {
+    dispatch(
+      setTravelDetails({ origin: srcDetails, destination: destDetails })
+    );
     navigation.navigate("ConfirmationTravel");
   };
 

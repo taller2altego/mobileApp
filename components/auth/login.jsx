@@ -1,32 +1,48 @@
 import React, { useState } from "react";
 import { Modal, Pressable, Text, TextInput, View } from "react-native";
-import { post } from "../../utils/requests";
+import { get, post } from "../../utils/requests";
 import { LandingStyles, modalStyles } from "../styles";
 import { Entypo } from "@expo/vector-icons";
 import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
-import LoginGoogleButton from "./LoginGoogleButton";
+import { useDispatch } from "react-redux";
+import { setIsDriver, setUserData } from "../../redux/actions/UpdateUserData";
+import LoginGoogleButton from "../auth/LoginGoogleButton";
 
 export default function LoginModal({ ...props }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const dispatch = useDispatch();
   const { API_URL, _ } = envs;
 
+  const getUserInfo = async (id, token) => {
+    return get(`${API_URL}/users/${id}`, token).then(({ data }) => data);
+  };
+
   const onSignIn = () => {
-    return post(`${API_URL}/login`, {
-      email,
-      password
-    })
-      .then(async (info) => {
-        const { data: { id, token } } = info;
+    const body = { email, password };
+    return post(`${API_URL}/login`, body)
+      .then(async ({ data: { id, token } }) => {
         await SecureStore.setItemAsync("token", token);
         await SecureStore.setItemAsync("id", id.toString());
+
+        const userInfo = await getUserInfo(id, token);
+        const userData = {
+          name: userInfo.name,
+          lastname: userInfo.lastname,
+          phoneNumber: userInfo.phoneNumberm,
+          email: userInfo.email,
+        };
+        dispatch(setUserData(userData));
+        dispatch(setIsDriver({ isDriver: userInfo.isDriver }));
         props.toggle();
         props.navigation.navigate("Home");
       })
-      .catch(e => {
-        const errMessage = e.response && e.response.data && e.response.data.message || e.message;
+      .catch((e) => {
+        const errMessage =
+          (e.response && e.response.data && e.response.data.message) ||
+          e.message;
         setErrorMessage(errMessage);
       });
   };
@@ -64,11 +80,13 @@ export default function LoginModal({ ...props }) {
                 Login
               </Text>
             </Pressable>
-            <LoginGoogleButton navigation={props.navigation} setErrorMessage={setErrorMessage}></LoginGoogleButton>
+            <LoginGoogleButton
+              navigation={props.navigation}
+              setErrorMessage={setErrorMessage}
+            ></LoginGoogleButton>
             <View style={LandingStyles.land_buttons_login}>
               <Pressable
-                onPress={() => props.navigation.navigate("RecoverPassword")
-                }
+                onPress={() => props.navigation.navigate("RecoverPassword")}
               >
                 <Text
                   style={[LandingStyles.simpleText, { fontFamily: "poppins" }]}
@@ -76,10 +94,7 @@ export default function LoginModal({ ...props }) {
                   Forgot Password
                 </Text>
               </Pressable>
-              <Pressable
-                onPress={() => props.navigation.navigate("AuthToken")
-                }
-              >
+              <Pressable onPress={() => props.navigation.navigate("AuthToken")}>
                 <Text
                   style={[LandingStyles.simpleText, { fontFamily: "poppins" }]}
                 >
@@ -88,11 +103,12 @@ export default function LoginModal({ ...props }) {
               </Pressable>
             </View>
 
-            <Text style={[modalStyles.error_modal, { fontFamily: "poppins" }]}>{errorMessage}</Text>
+            <Text style={[modalStyles.error_modal, { fontFamily: "poppins" }]}>
+              {errorMessage}
+            </Text>
           </View>
         </View>
       </View>
     </Modal>
   );
 }
-
