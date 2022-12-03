@@ -15,6 +15,7 @@ import {
   setUserLocation,
 } from "../../redux/actions/UpdateTravelDetails";
 import { useDispatch, useSelector } from "react-redux";
+import { setDriverId, setNewTravel } from "../../redux/actions/UpdateCurrentTravel";
 
 export default function TravelSearch({ navigation }) {
   const [modalTravelFindedVisible, setModalTravelFindedVisible] =
@@ -86,6 +87,9 @@ export default function TravelSearch({ navigation }) {
         );
         dispatch(setUserLocation({
           userLocation: data.data.source,
+        }));
+        dispatch(setNewTravel({
+          _id: data.data._id,
         }));
         return data;
       });

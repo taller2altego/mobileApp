@@ -12,7 +12,7 @@ import { useFonts } from "expo-font";
 import envs from "../../config/env";
 import { useEffect } from "react";
 import * as Location from "expo-location";
-import { authPost } from "../../utils/requests";
+import { authPost, get } from "../../utils/requests";
 import * as SecureStore from "expo-secure-store";
 
 const screen = Dimensions.get("window");
@@ -29,6 +29,7 @@ export default function TravelInProgressDriver({ navigation }) {
 
   // redux
   const tripData = useSelector((store) => store.travelDetailsData);
+  const travelData = useSelector((store) => store.currentTravel);
   const [locationSubscription, setLocationSubscription] = useState(null);
 
   // state
@@ -104,7 +105,7 @@ export default function TravelInProgressDriver({ navigation }) {
   const updateDistance = (args, tripPart) => {
     const setArrive =
       tripPart === "start" ? setArriveOnUserLocation : setArriveOnDestination;
-    if (args.distance.toFixed(2) < 0.05) {
+    if (args.distance.toFixed(2) < 15555) {
       setArrive(true);
     } else {
       setArrive(false);
@@ -117,25 +118,47 @@ export default function TravelInProgressDriver({ navigation }) {
     setRoadTofinalDestination(true);
     setArriveOnUserLocation(false);
     // FIXME sacar el id del viaje hardcodeado
-    authPost(`${API_URL}/travels/637ecde3d6c43a5791361204/start`, token)
+    authPost(`${API_URL}/travels/${travelData._id}/start`, token)
   };
 
   const finishTravel = async () => {
     const id = await SecureStore.getItemAsync("id");
     const token = await SecureStore.getItemAsync("token");
+    const travel = await get(`${API_URL}/travels/${travelData._id}`, token);
     // FIXME sacar el id del viaje hardcodeado
-    return authPost(`${API_URL}/travels/637ecde3d6c43a5791361204/finish`, token).then(
-      navigation.navigate("Home")
-    );
+    const body = {
+      driverId: travel.data.data.driverId,
+      price: travel.data.data.price,
+      paidWithCredits: true,
+      payToDriver: true,
+    };
+    return authPost(`${API_URL}/travels/${travelData._id}/finish`, token, body)
+      .then(navigation.navigate("Home"));
   };
 
-  const cancelTravel = () => {
+  const cancelTravel = async () => {
     // request para eliminar el driver del tralel
     // limpiar inputs de destino y origen en main
     // FIXME sacar el id del viaje hardcodeado
-    return post(
-      `${API_URL}/travels/637ecde3d6c43a5791361204/reject?isTravelCancelled='true'`
-    ).then(navigation.navigate("Home"));
+    const token = await SecureStore.getItemAsync("token");
+    const travel = await get(`${API_URL}/travels/${travelData._id}`, token);
+    const user = await get(`${API_URL}/users/${travel.data.data.userId}`, token)
+    console.log("TRAVEL ")
+    console.log(travel);
+    console.log("TRAVEL .DATA")
+    console.log(travel.data);
+    console.log("TRAVEL .DATA.DATA")
+    console.log(travel.data.data);
+    const body = {
+      userId: travel.data.data.userId,
+      email: user.data.email,
+      price: travel.data.data.price,
+      paidWithCredits: travel.data.data.paidWithCredits,
+      payToDriver: false,
+    };
+    console.log(body);
+    return authPost(`${API_URL}/travels/${travelData._id}/reject?isTravelCancelled='true'`, token, body)
+      .then(navigation.navigate("Home"));
   };
 
   if (!fontsLoaded) {

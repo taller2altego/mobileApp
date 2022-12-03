@@ -88,10 +88,14 @@ export default function DriverIncoming({ navigation }) {
   const cancelTravel = async () => {
     clearInterval(interval);
     let token = await SecureStore.getItemAsync("token");
-    return authPost(
-      `${API_URL}/travels/${travelId}/reject?isTravelCancelled='true'`,
-      token
-    ).then(navigation.navigate("Home"));
+    const travel = await get(`${API_URL}/travels/${travelId}`, token);
+    const body = {
+      driverId: travel.data.data.driverId,
+      price: travel.data.data.price,
+      paidWithCredits: true,
+      payToDriver: false,
+    };
+    return authPost(`${API_URL}/travels/${travelId}/reject?isTravelCancelled='true'`, token, body).then(navigation.navigate("Home"));
   };
 
   const [fontsLoaded] = useFonts({
