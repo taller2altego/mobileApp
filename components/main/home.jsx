@@ -1,7 +1,6 @@
 import React, { useEffect, useCallback } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { get, handlerUnauthorizedError } from "../../utils/requests";
-import { useDispatch } from "react-redux";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setDefaultLocation,

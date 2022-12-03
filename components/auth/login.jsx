@@ -17,14 +17,14 @@ export default function LoginModal({ ...props }) {
   const { API_URL, _ } = envs;
 
   const getUserInfo = async (id, token) => {
-    return get(`${API_URL}/users/${id}`, token).then(
-      ({ data }) => data
-    ).catch(error => handlerUnauthorizedError(navigation, error));
+    return get(`${API_URL}/users/${id}`, token)
+      .then(({ data }) => data)
+      .catch((error) => handlerUnauthorizedError(navigation, error));
   };
 
   const onSignIn = () => {
-    const body = { email: 'driver@fiuber.com', password: '1234' };
-    return post(`${API_URL}/login`, body, () => { })
+    const body = { email, password };
+    return post(`${API_URL}/login`, body, () => {})
       .then(async ({ data: { id, token } }) => {
         await SecureStore.setItemAsync("token", token);
         await SecureStore.setItemAsync("id", id.toString());
@@ -60,7 +60,7 @@ export default function LoginModal({ ...props }) {
             <TextInput
               style={[modalStyles.modal_input, { fontFamily: "poppins" }]}
               placeholder="Email"
-              value="driver@fiuber.com"
+              value={email}
               placeholderTextColor="#343437"
               onChangeText={(email) => setEmail(email)}
             />
@@ -68,7 +68,7 @@ export default function LoginModal({ ...props }) {
               style={[modalStyles.modal_input, { fontFamily: "poppins" }]}
               placeholder="Contraseña"
               placeholderTextColor="#343437"
-              value="1234"
+              value={password}
               secureTextEntry={true}
               onChangeText={(password) => setPassword(password)}
             />
