@@ -52,22 +52,22 @@ export default function LoginModal({ ...props }) {
   return (
     <Modal animationType="slide" transparent={true} visible={props.visible}>
       <View style={[modalStyles.modal_extern_view, { fontFamily: "poppins" }]}>
-        <View style={[modalStyles.modal_view, { fontFamily: "poppins" }]}>
+        <View style={modalStyles.modal_view}>
           <Pressable onPress={props.toggle}>
-            <Entypo name="cross" size={24} color="black" />
+            <Entypo name="cross" size={26} color="white" />
           </Pressable>
           <View style={[modalStyles.flex_modal, { fontFamily: "poppins" }]}>
             <TextInput
-              style={[modalStyles.modal_input, { fontFamily: "poppins" }]}
+              style={modalStyles.modal_input}
               placeholder="Email"
               value={email}
-              placeholderTextColor="#343437"
+              placeholderTextColor="white"
               onChangeText={(email) => setEmail(email)}
             />
             <TextInput
-              style={[modalStyles.modal_input, { fontFamily: "poppins" }]}
+              style={modalStyles.modal_input}
               placeholder="Contraseña"
-              placeholderTextColor="#343437"
+              placeholderTextColor="white"
               value={password}
               secureTextEntry={true}
               onChangeText={(password) => setPassword(password)}

@@ -50,40 +50,40 @@ export default function RegisterModal({ ...props }) {
       <View style={modalStyles.modal_extern_view}>
         <View style={[modalStyles.modal_view]}>
           <Pressable onPress={props.toggle}>
-            <Entypo name="cross" size={24} color="black" />
+            <Entypo name="cross" size={26} color="white" />
           </Pressable>
           <View style={[modalStyles.flex_modal]}>
             <TextInput
-              style={[modalStyles.modal_input, { fontFamily: "poppins" }]}
+              style={modalStyles.modal_input}
               placeholder="Nombre"
-              placeholderTextColor="#343437"
+              placeholderTextColor="white"
               onChangeText={(name) => setName(name)}
             />
             <TextInput
-              style={[modalStyles.modal_input, { fontFamily: "poppins" }]}
+              style={modalStyles.modal_input}
               placeholder="Apellido"
-              placeholderTextColor="#343437"
+              placeholderTextColor="white"
               onChangeText={(password) => setLastName(password)}
             />
             <TextInput
-              style={[modalStyles.modal_input, { fontFamily: "poppins" }]}
+              style={modalStyles.modal_input}
               placeholder="Email"
-              placeholderTextColor="#343437"
+              placeholderTextColor="white"
               onChangeText={(email) => setEmail(email)}
             />
             <TextInput
-              style={[modalStyles.modal_input, { fontFamily: "poppins" }]}
+              style={modalStyles.modal_input}
               placeholder="Telefono"
-              placeholderTextColor="#343437"
+              placeholderTextColor="white"
               keyboardType="numeric"
               onChangeText={(phone) => {
                 setPhone(phone.replace(/[^0-9]/, ""));
               }}
             />
             <TextInput
-              style={[modalStyles.modal_input, { fontFamily: "poppins" }]}
+              style={modalStyles.modal_input}
               placeholder="Contraseña"
-              placeholderTextColor="#343437"
+              placeholderTextColor="white"
               secureTextEntry={true}
               onChangeText={(password) => setPassword(password)}
             />

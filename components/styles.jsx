@@ -1,6 +1,6 @@
 import { StyleSheet, Dimensions } from "react-native";
-const PRIMARY_BLUE = "#1d9bc2";
-const SECONDARY_BLUE = "#0b0e12";
+const PRIMARY_BLUE = "#121111";
+const SECONDARY_BLUE = "#f7f4f3";
 
 const LandingStyles = StyleSheet.create({
   land_container: {
@@ -24,14 +24,14 @@ const LandingStyles = StyleSheet.create({
   simpleText: {
     textAlign: "center",
     textJustify: "center",
-    color: "black",
+    color: "white",
     lineHeight: 65,
     fontWeight: "bold",
-    fontSize: 14,
+    fontSize: 13,
   },
   tinyLogo: {
-    width: 150,
-    height: 150,
+    width: 250,
+    height: 250,
   },
   logo: {
     paddingTop: 100,
@@ -98,14 +98,16 @@ const modalStyles = StyleSheet.create({
     width: 150,
     height: 65,
     alignSelf: "center",
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: "white",
   },
   modal_input: {
     borderWidth: 1,
-    borderColor: "#343437",
+    borderColor: "white",
+    color: "white",
+    fontFamily: "poppins",
     borderRadius: 10,
-    height: 50,
+    height: 45,
     paddingLeft: 10,
     fontSize: 15,
     textAlign: "justify",

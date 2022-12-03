@@ -52,7 +52,7 @@ export default function LoginGoogleButton({ setErrorMessage, ...props }) {
 
   return (
     <Pressable onPress={() => promptAsync()} style={{ alignSelf: "center" }}>
-      <AntDesign name="google" size={24} color="black" />
+      <AntDesign name="google" size={24} color="white" />
     </Pressable>
   );
 }

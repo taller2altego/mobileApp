@@ -165,7 +165,7 @@ export default function ConfirmationTravel({ navigation }) {
           </Text>
           <Text style={{ fontFamily: "poppins", fontSize: 15 }}>
             {" "}
-            {price} ARS (est.)
+            {price} Ethereum (est.)
           </Text>
         </View>
       </View>

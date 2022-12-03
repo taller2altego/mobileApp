@@ -89,13 +89,14 @@ export default function HomeTab({ navigation }) {
       <ScrollView keyboardShouldPersistTaps={"handled"}>
         <ScrollView keyboardShouldPersistTaps={"handled"}>
           <View style={[{ flex: 0.3 }]}></View>
-          <View style={[{ flex: 0.5 }]}>
+          <View style={[{ flex: 0.5, alignItems:"center" }]}>
             <Text
               style={{
-                fontSize: 32,
+                fontSize: 30,
                 padding: 25,
                 paddingBottom: 10,
                 fontFamily: "poppins",
+                fontWeight:"bold",
               }}
             >
               Actividades
