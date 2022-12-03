@@ -125,6 +125,42 @@ const modalStyles = StyleSheet.create({
     textAlign: "center",
     color: "#C73E1D",
   },
+  centered_view: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
+  },
+  modal_view_travel: {
+    margin: 20,
+    padding: 25,
+    borderColor: "black",
+    borderRadius: 15,
+    backgroundColor: "white",
+    alignItems: "center",
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 10,
+    padding: 10,
+    elevation: 2
+  },
+  button_close: {
+    backgroundColor: "black",
+    height: 40,
+    width: 150
+  },
+  text_style: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center"
+  },
+  text_modal_style: {
+    marginBottom: 15,
+    textAlign: "center",
+    fontWeight: "bold",
+    color: "red"
+  }
 });
 
 const RecoverStyles = StyleSheet.create({

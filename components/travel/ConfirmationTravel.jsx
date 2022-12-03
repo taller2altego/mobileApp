@@ -1,11 +1,11 @@
 import { useRef, useState } from "react";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import CheckBox from 'expo-checkbox';
-import { MapStyles, TravelStyles } from "../styles";
+import { MapStyles, TravelStyles, modalStyles } from "../styles";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import * as SecureStore from "expo-secure-store";
 import MapViewDirections from "react-native-maps-directions";
-import { View, Text, Pressable, Image } from "react-native";
+import { View, Text, Pressable, Image, Modal, StyleSheet } from "react-native";
 import WaitingModal from "./Waiting";
 import { useDispatch, useSelector } from "react-redux";
 import { useFonts } from "expo-font";
@@ -44,6 +44,7 @@ export default function ConfirmationTravel({ navigation }) {
   const [duration, setDuration] = useState(0);
   const [price, setPrice] = useState(0);
   const [insufficientFunds, setInsufficientFunds] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
   const date = new Date().toISOString();
 
   const [modalWaitingVisible, setModalWaitingVisible] = useState(false);
@@ -120,7 +121,7 @@ export default function ConfirmationTravel({ navigation }) {
         setModalWaitingVisible(!modalWaitingVisible);
       })
       .catch(() => {
-        setInsufficientFunds(true);
+        setModalVisible(true);
       });
   };
 
@@ -193,15 +194,12 @@ export default function ConfirmationTravel({ navigation }) {
           </Text>
           <Text style={{ fontFamily: "poppins", fontSize: 15 }}>
             {" "}
-            {price} ARS (est.)
+            {price.toFixed(6)} ARS (est.)
           </Text>
         </View>
       </View>
-      {(insufficientFunds) && <View style={[TravelStyles.travelContainer]}>
-        <Text style={[TravelStyles.buttonContainer, { color: "red" }]}>
-          Fondos Insuficientes
-        </Text>
-      </View>}
+
+
       <View style={TravelStyles.travelContainer}>
         <View style={TravelStyles.buttonContainer}>
           <Pressable
@@ -236,6 +234,25 @@ export default function ConfirmationTravel({ navigation }) {
               Iniciar Viaje
             </Text>
           </Pressable>
+          <Modal
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => {
+              setModalVisible(!modalVisible);
+            }}
+          >
+            <View style={modalStyles.centered_view}>
+              <View style={modalStyles.modal_view_travel}>
+                <Text style={modalStyles.text_modal_style}>Fondos Insuficientes </Text>
+                <Pressable
+                  style={[modalStyles.button, modalStyles.button_close]}
+                  onPress={() => setModalVisible(!modalVisible)}
+                >
+                  <Text style={modalStyles.text_style}>Cerrar</Text>
+                </Pressable>
+              </View>
+            </View>
+          </Modal>
         </View>
         <View>
         </View>
