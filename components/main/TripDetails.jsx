@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { MapStyles, TravelStyles, Profilestyles } from "../styles";
 import { View, Text, Pressable, Image } from "react-native";
 import { useFonts } from "expo-font";
@@ -8,6 +8,7 @@ import * as SecureStore from "expo-secure-store";
 import moment from "moment";
 import envs from "../../config/env";
 import { Ionicons } from "@expo/vector-icons";
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function TripDetails({ route, navigation }) {
   const [alreadyRated, setAlreadyRated] = useState(false);
@@ -19,7 +20,7 @@ export default function TripDetails({ route, navigation }) {
   const [driverScore, setDriverScore] = useState();
   const { API_URL, _ } = envs;
 
-  useEffect(() => {
+  useFocusEffect(useCallback(() => {
     (async () => {
       const token = await SecureStore.getItemAsync("token");
       await get(`${API_URL}/travels/${route.params.travelId}`, token).then(
@@ -36,7 +37,7 @@ export default function TripDetails({ route, navigation }) {
         }
       );
     })();
-  }, []);
+  }, []));
 
   const sendRatingToDriver = async () => {
     const token = await SecureStore.getItemAsync("token");

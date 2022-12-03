@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { MapStyles, TravelStyles } from "../styles";
 import MapViewDirections from "react-native-maps-directions";
@@ -8,6 +8,7 @@ import { useFonts } from "expo-font";
 import { get, authPost } from "../../utils/requests";
 import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
+import { useFocusEffect } from '@react-navigation/native';
 
 const PRICE_PER_KM = 100;
 
@@ -46,7 +47,7 @@ export default function DriverIncoming({ navigation }) {
 
   const mapRef = useRef(null);
 
-  useEffect(() => {
+  useFocusEffect(useCallback(() => {
     let interval = setInterval(async () => {
       const token = await SecureStore.getItemAsync("token");
 
@@ -59,8 +60,7 @@ export default function DriverIncoming({ navigation }) {
           const isSameLat = position.latitude == destination.latitude;
           const isSameLong = position.longitude == destination.longitude;
           if (isSameLat && isSameLong) {
-            navigation.replace("TravelInProgress");
-            clearInterval(interval);
+            navigation.navigate("TravelInProgress");
           }
         }
       );
@@ -68,7 +68,7 @@ export default function DriverIncoming({ navigation }) {
     return () => {
       clearInterval(interval);
     };
-  }, []);
+  }, []));
 
   const cancelTravel = async () => {
     clearInterval(interval);

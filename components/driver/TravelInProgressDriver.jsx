@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import MapView, {
   AnimatedRegion,
   Marker,
@@ -14,6 +14,7 @@ import { useEffect } from "react";
 import * as Location from "expo-location";
 import { authPost } from "../../utils/requests";
 import * as SecureStore from "expo-secure-store";
+import { useFocusEffect } from "@react-navigation/native";
 
 const screen = Dimensions.get("window");
 const ASPECT_RATIO = screen.width / screen.height;
@@ -95,12 +96,15 @@ export default function TravelInProgressDriver({ navigation }) {
     }
   };
 
-  useEffect(() => {
-    updateDriverPosition();
-    return function cleanup() {
-      locationSubscription.remove();
-    };
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      updateDriverPosition();
+      return () => {
+        locationSubscription.remove();
+      };
+    }),
+    []
+  );
 
   const updateDistance = (args, tripPart) => {
     const setArrive =
@@ -117,15 +121,16 @@ export default function TravelInProgressDriver({ navigation }) {
     const token = await SecureStore.getItemAsync("token");
     setRoadTofinalDestination(true);
     setArriveOnUserLocation(false);
-    authPost(`${API_URL}/travels/${currentTravelData._id}/start`, token)
+    authPost(`${API_URL}/travels/${currentTravelData._id}/start`, token);
   };
 
   const finishTravel = async () => {
     const id = await SecureStore.getItemAsync("id");
     const token = await SecureStore.getItemAsync("token");
-    return authPost(`${API_URL}/travels/${currentTravelData._id}/finish`, token).then(
-      navigation.navigate("Home")
-    );
+    return authPost(
+      `${API_URL}/travels/${currentTravelData._id}/finish`,
+      token
+    ).then(navigation.navigate("Home"));
   };
 
   const cancelTravel = () => {
@@ -205,7 +210,9 @@ export default function TravelInProgressDriver({ navigation }) {
             <Text> CANCELAR </Text>
           </Pressable>
         </View>
-      ) : <></>}
+      ) : (
+        <></>
+      )}
       {arriveOnDestination ? (
         <Pressable onPress={finishTravel}>
           <Text> FINALIZAR VIAJE </Text>
