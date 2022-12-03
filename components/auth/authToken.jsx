@@ -25,7 +25,7 @@ export default function AuthToken({ navigation }) {
     };
 
     const comeBack = (navigation) => {
-        navigation.navigate("Home");
+        navigation.navigate("Landing");
     };
 
     if (!fontsLoaded) {

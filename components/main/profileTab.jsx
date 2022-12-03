@@ -73,19 +73,23 @@ export default function ProfileTab({ navigation }) {
       );
     });
 
-    await patch(`${API_URL}/drivers/${driver_id}`, token, {
-      model: modelText,
-      license: licenseText,
-      licensePlate: plateText,
-    }).then(() => {
-      dispatch(
-        setDriverData({
-          license: licenseText,
-          licensePlate: plateText,
-          model: modelText,
-        })
-      );
-    });
+    if (driver_id){
+      await patch(`${API_URL}/drivers/${driver_id}`, token, {
+        model: modelText,
+        license: licenseText,
+        licensePlate: plateText,
+      }).then(() => {
+        dispatch(
+          setDriverData({
+            license: licenseText,
+            licensePlate: plateText,
+            model: modelText,
+          })
+        );
+      })
+      .catch(() => {});
+    }
+
     setIsEditing(false);
   };
 
