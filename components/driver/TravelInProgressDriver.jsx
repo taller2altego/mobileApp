@@ -102,8 +102,7 @@ export default function TravelInProgressDriver({ navigation }) {
       return () => {
         locationSubscription.remove();
       };
-    }),
-    []
+    }, []),
   );
 
   const updateDistance = (args, tripPart) => {
