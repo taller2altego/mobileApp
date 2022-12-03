@@ -67,7 +67,7 @@ export default function LoginModal({ ...props }) {
             <LoginGoogleButton navigation={props.navigation} setErrorMessage={setErrorMessage}></LoginGoogleButton>
             <View style={LandingStyles.land_buttons_login}>
               <Pressable
-                onPress={() => navigation.navigate("RecoverPassword")
+                onPress={() => props.navigation.navigate("RecoverPassword")
                 }
               >
                 <Text
@@ -77,7 +77,7 @@ export default function LoginModal({ ...props }) {
                 </Text>
               </Pressable>
               <Pressable
-                onPress={() => navigation.navigate("AuthToken")
+                onPress={() => props.navigation.navigate("AuthToken")
                 }
               >
                 <Text
