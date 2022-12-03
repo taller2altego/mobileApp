@@ -66,9 +66,11 @@ export default function HomeTab({ navigation }) {
       };
 
       await get(`${API_URL}/travels/users/${id}`, token, {}, params)
-        .then(({ data: { data } }) => {
-          setData(data);
-        })
+        .then(
+          ({ data: { data } }) => {
+            const dataFiltered = data.filter(item => item.status === 'finished');
+            setData(dataFiltered);
+          })
         .catch(err => handlerUnauthorizedError(navigation, err));
     })();
   }, []));
@@ -89,14 +91,14 @@ export default function HomeTab({ navigation }) {
       <ScrollView keyboardShouldPersistTaps={"handled"}>
         <ScrollView keyboardShouldPersistTaps={"handled"}>
           <View style={[{ flex: 0.3 }]}></View>
-          <View style={[{ flex: 0.5, alignItems:"center" }]}>
+          <View style={[{ flex: 0.5, alignItems: "center" }]}>
             <Text
               style={{
                 fontSize: 30,
                 padding: 25,
                 paddingBottom: 10,
                 fontFamily: "poppins",
-                fontWeight:"bold",
+                fontWeight: "bold",
               }}
             >
               Actividades
