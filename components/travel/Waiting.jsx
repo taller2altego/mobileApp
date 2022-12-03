@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useFocusEffect } from '@react-navigation/native';
 
 // modules
-import { get, authPost } from "../../utils/requests";
+import { get,authPost, handlerUnauthorizedError } from "../../utils/requests";
 import { setDriverId } from "../../redux/actions/UpdateCurrentTravel";
 import { LandingStyles, modalStyles } from "../styles";
 import envs from "../../config/env";
@@ -28,8 +28,8 @@ export default function WaitingDriverModal({ navigation, ...props }) {
             dispatch(setDriverId({ driverId: data.data.driverId }));
             navigation.replace("DriverIncoming");
           }
-        }
-      );
+        }).catch(error => handlerUnauthorizedError(navigation, error));
+
     }, 10000);
 
     return () => {

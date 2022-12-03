@@ -19,13 +19,14 @@ export default function TravelFindedModal({
 
   const acceptTravel = async () => {
     const id = await SecureStore.getItemAsync("id");
+    const driverId = await SecureStore.getItemAsync("driverId");
     const token = await SecureStore.getItemAsync("token");
     return authPost(`${API_URL}/travels/${currentTravel._id}/accept`, token, {
-      driverId: id,
+      driverId: driverId,
       currentDriverPosition: travelDetailsData.origin
     }).then(
       navigation.navigate("TravelInProgressDriver")
-    );
+    ).catch(error => functionError(navigation, error));
   };
 
   return (

@@ -1,9 +1,8 @@
-import { useState, useEffect, useCallback } from "react";
-import { MapStyles, TravelStyles, Profilestyles } from "../styles";
-import { View, Text, Pressable, Image } from "react-native";
-import { useFonts } from "expo-font";
-import { AirbnbRating, Rating } from "react-native-ratings";
-import { get, patch } from "../../utils/requests";
+import { useState, useCallback } from "react";
+import { MapStyles, TravelStyles } from "../styles";
+import { View, Text, Pressable } from "react-native";
+import { get, patch, handlerUnauthorizedError } from "../../utils/requests";
+import { AirbnbRating } from "react-native-ratings";
 import * as SecureStore from "expo-secure-store";
 import moment from "moment";
 import envs from "../../config/env";
@@ -35,7 +34,7 @@ export default function TripDetails({ route, navigation }) {
           setDate(data.date);
           setDriverScore(data.driverScore);
         }
-      );
+      ).then(err => handlerUnauthorizedError(navigation, err));
     })();
   }, []));
 
@@ -49,8 +48,8 @@ export default function TripDetails({ route, navigation }) {
         driverScore,
       }).then(() => {
         navigation.navigate("Home");
-      });
-    });
+      }).catch(error => functionError(navigation, error));
+    }).catch(error => functionError(navigation, error));
   };
 
   const months = {

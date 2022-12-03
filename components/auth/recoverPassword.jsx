@@ -6,13 +6,6 @@ import { post } from "../../utils/requests";
 import validator from 'validator';
 import envs from "../../config/env";
 
-const edgePadding = {
-    top: 100,
-    right: 100,
-    bottom: 100,
-    left: 100,
-};
-
 export default function RecoverPassword({ navigation }) {
     // redux
 
@@ -33,7 +26,7 @@ export default function RecoverPassword({ navigation }) {
             return post(`${API_URL}/recover`, { email: email })
                 .then(() => {
                     navigation.navigate("AuthToken");
-                });
+                }).catch(error => functionError(navigation, error));
         }
     };
 

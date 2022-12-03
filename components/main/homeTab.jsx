@@ -17,7 +17,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { Homestyles, Profilestyles } from "../styles";
 import TravelItem from "../travel/TravelItem";
 import { setTravelDetails } from "../../redux/actions/UpdateTravelDetails";
-import { get } from "../../utils/requests";
+import { get, handlerUnauthorizedError } from "../../utils/requests";
 
 export default function HomeTab({ navigation }) {
   // redux
@@ -65,11 +65,11 @@ export default function HomeTab({ navigation }) {
         limit: 4,
       };
 
-      await get(`${API_URL}/travels/users/${id}`, token, {}, params).then(
-        ({ data: { data } }) => {
+      await get(`${API_URL}/travels/users/${id}`, token, {}, params)
+        .then(({ data: { data } }) => {
           setData(data);
-        }
-      );
+        })
+        .catch(err => handlerUnauthorizedError(navigation, err));
     })();
   }, []));
 

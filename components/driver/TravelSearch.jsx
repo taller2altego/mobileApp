@@ -7,8 +7,7 @@ import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
 import { useFocusEffect } from '@react-navigation/native';
 // modules
-import { LandingStyles, modalStyles } from "../styles";
-import { get } from "../../utils/requests";
+import { get, handlerUnauthorizedError } from "../../utils/requests";
 import {
   setTravelDetails,
   setTravelInfo,
@@ -91,7 +90,7 @@ export default function TravelSearch({ navigation }) {
           _id: data.data._id,
         }));
         return data;
-      });
+      }).catch(error => handlerUnauthorizedError(navigation, error));
 
       if (travels) {
         setIsSearching(false);

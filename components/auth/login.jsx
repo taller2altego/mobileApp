@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Modal, Pressable, Text, TextInput, View } from "react-native";
-import { get, post } from "../../utils/requests";
+import { get, post, handlerUnauthorizedError } from "../../utils/requests";
 import { LandingStyles, modalStyles } from "../styles";
 import { Entypo } from "@expo/vector-icons";
 import * as SecureStore from "expo-secure-store";
@@ -17,12 +17,14 @@ export default function LoginModal({ ...props }) {
   const { API_URL, _ } = envs;
 
   const getUserInfo = async (id, token) => {
-    return get(`${API_URL}/users/${id}`, token).then(({ data }) => data);
+    return get(`${API_URL}/users/${id}`, token)
+      .then(({ data }) => data)
+      .catch((error) => handlerUnauthorizedError(navigation, error));
   };
 
   const onSignIn = () => {
     const body = { email, password };
-    return post(`${API_URL}/login`, body)
+    return post(`${API_URL}/login`, body, () => {})
       .then(async ({ data: { id, token } }) => {
         await SecureStore.setItemAsync("token", token);
         await SecureStore.setItemAsync("id", id.toString());

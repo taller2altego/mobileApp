@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { get } from "../../utils/requests";
+import { get, handlerUnauthorizedError } from "../../utils/requests";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setDefaultLocation,
@@ -27,29 +27,11 @@ export default function Home({ navigation }) {
       const id = await SecureStore.getItemAsync("id");
       const token = await SecureStore.getItemAsync("token");
       await get(`${API_URL}/users/${id}`, token)
-        .then(
-          async ({
-            data: {
-              name,
-              lastname,
-              email,
-              phoneNumber,
-              isDriver,
-              driverId,
-              defaultAddress,
-            },
-          }) => {
+        .then(async ({ data: { name, lastname, email, phoneNumber, isDriver, driverId, defaultAddress, }}) => {
             if (driverId) {
               await SecureStore.setItemAsync("driverId", driverId.toString());
             }
-            dispatch(
-              setUserData({
-                name,
-                lastname,
-                email,
-                phoneNumber: phoneNumber.toString(),
-              })
-            );
+            dispatch(setUserData({ name, lastname, email, phoneNumber: phoneNumber.toString() }));
             dispatch(setDefaultLocation({ defaultLocation: defaultAddress }));
             dispatch(setIsDriver({ isDriver }));
           }
@@ -57,13 +39,14 @@ export default function Home({ navigation }) {
         .then(async () => {
           if (currentUserData.isDriver === true) {
             const driver_id = await SecureStore.getItemAsync("driverId");
-            await get(`${API_URL}/drivers/${driver_id}`, token).then(
+            return get(`${API_URL}/drivers/${driver_id}`, token).then(
               ({ data: { model, licensePlate, license } }) => {
                 dispatch(setDriverData({ model, licensePlate, license }));
               }
             );
           }
-        });
+        })
+        .catch(err => handlerUnauthorizedError(navigation, err));
     })();
   }, []));
 

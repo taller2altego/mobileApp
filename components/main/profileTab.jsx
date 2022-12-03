@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Pressable, Text, TextInput, View, ScrollView } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import * as SecureStore from "expo-secure-store";
-import { patch, authPost, get } from "../../utils/requests";
+import { patch, authPost, get, handlerUnauthorizedError } from "../../utils/requests";
 import { setUserData } from "../../redux/actions/UpdateUserData";
 import { Profilestyles } from "../styles";
 import envs from "../../config/env";
@@ -57,24 +57,36 @@ export default function ProfileTab({ navigation }) {
   const handleUpdate = async () => {
     const id = await SecureStore.getItemAsync("id");
     const token = await SecureStore.getItemAsync("token");
-    const driver_id = await SecureStore.getItemAsync("driverId");
-    await patch(`${API_URL}/users/${id}`, token, {
-      name: nameText,
-      lastname: lastnameText,
-      phoneNumber: Number(phoneText),
-    }).then(() => {
-      dispatch(
-        setUserData({
-          name: nameText,
-          lastname: lastnameText,
-          phoneNumber: phoneText.toString(),
-          email: emailText,
-        })
-      );
-    });
+    const body = { name: nameText, lastname: lastnameText, phoneNumber: Number(phoneText) };
+    patch(`${API_URL}/users/${id}`, token, body)
+      .then(() => {
+        dispatch(
+          setUserData({
+            name: nameText,
+            lastname: lastnameText,
+            phoneNumber: phoneText.toString(),
+            email: emailText,
+          })
+        );
+      })
+      .catch(error => handlerUnauthorizedError(navigation, error));
 
-    if (driver_id){
-      await patch(`${API_URL}/drivers/${driver_id}`, token, {
+    const driverid = await SecureStore.getItemAsync("driverId");
+
+    await patch(`${API_URL}/drivers/${driverid}`, token, { model: modelText, license: licenseText, licensePlate: plateText })
+      .then(() => {
+        dispatch(
+          setDriverData({
+            license: licenseText,
+            licensePlate: plateText,
+            model: modelText,
+          })
+        );
+      })
+      .catch(err => handlerUnauthorizedError(navigation, err));
+
+    if (driverid){
+      await patch(`${API_URL}/drivers/${driverid}`, token, {
         model: modelText,
         license: licenseText,
         licensePlate: plateText,

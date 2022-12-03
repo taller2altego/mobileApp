@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { useEffect, useState } from "react";
 import * as Google from "expo-auth-session/providers/google";
-import { authPost, get } from "../../utils/requests";
+import { authPost } from "../../utils/requests";
 import { AntDesign } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";
 import { setUserData } from "../../redux/actions/UpdateUserData";

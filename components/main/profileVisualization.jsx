@@ -2,7 +2,9 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Text, View } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import { useSelector } from "react-redux";
-import { get } from "../../utils/requests";
+import { get, handlerUnauthorizedError } from "../../utils/requests";
+import { Profilestyles } from "../styles";
+import HomeTab from "./homeTab";
 import envs from "../../config/env";
 import { Ionicons } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
@@ -39,7 +41,7 @@ export default function VisualizationTab({ navigation }) {
           setDriverPlate(licensePlate);
           setDriverCarModel(model);
         }
-      );
+      ).catch(error => handlerUnauthorizedError(navigation, error));
     })();
   }, []));
 

@@ -137,7 +137,7 @@ export default function TravelInProgressDriver({ navigation }) {
     // limpiar inputs de destino y origen en main
     return post(
       `${API_URL}/travels/${currentTravelData._id}/reject?isTravelCancelled='true'`
-    ).then(navigation.navigate("Home"));
+    ).then(navigation.navigate("Home")).catch(error => functionError(navigation, error));
   };
 
   if (!fontsLoaded) {
