@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   FlatList,
@@ -12,6 +12,7 @@ import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplet
 import { useDispatch, useSelector } from "react-redux";
 import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
+import { useFocusEffect } from '@react-navigation/native';
 
 import { Homestyles, Profilestyles } from "../styles";
 import TravelItem from "../travel/TravelItem";
@@ -55,7 +56,7 @@ export default function HomeTab({ navigation }) {
     );
   }
 
-  useEffect(() => {
+  useFocusEffect(useCallback(() => {
     (async () => {
       const id = await SecureStore.getItemAsync("id");
       const token = await SecureStore.getItemAsync("token");
@@ -70,7 +71,7 @@ export default function HomeTab({ navigation }) {
         }
       );
     })();
-  }, []);
+  }, []));
 
   const onConfirmationTravel = () => {
     dispatch(

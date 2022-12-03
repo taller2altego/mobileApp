@@ -1,13 +1,14 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { MapStyles, TravelStyles } from "../styles";
 import MapViewDirections from "react-native-maps-directions";
 import { View, Text, Pressable, Image } from "react-native";
 import { useSelector } from "react-redux";
 import { useFonts } from "expo-font";
-import { get } from "../../utils/requests";
+import { get, authPost } from "../../utils/requests";
 import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
+import { useFocusEffect } from '@react-navigation/native';
 
 const PRICE_PER_KM = 100;
 
@@ -46,21 +47,20 @@ export default function DriverIncoming({ navigation }) {
 
   const mapRef = useRef(null);
 
-  useEffect(() => {
+  useFocusEffect(useCallback(() => {
     let interval = setInterval(async () => {
       const token = await SecureStore.getItemAsync("token");
 
-      await get(`${API_URL}/travels/${travelId}/driver`, token)
-        .then(({ data }) => {
-          const position = data.data.currentDriverPosition;
-          setCurrentOrigin(position);
+        await get(`${API_URL}/travels/${travelId}/driver`, token).then(
+          ({ data }) => {
+            const position = data.data.currentDriverPosition;
+            setCurrentOrigin(position);
 
           // TODO: seguro la posicion final, no sea igual... calcular un aproximado
           const isSameLat = position.latitude == destination.latitude;
           const isSameLong = position.longitude == destination.longitude;
           if (isSameLat && isSameLong) {
-            navigation.replace("TravelInProgress");
-            clearInterval(interval);
+            navigation.navigate("TravelInProgress");
           }
         }
       );
@@ -68,10 +68,15 @@ export default function DriverIncoming({ navigation }) {
     return () => {
       clearInterval(interval);
     };
-  }, []);
+  }, []));
 
-  const cancelTravel = (navigation) => {
-    navigation.navigate("Home");
+  const cancelTravel = async () => {
+    clearInterval(interval);
+    let token = await SecureStore.getItemAsync("token");
+    return authPost(
+      `${API_URL}/travels/${travelId}/reject?isTravelCancelled='true'`,
+      token
+    ).then(navigation.navigate("Home"));
   };
 
   const [fontsLoaded] = useFonts({

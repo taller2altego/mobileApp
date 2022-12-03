@@ -34,7 +34,7 @@ export default function Driver({ navigation }) {
           })
         );
         dispatch(setIsDriver({ isDriver: true }));
-        navigation.replace("Home");
+        navigation.navigate("Home");
       })
       .catch((error) => setErrorMessage(error.response.data.message));
   };

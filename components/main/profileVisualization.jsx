@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Text, View } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import { useSelector } from "react-redux";
@@ -6,6 +6,7 @@ import { get } from "../../utils/requests";
 import envs from "../../config/env";
 import { Ionicons } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function VisualizationTab({ navigation }) {
   // States
@@ -20,7 +21,7 @@ export default function VisualizationTab({ navigation }) {
 
   const { API_URL, _ } = envs;
 
-  useEffect(() => {
+  useFocusEffect(useCallback(() => {
     (async () => {
       const token = await SecureStore.getItemAsync("token");
       await get(`${API_URL}/drivers/${currentTravelData.driverId}`, token).then(
@@ -40,7 +41,7 @@ export default function VisualizationTab({ navigation }) {
         }
       );
     })();
-  }, []);
+  }, []));
 
   return (
     <View style={{ flex: 1 }}>

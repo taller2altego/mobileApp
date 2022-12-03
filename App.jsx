@@ -11,7 +11,6 @@ import LoginModal from "./components/auth/login";
 import HomeScreen from "./components/main/home";
 import DriverScreen from "./components/auth/driver";
 import TravelInProgress from "./components/travel/TravelInProgress";
-import ReportTravel from "./components/travel/ReportTravel";
 import TravelSearch from "./components/driver/TravelSearch";
 import ProfileVisualization from "./components/main/profileVisualization";
 import store from "./redux/store/store";
