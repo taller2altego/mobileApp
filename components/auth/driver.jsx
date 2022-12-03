@@ -24,7 +24,7 @@ export default function Driver({ navigation }) {
         await SecureStore.setItemAsync("driverId", data.id.toString());
         dispatch(setDriverData({ license, model, licensePlate }));
         dispatch(setIsDriver({ isDriver: true }));
-        navigation.replace("Home");
+        navigation.navigate("Home");
       })
       .catch(error => {
         handlerUnauthorizedError(navigation, error);

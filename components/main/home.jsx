@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { get, handlerUnauthorizedError } from "../../utils/requests";
 import { useDispatch } from "react-redux";
@@ -9,6 +9,7 @@ import {
   setUserData,
 } from "../../redux/actions/UpdateUserData";
 import { Ionicons } from "@expo/vector-icons";
+import { useFocusEffect } from '@react-navigation/native';
 
 import * as SecureStore from "expo-secure-store";
 import HomeTab from "./homeTab";
@@ -22,7 +23,7 @@ export default function Home({ navigation }) {
   const currentUserData = useSelector((store) => store.userData);
   const { API_URL, _ } = envs;
 
-  useEffect(() => {
+  useFocusEffect(useCallback(() => {
     (async () => {
       const id = await SecureStore.getItemAsync("id");
       const token = await SecureStore.getItemAsync("token");
@@ -48,7 +49,7 @@ export default function Home({ navigation }) {
         })
         .catch(err => handlerUnauthorizedError(navigation, err));
     })();
-  }, []);
+  }, []));
 
   return (
     <Tab.Navigator>

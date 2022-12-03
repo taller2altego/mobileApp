@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import MapView, {
   AnimatedRegion,
   Marker,
@@ -12,6 +12,9 @@ import { useFonts } from "expo-font";
 import envs from "../../config/env";
 import { useEffect } from "react";
 import * as Location from "expo-location";
+import { authPost } from "../../utils/requests";
+import * as SecureStore from "expo-secure-store";
+import { useFocusEffect } from "@react-navigation/native";
 
 const screen = Dimensions.get("window");
 const ASPECT_RATIO = screen.width / screen.height;
@@ -27,6 +30,7 @@ export default function TravelInProgressDriver({ navigation }) {
 
   // redux
   const tripData = useSelector((store) => store.travelDetailsData);
+  const currentTravelData = useSelector((store) => store.currentTravel);
   const [locationSubscription, setLocationSubscription] = useState(null);
 
   // state
@@ -92,12 +96,14 @@ export default function TravelInProgressDriver({ navigation }) {
     }
   };
 
-  useEffect(() => {
-    updateDriverPosition();
-    return function cleanup() {
-      locationSubscription.remove();
-    };
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      updateDriverPosition();
+      return () => {
+        locationSubscription.remove();
+      };
+    }, []),
+  );
 
   const updateDistance = (args, tripPart) => {
     const setArrive =
@@ -109,27 +115,29 @@ export default function TravelInProgressDriver({ navigation }) {
     }
   };
 
-  const startTrip = () => {
+  const startTrip = async () => {
+    const id = await SecureStore.getItemAsync("id");
+    const token = await SecureStore.getItemAsync("token");
     setRoadTofinalDestination(true);
     setArriveOnUserLocation(false);
+    authPost(`${API_URL}/travels/${currentTravelData._id}/start`, token);
   };
 
-  const endTrip = () => {
-    navigation.navigate("Home");
+  const finishTravel = async () => {
+    const id = await SecureStore.getItemAsync("id");
+    const token = await SecureStore.getItemAsync("token");
+    return authPost(
+      `${API_URL}/travels/${currentTravelData._id}/finish`,
+      token
+    ).then(navigation.navigate("Home"));
   };
 
-  const finishTravel = (navigation) => {
-    return post(`/travels/${tripData._id}/finish`, errorFunction=functionError(navigation)).then(
-      navigation.navigate("Home")
-    )
-  };
-
-  const cancelTravel = (navigation) => {
+  const cancelTravel = () => {
     // request para eliminar el driver del tralel
     // limpiar inputs de destino y origen en main
-    return post(`/travels/${tripData._id}/reject?isTravelCancelled='true'`).then(
-      navigation.navigate("Home")
-    ).catch(error => functionError(navigation, error))
+    return post(
+      `${API_URL}/travels/${currentTravelData._id}/reject?isTravelCancelled='true'`
+    ).then(navigation.navigate("Home")).catch(error => functionError(navigation, error));
   };
 
   if (!fontsLoaded) {
@@ -193,21 +201,19 @@ export default function TravelInProgressDriver({ navigation }) {
         )}
       </MapView>
       {arriveOnUserLocation ? (
-        <div>
+        <View>
           <Pressable onPress={startTrip}>
             <Text> INICIAR VIAJE </Text>
           </Pressable>
           <Pressable onPress={cancelTravel}>
             <Text> CANCELAR </Text>
           </Pressable>
-        </div>
+        </View>
       ) : (
-        <Pressable onPress={finishTravel}>
-            <Text> FINALIZAR VIAJE </Text>
-        </Pressable>
+        <></>
       )}
       {arriveOnDestination ? (
-        <Pressable onPress={endTrip}>
+        <Pressable onPress={finishTravel}>
           <Text> FINALIZAR VIAJE </Text>
         </Pressable>
       ) : (

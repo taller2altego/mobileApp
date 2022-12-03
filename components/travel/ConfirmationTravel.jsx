@@ -10,7 +10,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useFonts } from "expo-font";
 import { authPost, get, handlerUnauthorizedError } from "../../utils/requests";
 import { setNewTravel } from "../../redux/actions/UpdateCurrentTravel";
-const API_KEY = "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ";
 import envs from "../../config/env";
 const PRICE_PER_KM = 100;
 
@@ -87,16 +86,17 @@ export default function ConfirmationTravel({ navigation }) {
   const createTravel = async (navigation) => {
     const id = await SecureStore.getItemAsync("id");
     const token = await SecureStore.getItemAsync("token");
-
-    const srcAddress = await fetch('https://maps.googleapis.com/maps/api/geocode/json?address=' + origin.latitude + ',' + origin.longitude + '&key=' + API_KEY)
+    const srcAddress = await fetch('https://maps.googleapis.com/maps/api/geocode/json?address=' + origin.latitude + ',' + origin.longitude + '&key=' + GOOGLE_API_KEY)
       .then((response) => response.json())
-      .then((responseJson) => responseJson.results[0].formatted_address);
-
-    const dstAddress = await fetch('https://maps.googleapis.com/maps/api/geocode/json?address=' + destination.latitude + ',' + destination.longitude + '&key=' + API_KEY)
+      .then((responseJson) => {
+        return responseJson.results[0].formatted_address
+      });
+    const dstAddress = await fetch('https://maps.googleapis.com/maps/api/geocode/json?address=' + destination.latitude + ',' + destination.longitude + '&key=' + GOOGLE_API_KEY)
       .then((response) => response.json())
       .then((responseJson) => responseJson.results[0].formatted_address);
 
     const body = {
+      paidWithCredits: true,
       userId: id,
       price: price,
       source: origin,

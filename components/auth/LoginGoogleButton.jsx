@@ -27,7 +27,6 @@ export default function LoginGoogleButton({ setErrorMessage, ...props }) {
 
   useEffect(() => {
     if (response && response.type === "success") {
-      console.log(response);
       setAccessToken(response.authentication.accessToken);
       accessToken && fetchUserInfo(response.authentication);
     }

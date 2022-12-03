@@ -1,13 +1,14 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { MapStyles, TravelStyles } from "../styles";
 import MapViewDirections from "react-native-maps-directions";
 import { View, Text, Pressable, Image } from "react-native";
 import { useSelector } from "react-redux";
 import { useFonts } from "expo-font";
-import { get, handlerUnauthorizedError } from "../../utils/requests";
+import { get, handlerUnauthorizedError,authPost } from "../../utils/requests";
 import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
+import { useFocusEffect } from '@react-navigation/native';
 
 const PRICE_PER_KM = 100;
 
@@ -46,44 +47,36 @@ export default function DriverIncoming({ navigation }) {
 
   const mapRef = useRef(null);
 
-  useEffect(() => {
-    (async () => {
-      const token = await SecureStore.getItemAsync("token");
-      return get(`${API_URL}/users/${driverId}`, token, navigation)
-        .then(({ data }) => {
-          const { name, lastname } = data;
-          const fullname = `${name} ${lastname}`;
-          setDriver(fullname);
-        })
-        .catch(err => handlerUnauthorizedError(navigation, err));
-    })();
-  }, []);
-
-  useEffect(() => {
-    setRequestInterval(setInterval(async () => {
+  useFocusEffect(useCallback(() => {
+    let interval = setInterval(async () => {
       const token = await SecureStore.getItemAsync("token");
 
-      await get(`${API_URL}/travels/${travelId}/driver`, token, navigation)
-        .then(({ data }) => {
-          const position = data.data.currentDriverPosition;
-          setCurrentOrigin(position);
+        await get(`${API_URL}/travels/${travelId}/driver`, token).then(
+          ({ data }) => {
+            const position = data.data.currentDriverPosition;
+            setCurrentOrigin(position);
 
           // TODO: seguro la posicion final, no sea igual... calcular un aproximado
           const isSameLat = position.latitude == destination.latitude;
           const isSameLong = position.longitude == destination.longitude;
           if (isSameLat && isSameLong) {
             navigation.navigate("TravelInProgress");
-            clearInterval(interval);
           }
-        });
-    }, 10000));
-  }, []);
+        }
+      );
+    }, 10000);
+    return () => {
+      clearInterval(interval);
+    };
+  }, []));
 
-  const cancelTravel = (navigation) => {
+  const cancelTravel = async () => {
     clearInterval(interval);
-    return post(`/travels/${currentTravel._id}/reject?isTravelCancelled='true'`).then(
-      navigation.navigate("Home")
-    ).catch(error => functionError(navigation, error))
+    let token = await SecureStore.getItemAsync("token");
+    return authPost(
+      `${API_URL}/travels/${travelId}/reject?isTravelCancelled='true'`,
+      token
+    ).then(navigation.navigate("Home")).catch(error => functionError(navigation, error));
   };
 
   const [fontsLoaded] = useFonts({
@@ -115,11 +108,15 @@ export default function DriverIncoming({ navigation }) {
         ref={mapRef}
         style={MapStyles.map}
         provider={PROVIDER_GOOGLE}
-        onMapLoaded={() => { zoomOnDirections(); }}
+        onMapLoaded={() => {
+          zoomOnDirections();
+        }}
         initialRegion={INITIAL_POSITION}
       >
         {origin && <Marker coordinate={origin} identifier="originMark" />}
-        {destination && <Marker coordinate={destination} identifier="destMark" />}
+        {destination && (
+          <Marker coordinate={destination} identifier="destMark" />
+        )}
         {currentOrigin && <Marker coordinate={currentOrigin} identifier="s" />}
         {origin && destination && (
           <MapViewDirections
@@ -176,7 +173,7 @@ export default function DriverIncoming({ navigation }) {
         <View style={TravelStyles.buttonContainer}>
           <Pressable
             style={MapStyles.confirmTripButton}
-            onPress={() => navigation.navigate("ProfileVisualization")}
+            onPress={() => navigation.push("ProfileVisualization")}
           >
             <Text
               style={{

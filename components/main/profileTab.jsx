@@ -71,9 +71,9 @@ export default function ProfileTab({ navigation }) {
       })
       .catch(error => handlerUnauthorizedError(navigation, error));
 
-    const driver_id = await SecureStore.getItemAsync("driverId");
+    const driverid = await SecureStore.getItemAsync("driverId");
 
-    await patch(`${API_URL}/drivers/${driver_id}`, token, { model: modelText, license: licenseText, licensePlate: plateText })
+    await patch(`${API_URL}/drivers/${driverid}`, token, { model: modelText, license: licenseText, licensePlate: plateText })
       .then(() => {
         dispatch(
           setDriverData({
@@ -84,6 +84,23 @@ export default function ProfileTab({ navigation }) {
         );
       })
       .catch(err => handlerUnauthorizedError(navigation, err));
+
+    if (driverid){
+      await patch(`${API_URL}/drivers/${driverid}`, token, {
+        model: modelText,
+        license: licenseText,
+        licensePlate: plateText,
+      }).then(() => {
+        dispatch(
+          setDriverData({
+            license: licenseText,
+            licensePlate: plateText,
+            model: modelText,
+          })
+        );
+      })
+      .catch(() => {});
+    }
 
     setIsEditing(false);
   };

@@ -28,6 +28,9 @@ const authPost = (url, token, body, extraHeaders, errorFunction) => {
 
 const get = (url, token, extraHeaders, params, errorFunction) => {
   return axios.get(url, {
+    validateStatus: status => {
+      return status >= 200 && status < 400;
+    },
     params,
     headers: { ...extraHeaders, Authorization: `Bearer ${token}` },
   })

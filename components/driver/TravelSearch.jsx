@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { getItemAsync } from "expo-secure-store";
+import { useCallback, useEffect, useState } from "react";
 import { View, Text, ActivityIndicator, Pressable } from "react-native";
 import TravelFindedModal from "./TravelFindedModal";
 import * as Location from "expo-location";
 import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
-
+import { useFocusEffect } from '@react-navigation/native';
 // modules
 import { get, handlerUnauthorizedError } from "../../utils/requests";
 import {
@@ -12,7 +13,8 @@ import {
   setTravelInfo,
   setUserLocation,
 } from "../../redux/actions/UpdateTravelDetails";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setNewTravel } from "../../redux/actions/UpdateCurrentTravel";
 
 export default function TravelSearch({ navigation }) {
   const [modalTravelFindedVisible, setModalTravelFindedVisible] =
@@ -58,8 +60,7 @@ export default function TravelSearch({ navigation }) {
     );
   };
 
-  useEffect(() => {
-    // TODO: agregar un estado para diferenciar el cambio del modal del cierre del modal.
+  useFocusEffect(useCallback(() => {
     setIsSearching(true);
 
     if (currentLocation.location === null) {
@@ -85,6 +86,9 @@ export default function TravelSearch({ navigation }) {
         dispatch(setUserLocation({
           userLocation: data.data.source,
         }));
+        dispatch(setNewTravel({
+          _id: data.data._id,
+        }));
         return data;
       }).catch(error => handlerUnauthorizedError(navigation, error));
 
@@ -98,7 +102,7 @@ export default function TravelSearch({ navigation }) {
       clearInterval(interval);
       locationSubscription.remove();
     };
-  }, [currentLocation]);
+  }, [currentLocation]));
 
   const toggleTravelFindedModal = () => {
     setModalTravelFindedVisible(!modalTravelFindedVisible);

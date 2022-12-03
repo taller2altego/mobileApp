@@ -1,66 +1,80 @@
-import React, { useState, useEffect } from "react";
-import { Pressable, Text, View } from "react-native";
+import React, { useState, useEffect, useCallback } from "react";
+import { Text, View } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import { useSelector } from "react-redux";
 import { get, handlerUnauthorizedError } from "../../utils/requests";
 import { Profilestyles } from "../styles";
 import HomeTab from "./homeTab";
 import envs from "../../config/env";
+import { Ionicons } from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function VisualizationTab({ navigation }) {
-  //states
+  // States
   const [name, setName] = useState();
   const [lastname, setLastName] = useState();
-  const [email, setEmail] = useState();
-  const [phoneNumber, setPhoneNumber] = useState();
-  const [numberOfScores, setNumberOfScores] = useState();
-  const [averageScore, setAverageScore] = useState();
-  // actual driver
+  const [driverScore, setDriverScore] = useState();
+  const [driverPlate, setDriverPlate] = useState();
+  const [driverCarModel, setDriverCarModel] = useState();
+
+  // Driver Data
   const currentTravelData = useSelector((store) => store.currentTravel);
-  const id = currentTravelData.driverId;
+
   const { API_URL, _ } = envs;
 
-  useEffect(() => {
+  useFocusEffect(useCallback(() => {
     (async () => {
-      const id = 2;
       const token = await SecureStore.getItemAsync("token");
-      await get(`${API_URL}/users/${id}`, token, navigation).then(
-        ({ data: { name, lastname, email, phoneNumber, numberOfScores, totalScore } }) => {
-
+      await get(`${API_URL}/drivers/${currentTravelData.driverId}`, token).then(
+        ({
+          data: {
+            totalScore,
+            licensePlate,
+            model,
+            user: { name, lastname },
+          },
+        }) => {
           setName(name);
           setLastName(lastname);
-          setEmail(email);
-          setPhoneNumber(phoneNumber);
-          setNumberOfScores(numberOfScores);
-          setAverageScore(totalScore);
+          setDriverScore(totalScore);
+          setDriverPlate(licensePlate);
+          setDriverCarModel(model);
         }
       ).catch(error => handlerUnauthorizedError(navigation, error));
     })();
-  }, []);
+  }, []));
 
   return (
-    <View style={Profilestyles.profile_container}>
-      <View style={Profilestyles.profile_text_container}></View>
-      <View style={Profilestyles.profile_container}>
-        <Text style={Profilestyles.profile_visualization}>
+    <View style={{ flex: 1 }}>
+      <Ionicons
+        name="arrow-back"
+        size={24}
+        color="black"
+        style={{ alignSelf: "flex-start", top: 40, left: 10 }}
+        onPress={() => navigation.goBack()}
+      />
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text style={{ fontFamily: "poppins", fontSize: 25 }}>
           {name} {lastname}
         </Text>
-        <Text style={Profilestyles.profile_visualization}>{email}</Text>
-        <Text style={Profilestyles.profile_visualization}>{phoneNumber}</Text>
-        <Text style={Profilestyles.profile_visualization}>
-          {numberOfScores} viajes
+        <View style={{ flexDirection: "row" }}>
+          <Text style={{ fontFamily: "poppins", fontSize: 25 }}>
+            {driverScore != 0 ? driverScore : "-"}
+          </Text>
+          <FontAwesome
+            name="star"
+            size={20}
+            color="black"
+            style={{ marginLeft: 4, marginTop: 4 }}
+          />
+        </View>
+        <Text style={{ fontFamily: "poppins", fontSize: 25 }}>
+          {driverPlate}
         </Text>
-        <Text style={Profilestyles.profile_visualization}>
-          {averageScore} puntaje actual
+        <Text style={{ fontFamily: "poppins", fontSize: 25 }}>
+          {driverCarModel}
         </Text>
-      </View>
-      <View style={Profilestyles.edit_profile}>
-        <Pressable
-          onPress={() => navigation.navigate("DriverIncoming")}
-          style={Profilestyles.edit_profile_button}
-        >
-          <Text style={Profilestyles.edit_button_text}>Volver Atras</Text>
-        </Pressable>
       </View>
     </View>
   );

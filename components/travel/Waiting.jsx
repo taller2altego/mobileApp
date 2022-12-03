@@ -1,7 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { ActivityIndicator, Modal, Pressable, Text, View } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import { useSelector, useDispatch } from "react-redux";
+import { useFocusEffect } from '@react-navigation/native';
 
 // modules
 import { get,authPost, handlerUnauthorizedError } from "../../utils/requests";
@@ -17,7 +18,7 @@ export default function WaitingDriverModal({ navigation, ...props }) {
 
   const { API_URL, GOOGLE_API_KEY } = envs;
 
-  useEffect(() => {
+  useFocusEffect(useCallback(() => {
     const interval = setInterval(async () => {
       const token = await SecureStore.getItemAsync("token");
 
@@ -25,7 +26,7 @@ export default function WaitingDriverModal({ navigation, ...props }) {
         ({ data }) => {
           if (data.data.driverId) {
             dispatch(setDriverId({ driverId: data.data.driverId }));
-            navigation.navigate("DriverIncoming");
+            navigation.replace("DriverIncoming");
           }
         }).catch(error => handlerUnauthorizedError(navigation, error));
 
@@ -34,7 +35,7 @@ export default function WaitingDriverModal({ navigation, ...props }) {
     return () => {
       clearInterval(interval);
     };
-  }, []);
+  }, []));
 
   const cancelSearch = async () => {
     let token = await SecureStore.getItemAsync("token");
