@@ -59,7 +59,6 @@ export default function HomeTab({ navigation }) {
   const [originInput, setOriginInput] = useState(
     currentUserData.defaultLocation
   );
-  const [firstTimeChange, setFirstTimeChange] = useState(true);
 
   const handleSelectedTrip = (item) => {
     setSelectedId(item.id);
@@ -198,7 +197,6 @@ export default function HomeTab({ navigation }) {
                     setCorrectSrcInput(false);
                   }
                 },
-                value: originInput,
               }}
               listEmptyComponent={() => (
                 <View style={{ flex: 1 }}>
