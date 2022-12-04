@@ -117,7 +117,6 @@ export default function TravelInProgressDriver({ navigation }) {
     const token = await SecureStore.getItemAsync("token");
     setRoadTofinalDestination(true);
     setArriveOnUserLocation(false);
-    // FIXME sacar el id del viaje hardcodeado
     authPost(`${API_URL}/travels/${travelData._id}/start`, token)
   };
 
@@ -125,7 +124,6 @@ export default function TravelInProgressDriver({ navigation }) {
     const id = await SecureStore.getItemAsync("id");
     const token = await SecureStore.getItemAsync("token");
     const travel = await get(`${API_URL}/travels/${travelData._id}`, token);
-    // FIXME sacar el id del viaje hardcodeado
     const body = {
       driverId: travel.data.data.driverId,
       price: travel.data.data.price,
@@ -137,18 +135,9 @@ export default function TravelInProgressDriver({ navigation }) {
   };
 
   const cancelTravel = async () => {
-    // request para eliminar el driver del tralel
-    // limpiar inputs de destino y origen en main
-    // FIXME sacar el id del viaje hardcodeado
     const token = await SecureStore.getItemAsync("token");
     const travel = await get(`${API_URL}/travels/${travelData._id}`, token);
     const user = await get(`${API_URL}/users/${travel.data.data.userId}`, token)
-    console.log("TRAVEL ")
-    console.log(travel);
-    console.log("TRAVEL .DATA")
-    console.log(travel.data);
-    console.log("TRAVEL .DATA.DATA")
-    console.log(travel.data.data);
     const body = {
       userId: travel.data.data.userId,
       email: user.data.email,
@@ -156,7 +145,6 @@ export default function TravelInProgressDriver({ navigation }) {
       paidWithCredits: travel.data.data.paidWithCredits,
       payToDriver: false,
     };
-    console.log(body);
     return authPost(`${API_URL}/travels/${travelData._id}/reject?isTravelCancelled='true'`, token, body)
       .then(navigation.navigate("Home"));
   };
@@ -164,6 +152,12 @@ export default function TravelInProgressDriver({ navigation }) {
   if (!fontsLoaded) {
     return null;
   }
+
+  const userVisualization = async () => {
+    const travel = await get(`${API_URL}/travels/${travelData._id}`, token);
+    navigation.navigate("UserProfileVisualization", { userId: travel.data.data.userId });
+  };
+
 
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
