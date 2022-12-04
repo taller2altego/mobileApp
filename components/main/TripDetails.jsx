@@ -185,6 +185,21 @@ export default function TripDetails({ route, navigation }) {
               Denunciar
             </Text>
           </Pressable>
+          <Pressable
+            style={MapStyles.confirmTripButton}
+            onPress={() => comeBack(navigation)}
+          >
+            <Text
+              style={{
+                fontFamily: "poppins-bold",
+                color: "white",
+                textAlign: "center",
+                lineHeight: 38,
+              }}
+            >
+              Volver atras
+            </Text>
+          </Pressable>
         </View>
       </View>
     </View>
