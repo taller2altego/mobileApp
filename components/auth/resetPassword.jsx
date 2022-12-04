@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MapStyles, TravelStyles, Profilestyles, RecoverStyles } from "../styles";
+import { MapStyles, LandingStyles, Profilestyles, RecoverStyles } from "../styles";
 import { View, Text, TextInput, Pressable } from "react-native";
 import { useFonts } from "expo-font";
 import { patch, handlerUnauthorizedError } from "../../utils/requests";
@@ -69,8 +69,8 @@ export default function ResetPassword({ route, navigation }) {
             {!passwordMatch && <View style={RecoverStyles.info_container}>
                 <Text style={RecoverStyles.invalid_email}>{"Las contraseñas no coinciden, intente nuevamente"}</Text>
             </View>}
-            <View style={TravelStyles.travelContainer}>
-                <View style={TravelStyles.buttonContainer}>
+            <View style={LandingStyles.land_container_v2}>
+                <View style={LandingStyles.land_buttons_container_v2}>
                     <Pressable
                         style={MapStyles.confirmTripButton}
                         onPress={() => comeBack(navigation)}
@@ -87,7 +87,7 @@ export default function ResetPassword({ route, navigation }) {
                         </Text>
                     </Pressable>
                 </View>
-                <View style={TravelStyles.buttonContainer}>
+                <View style={LandingStyles.land_buttons_container_v2}>
                     <Pressable
                         style={MapStyles.confirmTripButton}
                         onPress={() => changePassword(navigation)}

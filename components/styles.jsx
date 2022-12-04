@@ -66,6 +66,17 @@ const LandingStyles = StyleSheet.create({
     color: "white",
     fontSize: 18,
   },
+  land_container_v2: {
+    flex: 1.5,
+    alignItems: "center",
+    justifyContent: "space-around",
+  },
+  land_buttons_container_v2: {
+    flex: 1,
+    flexDirection: 'row',
+    marginHorizontal: 20,
+    marginTop: 5,
+  },
 });
 
 const modalStyles = StyleSheet.create({
@@ -372,16 +383,13 @@ const MapStyles = StyleSheet.create({
 });
 const TravelStyles = StyleSheet.create({
   travelContainer: {
-    flex: 1.5,
+    flex: 1,
+    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-around",
-
+    justifyContent: "center",
   },
   buttonContainer: {
     flex: 1,
-    flexDirection: 'row',
-    marginHorizontal: 20,
-    marginTop: 5,
   },
   comment_container: {
     height: (15 * Dimensions.get("window").height) / 100,
