@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MapStyles, TravelStyles, Profilestyles, RecoverStyles } from "../styles";
+import { MapStyles, Profilestyles, RecoverStyles, LandingStyles } from "../styles";
 import { View, Text, TextInput, Pressable } from "react-native";
 import { useFonts } from "expo-font";
 import { post } from "../../utils/requests";
@@ -55,8 +55,8 @@ export default function RecoverPassword({ navigation }) {
             {invalidEmail && <View style={RecoverStyles.info_container}>
                 <Text style={RecoverStyles.invalid_email}>{"Ingrese un correo valido"}</Text>
             </View>}
-            <View style={TravelStyles.travelContainer}>
-                <View style={TravelStyles.buttonContainer}>
+            <View style={LandingStyles.land_container_v2}>
+                <View style={LandingStyles.land_buttons_container_v2}>
                     <Pressable
                         style={MapStyles.confirmTripButton}
                         onPress={() => comeBack(navigation)}
@@ -73,7 +73,7 @@ export default function RecoverPassword({ navigation }) {
                         </Text>
                     </Pressable>
                 </View>
-                <View style={TravelStyles.buttonContainer}>
+                <View style={LandingStyles.land_buttons_container_v2}>
                     <Pressable
                         style={MapStyles.confirmTripButton}
                         onPress={() => sendMail(navigation)}

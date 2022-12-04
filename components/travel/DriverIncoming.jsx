@@ -173,7 +173,7 @@ export default function DriverIncoming({ navigation }) {
         <View style={TravelStyles.buttonContainer}>
           <Pressable
             style={MapStyles.confirmTripButton}
-            onPress={() => navigation.push("ProfileVisualization")}
+            onPress={() => navigation.push("DriverProfileVisualization")}
           >
             <Text
               style={{

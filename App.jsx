@@ -12,7 +12,7 @@ import HomeScreen from "./components/main/home";
 import DriverScreen from "./components/auth/driver";
 import TravelInProgress from "./components/travel/TravelInProgress";
 import TravelSearch from "./components/driver/TravelSearch";
-import ProfileVisualization from "./components/main/profileVisualization";
+import DriverProfileVisualization from "./components/main/DriverProfileVisualization";
 import store from "./redux/store/store";
 import { Provider } from "react-redux";
 import ConfirmationTravel from "./components/travel/ConfirmationTravel";
@@ -78,8 +78,8 @@ export default function App() {
             options={{ headerShown: false }}
           />
           <Stack.Screen
-            name="ProfileVisualization"
-            component={ProfileVisualization}
+            name="DriverProfileVisualization"
+            component={DriverProfileVisualization}
             options={{ headerShown: false }}
           />
           <Stack.Screen

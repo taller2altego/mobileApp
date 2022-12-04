@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MapStyles, TravelStyles, Profilestyles, RecoverStyles } from "../styles";
+import { MapStyles, TravelStyles, Profilestyles, RecoverStyles, LandingStyles } from "../styles";
 import { View, Text, TextInput, Pressable, FlatList } from "react-native";
 import { useFonts } from "expo-font";
 import { authPost, handlerUnauthorizedError } from "../../utils/requests";
@@ -50,8 +50,8 @@ export default function AuthToken({ navigation }) {
                 />
             </View>
 
-            <View style={TravelStyles.travelContainer}>
-                <View style={TravelStyles.buttonContainer}>
+            <View style={LandingStyles.land_container_v2}>
+                <View style={LandingStyles.land_buttons_container_v2}>
                     <Pressable
                         style={MapStyles.confirmTripButton}
                         onPress={() => comeBack(navigation)}
@@ -68,7 +68,7 @@ export default function AuthToken({ navigation }) {
                         </Text>
                     </Pressable>
                 </View>
-                <View style={TravelStyles.buttonContainer}>
+                <View style={LandingStyles.land_buttons_container_v2}>
                     <Pressable
                         style={MapStyles.confirmTripButton}
                         onPress={() => validateToken(navigation)}
