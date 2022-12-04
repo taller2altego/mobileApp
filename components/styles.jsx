@@ -372,14 +372,38 @@ const MapStyles = StyleSheet.create({
 });
 const TravelStyles = StyleSheet.create({
   travelContainer: {
-    flex: 1,
-    flexDirection: "row",
+    flex: 1.5,
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "space-around",
+
   },
   buttonContainer: {
     flex: 1,
+    flexDirection: 'row',
+    marginHorizontal: 20,
+    marginTop: 5,
   },
+  comment_container: {
+    height: (15 * Dimensions.get("window").height) / 100,
+    width: (75 * Dimensions.get("window").width) / 100,
+    backgroundColor: "white",
+    fontSize: 16,
+    textAlign: "center",
+    shadowColor: "black",
+    borderColor: 'black',
+    borderWidth: 2,
+    shadowOpacity: 0.5,
+    shadowOffset: { width: 2, height: 2 },
+    shadowRadius: 4,
+    elevation: 4,
+    padding: 8,
+    borderRadius: 8,
+    top: 35,
+  },
+  input_text: {
+    flex: 2,
+    textAlign: "center",
+  }
 });
 
 const ReportStyles = StyleSheet.create({

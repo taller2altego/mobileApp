@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
-import { MapStyles, TravelStyles } from "../styles";
-import { View, Text, Pressable } from "react-native";
-import { get, patch, handlerUnauthorizedError } from "../../utils/requests";
+import { MapStyles, TravelStyles, ReportStyles } from "../styles";
+import { View, Text, TextInput, Pressable, Dimensions } from "react-native";
+import { get, patch, handlerUnauthorizedError, authPost } from "../../utils/requests";
 import { AirbnbRating } from "react-native-ratings";
 import * as SecureStore from "expo-secure-store";
 import moment from "moment";
@@ -17,6 +17,8 @@ export default function TripDetails({ route, navigation }) {
   const [driver, setDriver] = useState();
   const [date, setDate] = useState();
   const [driverScore, setDriverScore] = useState();
+  const [comment, setComment] = useState("");
+
   const { API_URL, _ } = envs;
 
   useFocusEffect(useCallback(() => {
@@ -46,7 +48,10 @@ export default function TripDetails({ route, navigation }) {
     }).then(() => {
       return patch(`${API_URL}/travels/${route.params.travelId}`, token, {
         driverScore,
-      }).then(() => {
+      }).then(async () => {
+        if (comment != "") {
+          await authPost(`${API_URL}/comments/driver`, token, { userId: driver, description: comment })
+        }
         navigation.navigate("Home");
       }).catch(error => functionError(navigation, error));
     }).catch(error => functionError(navigation, error));
@@ -83,8 +88,12 @@ export default function TripDetails({ route, navigation }) {
     });
   };
 
+  const comeBack = (navigation) => {
+    navigation.navigate("Home")
+  };
+
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, alignItems: "center" }}>
       <Ionicons
         name="arrow-back"
         size={24}
@@ -132,61 +141,32 @@ export default function TripDetails({ route, navigation }) {
         }}
       >
         {!alreadyRated
-          ? `Puntua tu viaje con ${driver}`
-          : `Gracias por puntuar a ${driver}`}
+          ? `Puntua tu viaje con el driver ${driver}`
+          : `${driverScore} estrellas`}
       </Text>
-      <AirbnbRating
+      {!alreadyRated && <AirbnbRating
         defaultRating={driverScore}
         size={35}
         selectedColor="black"
         showRating={false}
         isDisabled={alreadyRated}
         onFinishRating={(rating) => setDriverScore(rating)}
-      />
-      <View style={TravelStyles.travelContainer}>
-        <View style={[TravelStyles.buttonContainer, { marginTop: 100 }]}>
+      />}
+      {!alreadyRated &&
+        <View style={TravelStyles.comment_container}>
+          <TextInput
+            style={[TravelStyles.input_text, { width: 300 }]}
+            placeholder="Comente su experiencia aqui..."
+            onChangeText={newText => setComment(newText)}
+            defaultValue={comment}
+            maxLength={500}
+          />
+        </View>}
+      <View style={[TravelStyles.travelContainer, { marginBottom: 10 }]}>
+        <View style={TravelStyles.buttonContainer}>
           <Text style={{ fontFamily: "poppins", fontSize: 20 }}></Text>
-          {!alreadyRated ? (
-            <Pressable
-              style={
-                driverScore != 0
-                  ? MapStyles.confirmTripButton
-                  : [MapStyles.confirmTripButton, { backgroundColor: "#bbb" }]
-              }
-              disabled={driverScore == 0}
-              onPress={() => sendRatingToDriver()}
-            >
-              <Text
-                style={{
-                  fontFamily: "poppins-bold",
-                  textAlign: "center",
-                  lineHeight: 38,
-                  color: "white",
-                }}
-              >
-                Enviar Puntuacion
-              </Text>
-            </Pressable>
-          ) : (
-            <></>
-          )}
           <Pressable
-            style={MapStyles.confirmTripButton}
-            onPress={() => sendReport(navigation)}
-          >
-            <Text
-              style={{
-                fontFamily: "poppins-bold",
-                color: "white",
-                textAlign: "center",
-                lineHeight: 38,
-              }}
-            >
-              Denunciar
-            </Text>
-          </Pressable>
-          <Pressable
-            style={MapStyles.confirmTripButton}
+            style={[MapStyles.confirmTripButton, { width: (30 * Dimensions.get("window").width) / 100, marginRight: 10 }]}
             onPress={() => comeBack(navigation)}
           >
             <Text
@@ -200,6 +180,45 @@ export default function TripDetails({ route, navigation }) {
               Volver atras
             </Text>
           </Pressable>
+          <Pressable
+            style={[MapStyles.confirmTripButton, { width: (30 * Dimensions.get("window").width) / 100, marginRight: 10 }]}
+            onPress={() => sendReport(navigation)}
+          >
+            <Text
+              style={{
+                fontFamily: "poppins-bold",
+                color: "white",
+                textAlign: "center",
+                lineHeight: 38,
+              }}
+            >
+              Denunciar
+            </Text>
+          </Pressable>
+          {!alreadyRated ? (
+            <Pressable
+              style={
+                [driverScore != 0
+                  ? MapStyles.confirmTripButton
+                  : [MapStyles.confirmTripButton, { backgroundColor: "#bbb" }, { width: (30 * Dimensions.get("window").width) / 100 }]]
+              }
+              disabled={driverScore == 0}
+              onPress={() => sendRatingToDriver()}
+            >
+              <Text
+                style={{
+                  fontFamily: "poppins-bold",
+                  textAlign: "center",
+                  lineHeight: 38,
+                  color: "white",
+                }}
+              >
+                Puntuar
+              </Text>
+            </Pressable>
+          ) : (
+            <></>
+          )}
         </View>
       </View>
     </View>
