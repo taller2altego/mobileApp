@@ -1,21 +1,12 @@
-import { useDispatch } from "react-redux";
-
-// // modules
-import TravelFindedModal from "./TravelFindedModal";
-import { getItemAsync } from "expo-secure-store";
-import { useCallback, useEffect, useState } from "react";
-import { View, Text, ActivityIndicator, Pressable } from "react-native";
-import * as Location from "expo-location";
-import * as SecureStore from "expo-secure-store";
-import envs from "../../config/env";
-import { useFocusEffect } from '@react-navigation/native';
 // modules
-import { get, handlerUnauthorizedError } from "../../utils/requests";
-import {
-  setTravelDetails,
-  setTravelInfo,
-  setUserLocation,
-} from "../../redux/actions/UpdateTravelDetails";
+import { View, Text, ActivityIndicator, Pressable } from "react-native";
+import { useCallback, useState } from "react";
+import * as SecureStore from "expo-secure-store";
+import { useFocusEffect } from '@react-navigation/native';
+// files
+import TravelFindedModal from "./TravelFindedModal";
+import { setTravelDetails, setTravelInfo, setUserLocation } from "../../redux/actions/UpdateTravelDetails";
+import { useDispatch } from "react-redux";
 import { setNewTravel } from "../../redux/actions/UpdateCurrentTravel";
 
 export default function TravelSearch({ navigation }) {
@@ -27,13 +18,9 @@ export default function TravelSearch({ navigation }) {
   useFocusEffect(useCallback(() => {
     setIsSearching(true);
 
-    console.log(1);
-
     (async () => {
       await SecureStore.setItemAsync('askForTravel', 'true');
     })();
-
-    console.log(2);
 
     const interval = setInterval(async () => {
 
@@ -63,11 +50,11 @@ export default function TravelSearch({ navigation }) {
       }
     }, 10000);
 
-    // return () => {
-    //   setIsSearching(false);
-    //   setModalTravelFindedVisible(true);
-    //   clearInterval(interval);
-    // };
+    return () => {
+      setIsSearching(false);
+      setModalTravelFindedVisible(true);
+      clearInterval(interval);
+    };
 
   }, []));
 

@@ -5,7 +5,7 @@ import MapViewDirections from "react-native-maps-directions";
 import { View, Text, Pressable, Image } from "react-native";
 import { useSelector } from "react-redux";
 import { useFonts } from "expo-font";
-import { get, handlerUnauthorizedError,authPost } from "../../utils/requests";
+import { get, authPost, handlerUnauthorizedError } from "../../utils/requests";
 import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
 import { useFocusEffect } from '@react-navigation/native';
@@ -51,8 +51,8 @@ export default function DriverIncoming({ navigation }) {
     let interval = setInterval(async () => {
       const token = await SecureStore.getItemAsync("token");
 
-      await get(`${API_URL}/travels/${travelId}/driver`, token)
-        .then(({ data }) => {
+      await get(`${API_URL}/travels/${travelId}/driver`, token).then(
+        ({ data }) => {
           const position = data.data.currentDriverPosition;
           setCurrentOrigin(position);
 
@@ -73,10 +73,16 @@ export default function DriverIncoming({ navigation }) {
   const cancelTravel = async () => {
     clearInterval(interval);
     let token = await SecureStore.getItemAsync("token");
-    return authPost(
-      `${API_URL}/travels/${travelId}/reject?isTravelCancelled='true'`,
-      token
-    ).then(navigation.navigate("Home")).catch(error => functionError(navigation, error));
+    const travel = await get(`${API_URL}/travels/${travelId}`, token);
+    const body = {
+      driverId: travel.data.data.driverId,
+      price: travel.data.data.price,
+      paidWithCredits: true,
+      payToDriver: false,
+    };
+    return authPost(`${API_URL}/travels/${travelId}/reject?isTravelCancelled='true'`, token, body)
+      .then(navigation.navigate("Home"))
+      .catch(error => handlerUnauthorizedError(navigation, error));
   };
 
   const [fontsLoaded] = useFonts({
@@ -173,7 +179,7 @@ export default function DriverIncoming({ navigation }) {
         <View style={TravelStyles.buttonContainer}>
           <Pressable
             style={MapStyles.confirmTripButton}
-            onPress={() => navigation.push("ProfileVisualization")}
+            onPress={() => navigation.push("DriverProfileVisualization")}
           >
             <Text
               style={{

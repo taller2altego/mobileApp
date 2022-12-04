@@ -1,14 +1,15 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { Text, View } from "react-native";
+import React, { useState, useCallback } from "react";
+import { Text, View , FlatList} from "react-native";
 import * as SecureStore from "expo-secure-store";
 import { useSelector } from "react-redux";
 import { get, handlerUnauthorizedError } from "../../utils/requests";
-import { Profilestyles } from "../styles";
+import { TravelStyles, MapStyles } from "../styles";
 import HomeTab from "./homeTab";
 import envs from "../../config/env";
 import { Ionicons } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
 import { useFocusEffect } from '@react-navigation/native';
+import CommentItem from "../travel/CommentItem";
 
 export default function VisualizationTab({ navigation }) {
   // States
@@ -17,11 +18,24 @@ export default function VisualizationTab({ navigation }) {
   const [driverScore, setDriverScore] = useState();
   const [driverPlate, setDriverPlate] = useState();
   const [driverCarModel, setDriverCarModel] = useState();
+  const [data, setData] = useState([]);
+  const [selectedId, setSelectedId] = useState(null);
 
   // Driver Data
   const currentTravelData = useSelector((store) => store.currentTravel);
 
   const { API_URL, _ } = envs;
+
+  function renderItem({ item }) {
+    const backgroundColor = item.id === selectedId ? "#f2f2f200" : "white";
+    return (
+      <CommentItem
+        item={item}
+        onPress={() => handleSelectedTrip(item)}
+        backgroundColor={{ backgroundColor }}
+      />
+    );
+  }
 
   useFocusEffect(useCallback(() => {
     (async () => {
@@ -42,6 +56,19 @@ export default function VisualizationTab({ navigation }) {
           setDriverCarModel(model);
         }
       ).catch(error => handlerUnauthorizedError(navigation, error));
+
+      const id = await SecureStore.getItemAsync("id");
+      const params = {
+        page: 1,
+        limit: 4,
+      };
+
+      await get(`${API_URL}/comments/driver/${currentTravelData.driverId}`, token)
+        .then((data) => {
+          setData(data.data.comments);
+        })
+        .catch(err => handlerUnauthorizedError(navigation, err));
+
     })();
   }, []));
 
@@ -76,6 +103,14 @@ export default function VisualizationTab({ navigation }) {
           {driverCarModel}
         </Text>
       </View>
+      <View style={{ flex: 3 }}>
+            <FlatList
+              data={data}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.id}
+              extraData={selectedId}
+            />
+          </View>
     </View>
   );
 }

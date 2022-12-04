@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   View,
   FlatList,
@@ -49,6 +49,7 @@ export default function HomeTab({ navigation }) {
   const { API_URL, GOOGLE_API_KEY } = envs;
 
   // state
+  const originRef = useRef();
   const [srcDetails, setSrcDetails] = useState("");
   const [destDetails, setDestDetails] = useState("");
   const [data_travels, setData] = useState([]);
@@ -76,6 +77,14 @@ export default function HomeTab({ navigation }) {
       />
     );
   }
+
+  useEffect(() => {
+    originRef.current?.setAddressText(currentUserData.defaultLocation.address)
+    setSrcDetails({
+      latitude: currentUserData.defaultLocation.latitude,
+      longitude: currentUserData.defaultLocation.longitude,
+    });
+  }, [currentUserData])
 
   useFocusEffect(useCallback(() => {
     (async () => {
@@ -178,16 +187,15 @@ export default function HomeTab({ navigation }) {
 
           <View style={[{ flex: 1, padding: 20 }]}>
             <GooglePlacesAutocomplete
+              ref={originRef}
               styles={{ textInput: Homestyles.searchInput, flex: 1 }}
               placeholder="Punto de partida"
               fetchDetails
               enablePoweredByContainer={false}
               textInputProps={{
                 onChangeText: (text) => {
-                  if (text != "" || !firstTimeChange) {
+                  if (text != "") {
                     setCorrectSrcInput(false);
-                    setOriginInput(text);
-                    setFirstTimeChange(false);
                   }
                 },
                 value: originInput,

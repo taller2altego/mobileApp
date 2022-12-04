@@ -11,12 +11,17 @@ export default function DefaultLocationRequest({ navigation }) {
   const { API_URL, GOOGLE_API_KEY } = envs;
   const [correctInput, setCorrectInput] = useState(false);
   const [defaultAddress, setDefaultAddress] = useState("");
+  const [defaultAddressCoordinates, setDefaultAddressCoordinates] = useState(
+    {}
+  );
 
   const handleConfirm = async () => {
     const id = await SecureStore.getItemAsync("id");
     const token = await SecureStore.getItemAsync("token");
     patch(`${API_URL}/users/${id}/location`, token, {
       defaultAddress,
+      defaultLatitude: defaultAddressCoordinates.latitude,
+      defaultLongitude: defaultAddressCoordinates.longitude
     }).then(() => {
       navigation.replace("Home");
     });
@@ -62,6 +67,10 @@ export default function DefaultLocationRequest({ navigation }) {
             </View>
           )}
           onPress={(data, details) => {
+            setDefaultAddressCoordinates({
+              latitude: details.geometry.location.lat,
+              longitude: details.geometry.location.lng,
+            });
             setDefaultAddress(data.description);
             setCorrectInput(true);
           }}

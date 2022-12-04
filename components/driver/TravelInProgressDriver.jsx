@@ -11,7 +11,7 @@ import { useSelector } from "react-redux";
 import { useFonts } from "expo-font";
 import envs from "../../config/env";
 import * as Location from "expo-location";
-import { authPost } from "../../utils/requests";
+import { authPost, get, handlerUnauthorizedError } from "../../utils/requests";
 import * as SecureStore from "expo-secure-store";
 import { useFocusEffect } from "@react-navigation/native";
 
@@ -29,7 +29,7 @@ export default function TravelInProgressDriver({ navigation }) {
 
   // redux
   const tripData = useSelector((store) => store.travelDetailsData);
-  const currentTravelData = useSelector((store) => store.currentTravel);
+  const travelData = useSelector((store) => store.currentTravel);
   const [locationSubscription, setLocationSubscription] = useState(null);
 
   // state
@@ -119,24 +119,37 @@ export default function TravelInProgressDriver({ navigation }) {
     const token = await SecureStore.getItemAsync("token");
     setRoadTofinalDestination(true);
     setArriveOnUserLocation(false);
-    authPost(`${API_URL}/travels/${currentTravelData._id}/start`, token);
+    authPost(`${API_URL}/travels/${travelData._id}/start`, token)
   };
 
   const finishTravel = async () => {
     const id = await SecureStore.getItemAsync("id");
     const token = await SecureStore.getItemAsync("token");
-    return authPost(
-      `${API_URL}/travels/${currentTravelData._id}/finish`,
-      token
-    ).then(navigation.navigate("Home"));
+    const travel = await get(`${API_URL}/travels/${travelData._id}`, token);
+    const body = {
+      driverId: travel.data.data.driverId,
+      price: travel.data.data.price,
+      paidWithCredits: true,
+      payToDriver: true,
+    };
+    return authPost(`${API_URL}/travels/${travelData._id}/finish`, token, body)
+      .then(navigation.navigate("UserProfileVisualization", { travelId: travelData._id, userId: travel.data.data.userId }));
   };
 
-  const cancelTravel = () => {
-    // request para eliminar el driver del tralel
-    // limpiar inputs de destino y origen en main
-    return post(
-      `${API_URL}/travels/${currentTravelData._id}/reject?isTravelCancelled='true'`
-    ).then(navigation.navigate("Home")).catch(error => functionError(navigation, error));
+  const cancelTravel = async () => {
+    const token = await SecureStore.getItemAsync("token");
+    const travel = await get(`${API_URL}/travels/${travelData._id}`, token);
+    const user = await get(`${API_URL}/users/${travel.data.data.userId}`, token)
+    const body = {
+      userId: travel.data.data.userId,
+      email: user.data.email,
+      price: travel.data.data.price,
+      paidWithCredits: travel.data.data.paidWithCredits,
+      payToDriver: false,
+    };
+    return authPost(`${API_URL}/travels/${travelData._id}/reject?isTravelCancelled='true'`, token, body)
+      .then(navigation.navigate("Home"))
+      .catch(error => handlerUnauthorizedError(navigation, error));
   };
 
   if (!fontsLoaded) {

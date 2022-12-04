@@ -23,7 +23,7 @@ export default function ReportTravel({ route, navigation }) {
         const id = await SecureStore.getItemAsync("id");
         const token = await SecureStore.getItemAsync("token");
         const data = {
-            userId: id,
+            userId: parseInt(id),
             driverId: item.driver,
             description: reportText
         };

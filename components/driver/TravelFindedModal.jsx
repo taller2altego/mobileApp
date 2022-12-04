@@ -4,10 +4,9 @@ import { Entypo } from "@expo/vector-icons";
 
 import { modalStyles } from "../styles";
 import { useSelector } from "react-redux";
-import { authPost } from "../../utils/requests";
+import { authPost, handlerUnauthorizedError } from "../../utils/requests";
 import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
-import { handlerUnauthorizedError } from "./../../utils/requests";
 
 export default function TravelFindedModal({
   navigation,

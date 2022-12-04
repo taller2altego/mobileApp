@@ -2,6 +2,7 @@ import {
   SET_IS_DRIVER,
   SET_USER_DATA,
   SET_DEFAULT_LOCATION,
+  CLEAR_USER_DATA,
 } from "../actions/UpdateUserData";
 
 const initialState = {
@@ -9,7 +10,7 @@ const initialState = {
   lastname: "",
   email: "",
   phoneNumber: "",
-  defaultLocation: "",
+  defaultLocation: {},
   isDriver: "false",
 };
 
@@ -28,7 +29,22 @@ const modifyUserDataReducer = (state = initialState, action) => {
     case SET_DEFAULT_LOCATION:
       return {
         ...state,
-        defaultLocation: action.payload.defaultLocation,
+        defaultLocation: {
+          ...state.defaultLocation,
+          address: action.payload.address,
+          latitude: action.payload.latitude,
+          longitude: action.payload.longitude
+        },
+      };
+    case CLEAR_USER_DATA:
+      return {
+        ...state,
+        name: initialState.name,
+        lastname: initialState.lastname,
+        email: initialState.email,
+        phoneNumber: initialState.phoneNumber,
+        defaultLocation: initialState.defaultLocation,
+        isDriver: initialState.isDriver 
       };
     default:
       return state;

@@ -65,7 +65,7 @@ export default function Landing({ navigation }) {
         </Text>
       </View>
       <View style={[LandingStyles.land_text_container]}>
-        <Text style={[LandingStyles.land_sub_text, { fontFamily: "poppins" }]}>
+        <Text style={[LandingStyles.land_sub_text, { fontFamily: "poppins", color: "black" }]}>
           Por favor, inicia sesion con tu cuenta o registrate para seguir
           utilizando Fiuber
         </Text>

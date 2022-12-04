@@ -2,11 +2,21 @@ import React, { useState, useEffect } from "react";
 import { Pressable, Text, TextInput, View, ScrollView } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import * as SecureStore from "expo-secure-store";
-import { patch, authPost, get, handlerUnauthorizedError } from "../../utils/requests";
-import { setUserData } from "../../redux/actions/UpdateUserData";
+import {
+  patch,
+  authPost,
+  get,
+  handlerUnauthorizedError,
+} from "../../utils/requests";
+import { clearUserData, setUserData } from "../../redux/actions/UpdateUserData";
 import { Profilestyles } from "../styles";
 import envs from "../../config/env";
-import { setDriverData } from "../../redux/actions/UpdateDriverData";
+import {
+  clearDriverData,
+  setDriverData,
+} from "../../redux/actions/UpdateDriverData";
+import { clearCurrentTravel } from "../../redux/actions/UpdateCurrentTravel";
+import { clearTravelDetails } from "../../redux/actions/UpdateTravelDetails";
 
 export default function ProfileTab({ navigation }) {
   const currentUserData = useSelector((store) => store.userData);
@@ -23,11 +33,29 @@ export default function ProfileTab({ navigation }) {
   const [errorMessage, setErrorMessage] = useState("");
   const { API_URL, _ } = envs;
 
-  const logOut = async (navigation) => {
+  useEffect(() => {
+    setModelText(currentDriverData.model);
+    setPlateText(currentDriverData.licensePlate);
+    setLicenseText(currentDriverData.license);
+    setNameText(currentUserData.name);
+    setLastnameText(currentUserData.lastname);
+    setPhoneText(currentUserData.phoneNumber);
+  }, [currentDriverData, currentUserData]);
+
+  const logOut = async () => {
     const token = await SecureStore.getItemAsync("token");
+    console.log(token);
     return authPost(`${API_URL}/logout`, token)
       .then(async () => {
         await SecureStore.deleteItemAsync("token");
+        await SecureStore.deleteItemAsync("id");
+        if (await SecureStore.getItemAsync("driverId")) {
+          await SecureStore.deleteItemAsync("driverId");
+        }
+        dispatch(clearCurrentTravel());
+        dispatch(clearDriverData());
+        dispatch(clearUserData());
+        dispatch(clearTravelDetails());
         navigation.navigate("Landing");
       })
       .catch((e) => {
@@ -56,7 +84,11 @@ export default function ProfileTab({ navigation }) {
   const handleUpdate = async () => {
     const id = await SecureStore.getItemAsync("id");
     const token = await SecureStore.getItemAsync("token");
-    const body = { name: nameText, lastname: lastnameText, phoneNumber: Number(phoneText) };
+    const body = {
+      name: nameText,
+      lastname: lastnameText,
+      phoneNumber: Number(phoneText),
+    };
     patch(`${API_URL}/users/${id}`, token, body)
       .then(() => {
         dispatch(
@@ -68,11 +100,15 @@ export default function ProfileTab({ navigation }) {
           })
         );
       })
-      .catch(error => handlerUnauthorizedError(navigation, error));
+      .catch((error) => handlerUnauthorizedError(navigation, error));
 
     const driverid = await SecureStore.getItemAsync("driverId");
 
-    await patch(`${API_URL}/drivers/${driverid}`, token, { model: modelText, license: licenseText, licensePlate: plateText })
+    await patch(`${API_URL}/drivers/${driverid}`, token, {
+      model: modelText,
+      license: licenseText,
+      licensePlate: plateText,
+    })
       .then(() => {
         dispatch(
           setDriverData({
@@ -82,23 +118,24 @@ export default function ProfileTab({ navigation }) {
           })
         );
       })
-      .catch(err => handlerUnauthorizedError(navigation, err));
+      .catch((err) => handlerUnauthorizedError(navigation, err));
 
-    if (driverid){
+    if (driverid) {
       await patch(`${API_URL}/drivers/${driverid}`, token, {
         model: modelText,
         license: licenseText,
         licensePlate: plateText,
-      }).then(() => {
-        dispatch(
-          setDriverData({
-            license: licenseText,
-            licensePlate: plateText,
-            model: modelText,
-          })
-        );
       })
-      .catch(() => {});
+        .then(() => {
+          dispatch(
+            setDriverData({
+              license: licenseText,
+              licensePlate: plateText,
+              model: modelText,
+            })
+          );
+        })
+        .catch(() => {});
     }
 
     setIsEditing(false);
@@ -287,7 +324,7 @@ export default function ProfileTab({ navigation }) {
             <></>
           )}
           <Pressable
-            onPress={() => logOut(navigation)}
+            onPress={() => logOut()}
             style={Profilestyles.edit_profile_button}
           >
             <Text
