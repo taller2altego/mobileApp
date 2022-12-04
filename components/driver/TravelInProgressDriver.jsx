@@ -12,7 +12,7 @@ import { useFonts } from "expo-font";
 import envs from "../../config/env";
 import { useEffect } from "react";
 import * as Location from "expo-location";
-import { authPost, get } from "../../utils/requests";
+import { authPost, get, handlerUnauthorizedError } from "../../utils/requests";
 import * as SecureStore from "expo-secure-store";
 import { useFocusEffect } from "@react-navigation/native";
 
@@ -134,7 +134,7 @@ export default function TravelInProgressDriver({ navigation }) {
       payToDriver: true,
     };
     return authPost(`${API_URL}/travels/${travelData._id}/finish`, token, body)
-      .then(navigation.navigate("Home"));
+      .then(navigation.navigate("UserProfileVisualization", { travelId: travelData._id, userId: travel.data.data.userId }));
   };
 
   const cancelTravel = async () => {
@@ -150,18 +150,12 @@ export default function TravelInProgressDriver({ navigation }) {
     };
     return authPost(`${API_URL}/travels/${travelData._id}/reject?isTravelCancelled='true'`, token, body)
       .then(navigation.navigate("Home"))
-      .catch(error => functionError(navigation, error));
+      .catch(error => handlerUnauthorizedError(navigation, error));
   };
 
   if (!fontsLoaded) {
     return null;
   }
-
-  const userVisualization = async () => {
-    const travel = await get(`${API_URL}/travels/${travelData._id}`, token);
-    navigation.navigate("UserProfileVisualization", { userId: travel.data.data.userId });
-  };
-
 
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>

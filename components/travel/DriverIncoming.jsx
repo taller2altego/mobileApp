@@ -5,7 +5,7 @@ import MapViewDirections from "react-native-maps-directions";
 import { View, Text, Pressable, Image } from "react-native";
 import { useSelector } from "react-redux";
 import { useFonts } from "expo-font";
-import { get, authPost } from "../../utils/requests";
+import { get, authPost, handlerUnauthorizedError } from "../../utils/requests";
 import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
 import { useFocusEffect } from '@react-navigation/native';
@@ -82,7 +82,7 @@ export default function DriverIncoming({ navigation }) {
     };
     return authPost(`${API_URL}/travels/${travelId}/reject?isTravelCancelled='true'`, token, body)
       .then(navigation.navigate("Home"))
-      .catch(error => functionError(navigation, error));
+      .catch(error => handlerUnauthorizedError(navigation, error));
   };
 
   const [fontsLoaded] = useFonts({

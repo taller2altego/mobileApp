@@ -4,7 +4,7 @@ import { Entypo } from "@expo/vector-icons";
 
 import { LandingStyles, modalStyles } from "../styles";
 import { useSelector } from "react-redux";
-import { authPost } from "../../utils/requests";
+import { authPost, handlerUnauthorizedError } from "../../utils/requests";
 import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
 
@@ -26,7 +26,7 @@ export default function TravelFindedModal({
       currentDriverPosition: travelDetailsData.origin
     }).then(
       navigation.navigate("TravelInProgressDriver")
-    ).catch(error => functionError(navigation, error));
+    ).catch(error => handlerUnauthorizedError(navigation, error));
   };
 
   return (

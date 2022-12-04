@@ -13,11 +13,13 @@ import DriverScreen from "./components/auth/driver";
 import TravelInProgress from "./components/travel/TravelInProgress";
 import TravelSearch from "./components/driver/TravelSearch";
 import DriverProfileVisualization from "./components/main/DriverProfileVisualization";
+import UserProfileVisualization from "./components/driver/UserProfileVisualization";
 import store from "./redux/store/store";
 import { Provider } from "react-redux";
 import ConfirmationTravel from "./components/travel/ConfirmationTravel";
 import DriverIncoming from "./components/travel/DriverIncoming";
 import TravelFindedModal from "./components/driver/TravelFindedModal";
+import RateUser from "./components/driver/RateUser";
 import TravelInProgressDriver from "./components/driver/TravelInProgressDriver";
 import TripDetailsScreen from "./components/main/TripDetails";
 import RecoverPassword from "./components/auth/recoverPassword";
@@ -115,6 +117,16 @@ export default function App() {
           <Stack.Screen
             name="ReportTravel"
             component={ReportTravel}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="UserProfileVisualization"
+            component={UserProfileVisualization}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="RateUser"
+            component={RateUser}
             options={{ headerShown: false }}
           />
         </Stack.Navigator>

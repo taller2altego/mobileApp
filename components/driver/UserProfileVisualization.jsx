@@ -1,11 +1,12 @@
 import React, { useState, useCallback } from "react";
-import { Text, View, FlatList } from "react-native";
+import { Text, View, FlatList, Pressable } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import { get } from "../../utils/requests";
 import envs from "../../config/env";
 import { Ionicons } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
 import { useFocusEffect } from '@react-navigation/native';
+import { MapStyles, TravelStyles } from "../styles";
 import CommentItem from "../travel/CommentItem";
 
 export default function VisualizationTab({ route, navigation }) {
@@ -18,12 +19,10 @@ export default function VisualizationTab({ route, navigation }) {
     const { API_URL, _ } = envs;
 
     function renderItem({ item }) {
-        const backgroundColor = item.id === selectedId ? "#f2f2f200" : "white";
         return (
             <CommentItem
                 item={item}
-                onPress={() => handleSelectedTrip(item)}
-                backgroundColor={{ backgroundColor }}
+                backgroundColor={"white"}
             />
         );
     }
@@ -62,7 +61,7 @@ export default function VisualizationTab({ route, navigation }) {
                 </Text>
                 <View style={{ flexDirection: "row" }}>
                     <Text style={{ fontFamily: "poppins", fontSize: 25 }}>
-                        {userScore != 0 ? userScore : "-"}
+                        {userScore > 0 ? userScore.toFixed(1) : "-"}
                     </Text>
                     <FontAwesome
                         name="star"
@@ -78,6 +77,41 @@ export default function VisualizationTab({ route, navigation }) {
                     renderItem={renderItem}
                     keyExtractor={(item) => item.id}
                 />
+            </View>
+            <View style={TravelStyles.buttonContainer}>
+                <Pressable
+                    style={MapStyles.confirmTripButton}
+                    onPress={() => navigation.navigate("Home")}
+                >
+                    <Text
+                        style={{
+                            fontFamily: "poppins-bold",
+                            color: "white",
+                            textAlign: "center",
+                            lineHeight: 38,
+                        }}
+                    >
+                        Continuar
+                    </Text>
+                </Pressable>
+                <Pressable
+                    style={MapStyles.confirmTripButton}
+                    onPress={() => {
+                        const { travelId } = route.params;
+                        navigation.navigate("RateUser", { travelId });
+                    }}
+                >
+                    <Text
+                        style={{
+                            fontFamily: "poppins-bold",
+                            color: "white",
+                            textAlign: "center",
+                            lineHeight: 38,
+                        }}
+                    >
+                        Puntuar Pasajero
+                    </Text>
+                </Pressable>
             </View>
         </View>
     );
