@@ -60,7 +60,7 @@ export default function LoginModal({ ...props }) {
             <TextInput
               style={modalStyles.modal_input}
               placeholder="Email"
-              value="driver@fiuber.com"
+              value={email}
               placeholderTextColor="#343437"
               onChangeText={(email) => setEmail(email)}
             />
@@ -68,7 +68,7 @@ export default function LoginModal({ ...props }) {
               style={modalStyles.modal_input}
               placeholder="Contraseña"
               placeholderTextColor="#343437"
-              value="1234"
+              value={password}
               secureTextEntry={true}
               onChangeText={(password) => setPassword(password)}
             />

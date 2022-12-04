@@ -11,7 +11,6 @@ import { setDriverData } from "../../redux/actions/UpdateDriverData";
 export default function ProfileTab({ navigation }) {
   const currentUserData = useSelector((store) => store.userData);
   const currentDriverData = useSelector((store) => store.driverData);
-  console.log(currentDriverData);
   const dispatch = useDispatch();
   const [nameText, setNameText] = useState(currentUserData.name);
   const [lastnameText, setLastnameText] = useState(currentUserData.lastname);

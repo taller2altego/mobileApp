@@ -29,9 +29,6 @@ Notifications.setNotificationHandler({
   }),
 });
 
-import * as Notifications from "expo-notifications";
-import { handleNewNotification } from "../notifications/Notifications";
-
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,

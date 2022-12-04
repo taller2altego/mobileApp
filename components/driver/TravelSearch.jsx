@@ -1,6 +1,3 @@
-import { useEffect, useState } from "react";
-import { View, Text, ActivityIndicator, Pressable } from "react-native";
-import * as SecureStore from "expo-secure-store";
 import { useDispatch } from "react-redux";
 
 // // modules
@@ -8,7 +5,6 @@ import TravelFindedModal from "./TravelFindedModal";
 import { getItemAsync } from "expo-secure-store";
 import { useCallback, useEffect, useState } from "react";
 import { View, Text, ActivityIndicator, Pressable } from "react-native";
-import TravelFindedModal from "./TravelFindedModal";
 import * as Location from "expo-location";
 import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
