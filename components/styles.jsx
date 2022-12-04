@@ -1,6 +1,6 @@
 import { StyleSheet, Dimensions } from "react-native";
-const PRIMARY_BLUE = "#1d9bc2";
-const SECONDARY_BLUE = "#0b0e12";
+const PRIMARY_BLUE = "#121111";
+const SECONDARY_BLUE = "#f7f4f3";
 
 const LandingStyles = StyleSheet.create({
   land_container: {
@@ -24,14 +24,14 @@ const LandingStyles = StyleSheet.create({
   simpleText: {
     textAlign: "center",
     textJustify: "center",
-    color: "black",
+    color: "white",
     lineHeight: 65,
     fontWeight: "bold",
-    fontSize: 14,
+    fontSize: 13,
   },
   tinyLogo: {
-    width: 150,
-    height: 150,
+    width: 250,
+    height: 250,
   },
   logo: {
     paddingTop: 100,
@@ -66,6 +66,17 @@ const LandingStyles = StyleSheet.create({
     color: "white",
     fontSize: 18,
   },
+  land_container_v2: {
+    flex: 1.5,
+    alignItems: "center",
+    justifyContent: "space-around",
+  },
+  land_buttons_container_v2: {
+    flex: 1,
+    flexDirection: 'row',
+    marginHorizontal: 20,
+    marginTop: 5,
+  },
 });
 
 const modalStyles = StyleSheet.create({
@@ -98,14 +109,16 @@ const modalStyles = StyleSheet.create({
     width: 150,
     height: 65,
     alignSelf: "center",
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: "white",
   },
   modal_input: {
     borderWidth: 1,
-    borderColor: "#343437",
+    borderColor: "white",
+    color: "white",
+    fontFamily: "poppins",
     borderRadius: 10,
-    height: 50,
+    height: 45,
     paddingLeft: 10,
     fontSize: 15,
     textAlign: "justify",
@@ -196,7 +209,7 @@ const RecoverStyles = StyleSheet.create({
 
 const Profilestyles = StyleSheet.create({
   profile_text: {
-    fontSize: 15,
+    fontSize: 35,
   },
   profile_container: {
     flex: 1,
@@ -209,25 +222,21 @@ const Profilestyles = StyleSheet.create({
     paddingTop: 30,
   },
   profile_inputs: {
-    flex: 2,
+    flex: 3,
     justifyContent: "space-evenly",
   },
   profile_input: {
     fontSize: 15,
-    marginLeft: 50,
     width: 300,
     borderWidth: 1,
     borderColor: "#343437",
     borderRadius: 10,
     height: 50,
     paddingLeft: 10,
-    marginLeft: 30,
-    marginRight: 30,
     outlineStyle: "none",
   },
   profile_visualization: {
     fontSize: 15,
-    fontWeight: "bold",
     marginLeft: 50,
     width: 300,
     height: 50,
@@ -369,7 +378,7 @@ const MapStyles = StyleSheet.create({
     backgroundColor: "black",
     marginBottom: 10,
     marginTop: 10,
-    borderRadius: 15,
+    borderRadius: 5,
   },
 });
 const TravelStyles = StyleSheet.create({
@@ -382,6 +391,27 @@ const TravelStyles = StyleSheet.create({
   buttonContainer: {
     flex: 1,
   },
+  comment_container: {
+    height: (15 * Dimensions.get("window").height) / 100,
+    width: (75 * Dimensions.get("window").width) / 100,
+    backgroundColor: "white",
+    fontSize: 16,
+    textAlign: "center",
+    shadowColor: "black",
+    borderColor: 'black',
+    borderWidth: 2,
+    shadowOpacity: 0.5,
+    shadowOffset: { width: 2, height: 2 },
+    shadowRadius: 4,
+    elevation: 4,
+    padding: 8,
+    borderRadius: 8,
+    top: 35,
+  },
+  input_text: {
+    flex: 2,
+    textAlign: "center",
+  }
 });
 
 const ReportStyles = StyleSheet.create({

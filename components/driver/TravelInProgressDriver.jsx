@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import MapView, {
   AnimatedRegion,
   Marker,
@@ -14,6 +14,7 @@ import { useEffect } from "react";
 import * as Location from "expo-location";
 import { authPost, get } from "../../utils/requests";
 import * as SecureStore from "expo-secure-store";
+import { useFocusEffect } from "@react-navigation/native";
 
 const screen = Dimensions.get("window");
 const ASPECT_RATIO = screen.width / screen.height;
@@ -95,17 +96,19 @@ export default function TravelInProgressDriver({ navigation }) {
     }
   };
 
-  useEffect(() => {
-    updateDriverPosition();
-    return function cleanup() {
-      locationSubscription.remove();
-    };
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      updateDriverPosition();
+      return () => {
+        locationSubscription.remove();
+      };
+    }, []),
+  );
 
   const updateDistance = (args, tripPart) => {
     const setArrive =
       tripPart === "start" ? setArriveOnUserLocation : setArriveOnDestination;
-    if (args.distance.toFixed(2) < 15555) {
+    if (args.distance.toFixed(2) < 0.05) {
       setArrive(true);
     } else {
       setArrive(false);
@@ -146,7 +149,8 @@ export default function TravelInProgressDriver({ navigation }) {
       payToDriver: false,
     };
     return authPost(`${API_URL}/travels/${travelData._id}/reject?isTravelCancelled='true'`, token, body)
-      .then(navigation.navigate("Home"));
+      .then(navigation.navigate("Home"))
+      .catch(error => functionError(navigation, error));
   };
 
   if (!fontsLoaded) {
@@ -224,7 +228,9 @@ export default function TravelInProgressDriver({ navigation }) {
             <Text> CANCELAR </Text>
           </Pressable>
         </View>
-      ) : <></>}
+      ) : (
+        <></>
+      )}
       {arriveOnDestination ? (
         <Pressable onPress={finishTravel}>
           <Text> FINALIZAR VIAJE </Text>

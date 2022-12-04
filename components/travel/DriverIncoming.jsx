@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { MapStyles, TravelStyles } from "../styles";
 import MapViewDirections from "react-native-maps-directions";
@@ -8,6 +8,7 @@ import { useFonts } from "expo-font";
 import { get, authPost } from "../../utils/requests";
 import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
+import { useFocusEffect } from '@react-navigation/native';
 
 const PRICE_PER_KM = 100;
 
@@ -46,44 +47,28 @@ export default function DriverIncoming({ navigation }) {
 
   const mapRef = useRef(null);
 
-  useEffect(() => {
-    (async () => {
+  useFocusEffect(useCallback(() => {
+    let interval = setInterval(async () => {
       const token = await SecureStore.getItemAsync("token");
-      return get(`${API_URL}/users/${driverId}`, token)
-        .then(({ data }) => {
-          const { name, lastname } = data;
-          const fullname = `${name} ${lastname}`;
-          setDriver(fullname);
-        })
-        .catch((err) => {
-          console.log(err);
-          return err;
-        });
-    })();
-  }, []);
 
-  useEffect(() => {
-    setRequestInterval(
-      setInterval(async () => {
-        const token = await SecureStore.getItemAsync("token");
+      await get(`${API_URL}/travels/${travelId}/driver`, token).then(
+        ({ data }) => {
+          const position = data.data.currentDriverPosition;
+          setCurrentOrigin(position);
 
-        await get(`${API_URL}/travels/${travelId}/driver`, token).then(
-          ({ data }) => {
-            const position = data.data.currentDriverPosition;
-            setCurrentOrigin(position);
-
-            // TODO: seguro la posicion final, no sea igual... calcular un aproximado
-            const isSameLat = position.latitude == destination.latitude;
-            const isSameLong = position.longitude == destination.longitude;
-            if (isSameLat && isSameLong) {
-              navigation.navigate("TravelInProgress");
-              clearInterval(interval);
-            }
+          // TODO: seguro la posicion final, no sea igual... calcular un aproximado
+          const isSameLat = position.latitude == destination.latitude;
+          const isSameLong = position.longitude == destination.longitude;
+          if (isSameLat && isSameLong) {
+            navigation.navigate("TravelInProgress");
           }
-        );
-      }, 10000)
-    );
-  }, []);
+        }
+      );
+    }, 10000);
+    return () => {
+      clearInterval(interval);
+    };
+  }, []));
 
   const cancelTravel = async () => {
     clearInterval(interval);
@@ -95,7 +80,9 @@ export default function DriverIncoming({ navigation }) {
       paidWithCredits: true,
       payToDriver: false,
     };
-    return authPost(`${API_URL}/travels/${travelId}/reject?isTravelCancelled='true'`, token, body).then(navigation.navigate("Home"));
+    return authPost(`${API_URL}/travels/${travelId}/reject?isTravelCancelled='true'`, token, body)
+      .then(navigation.navigate("Home"))
+      .catch(error => functionError(navigation, error));
   };
 
   const [fontsLoaded] = useFonts({
@@ -192,7 +179,7 @@ export default function DriverIncoming({ navigation }) {
         <View style={TravelStyles.buttonContainer}>
           <Pressable
             style={MapStyles.confirmTripButton}
-            onPress={() => navigation.navigate("ProfileVisualization")}
+            onPress={() => navigation.push("DriverProfileVisualization")}
           >
             <Text
               style={{

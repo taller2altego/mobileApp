@@ -1,17 +1,10 @@
 import { useState } from "react";
-import { MapStyles, TravelStyles, Profilestyles, RecoverStyles } from "../styles";
+import { MapStyles, Profilestyles, RecoverStyles, LandingStyles } from "../styles";
 import { View, Text, TextInput, Pressable } from "react-native";
 import { useFonts } from "expo-font";
 import { post } from "../../utils/requests";
 import validator from 'validator';
 import envs from "../../config/env";
-
-const edgePadding = {
-    top: 100,
-    right: 100,
-    bottom: 100,
-    left: 100,
-};
 
 export default function RecoverPassword({ navigation }) {
     // redux
@@ -33,7 +26,7 @@ export default function RecoverPassword({ navigation }) {
             return post(`${API_URL}/recover`, { email: email })
                 .then(() => {
                     navigation.navigate("AuthToken");
-                });
+                }).catch(error => functionError(navigation, error));
         }
     };
 
@@ -62,8 +55,8 @@ export default function RecoverPassword({ navigation }) {
             {invalidEmail && <View style={RecoverStyles.info_container}>
                 <Text style={RecoverStyles.invalid_email}>{"Ingrese un correo valido"}</Text>
             </View>}
-            <View style={TravelStyles.travelContainer}>
-                <View style={TravelStyles.buttonContainer}>
+            <View style={LandingStyles.land_container_v2}>
+                <View style={LandingStyles.land_buttons_container_v2}>
                     <Pressable
                         style={MapStyles.confirmTripButton}
                         onPress={() => comeBack(navigation)}
@@ -80,7 +73,7 @@ export default function RecoverPassword({ navigation }) {
                         </Text>
                     </Pressable>
                 </View>
-                <View style={TravelStyles.buttonContainer}>
+                <View style={LandingStyles.land_buttons_container_v2}>
                     <Pressable
                         style={MapStyles.confirmTripButton}
                         onPress={() => sendMail(navigation)}

@@ -1,55 +1,61 @@
-import { useState, useEffect } from "react";
-import { MapStyles, TravelStyles, Profilestyles } from "../styles";
-import { View, Text, Pressable, Image } from "react-native";
-import { useFonts } from "expo-font";
-import { Rating } from "react-native-ratings";
-import { get, patch } from "../../utils/requests";
+import { useState, useCallback } from "react";
+import { MapStyles, TravelStyles, ReportStyles } from "../styles";
+import { View, Text, TextInput, Pressable, Dimensions } from "react-native";
+import { get, patch, handlerUnauthorizedError, authPost } from "../../utils/requests";
+import { AirbnbRating } from "react-native-ratings";
 import * as SecureStore from "expo-secure-store";
 import moment from "moment";
-
-const API_KEY = "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ";
+import envs from "../../config/env";
+import { Ionicons } from "@expo/vector-icons";
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function TripDetails({ route, navigation }) {
-  const [fontsLoaded] = useFonts({
-    poppins: require("../../assets/fonts/Poppins-Regular.ttf"),
-    "poppins-bold": require("../../assets/fonts/Poppins-Bold.ttf"),
-  });
-  const [rating, handleRating] = useState();
+  const [alreadyRated, setAlreadyRated] = useState(false);
   const [source, setSource] = useState();
   const [destination, setDestination] = useState();
   const [price, setPrice] = useState();
   const [driver, setDriver] = useState();
   const [date, setDate] = useState();
   const [driverScore, setDriverScore] = useState();
+  const [comment, setComment] = useState("");
 
-  useEffect(() => {
+  const { API_URL, _ } = envs;
+
+  useFocusEffect(useCallback(() => {
     (async () => {
-      const { travelId } = route.params;
-
       const token = await SecureStore.getItemAsync("token");
-      await get(`http://10.0.2.2:5000/travels/${travelId}`, token)
-        .then(
-          ({ data: { data } }) => {
-            setSource(data.sourceAddress);
-            setDestination(data.destinationAddress);
-            setDriver(data.driver);
-            setPrice(data.price);
-            setDate(data.date);
-            setDriverScore(data.driverScore);
-          });
+      await get(`${API_URL}/travels/${route.params.travelId}`, token).then(
+        ({ data: { data } }) => {
+          if (data.driverScore != 0) {
+            setAlreadyRated(true);
+          }
+          setSource(data.sourceAddress);
+          setDestination(data.destinationAddress);
+          setDriver(data.driverId);
+          setPrice(data.price);
+          setDate(data.date);
+          setDriverScore(data.driverScore);
+        }
+      ).then(err => handlerUnauthorizedError(navigation, err));
     })();
-  }, []);
+  }, []));
 
-  const sendRatingToDriver = async (navigation) => {
+  const sendRatingToDriver = async () => {
     const token = await SecureStore.getItemAsync("token");
-    return patch(`http://10.0.2.2:5000/drivers/${driver}}`, token, { score: rating })
-      .then(() => {
-        return patch(`http://10.0.2.2:5000/travels/${travelId}`, token, { driverScore: rating })
-          .then(() => {
-            navigation.navigate("Home");
-          });
-      });
-  }
+    setAlreadyRated(true);
+    return patch(`${API_URL}/drivers/${driver}`, token, {
+      score: driverScore,
+    }).then(() => {
+      return patch(`${API_URL}/travels/${route.params.travelId}`, token, {
+        driverScore,
+      }).then(async () => {
+        if (comment != "") {
+          await authPost(`${API_URL}/comments/driver`, token, { userId: driver, description: comment })
+        }
+        navigation.navigate("Home");
+      }).catch(error => functionError(navigation, error));
+    }).catch(error => functionError(navigation, error));
+  };
 
   const months = {
     January: 1,
@@ -66,59 +72,102 @@ export default function TripDetails({ route, navigation }) {
     December: 12,
   };
 
-  if (!fontsLoaded) {
-    return null;
-  }
-  
   const a = moment(date);
   const year = a.format("YYYY");
   const month = a.format("MMMM");
   const day = a.format("DD");
 
   const sendReport = (navigation) => {
-    const dateTravel = `${day}/${months[month]}/${year}`
+    const dateTravel = `${day}/${months[month]}/${year}`;
     const { travelId } = route.params;
-    navigation.navigate("ReportTravel", { travelId, destination, dateTravel, driver });
-  }
+    navigation.navigate("ReportTravel", {
+      travelId,
+      destination,
+      dateTravel,
+      driver,
+    });
+  };
+
+  const comeBack = (navigation) => {
+    navigation.navigate("Home")
+  };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, alignItems: "center" }}>
+      <Ionicons
+        name="arrow-back"
+        size={24}
+        color="black"
+        style={{ top: 35, left: 15 }}
+        onPress={() => navigation.navigate("Home")}
+      />
       <View
         style={{
           flex: 1,
           flexDirection: "row",
-          justifyContent: "space-evenly",
+          justifyContent: "flex-start",
           alignItems: "center",
+          left: 30,
         }}
       >
-        <View style={Profilestyles.profile_container}>
-          <Text style={Profilestyles.profile_visualization}>Desde: {source}</Text>
-          <Text style={Profilestyles.profile_visualization}>Hasta: {destination}</Text>
-          <Text style={Profilestyles.profile_visualization}>Precio: ${price}</Text>
-          <Text style={Profilestyles.profile_visualization}>Conductor: {driver}</Text>
-          {(driverScore > 0) && (<Text style={Profilestyles.profile_visualization}>Puntaje del Viaje: {driverScore}</Text>)}
-          <Text style={Profilestyles.profile_visualization}>Fecha: {day}/{months[month]}/{year}</Text>
+        <View>
+          <Text
+            style={{
+              fontFamily: "poppins-bold",
+              fontSize: 25,
+              marginBottom: 30,
+            }}
+          >
+            Informacion Del Viaje
+          </Text>
+          <Text style={{ fontFamily: "poppins", fontSize: 18 }}>{source}</Text>
+          <Text style={{ fontFamily: "poppins", fontSize: 18 }}>
+            {destination}
+          </Text>
+          <Text style={{ fontFamily: "poppins", fontSize: 18 }}>
+            {price + "$"}
+          </Text>
+          <Text style={{ fontFamily: "poppins", fontSize: 18 }}>
+            {day}/{months[month]}/{year}
+          </Text>
         </View>
       </View>
-      {(driverScore == 0) && <Rating
-        style={{ alignSelf: "center", paddingBottom: 60 }}
-        type="custom"
-        minValue={1}
-        ratingCount={5}
-        imageSize={40}
-        ratingBackgroundColor="white"
-        ratingColor="black"
-        tintColor="grey"
-        startingValue={1}
-        fractions={1}
-        onFinishRating={(rating) => handleRating(rating)}
+      <Text
+        style={{
+          fontFamily: "poppins",
+          left: 30,
+          fontSize: 20,
+          marginBottom: 20,
+        }}
+      >
+        {!alreadyRated
+          ? `Puntua tu viaje con el driver ${driver}`
+          : `${driverScore} estrellas`}
+      </Text>
+      {!alreadyRated && <AirbnbRating
+        defaultRating={driverScore}
+        size={35}
+        selectedColor="black"
+        showRating={false}
+        isDisabled={alreadyRated}
+        onFinishRating={(rating) => setDriverScore(rating)}
       />}
-      <View style={TravelStyles.travelContainer}>
-
+      {!alreadyRated &&
+        <View style={TravelStyles.comment_container}>
+          <TextInput
+            style={[TravelStyles.input_text, { width: 300 }]}
+            placeholder="Comente su experiencia aqui..."
+            onChangeText={newText => setComment(newText)}
+            defaultValue={comment}
+            maxLength={500}
+          />
+        </View>}
+      <View style={[TravelStyles.travelContainer, { marginBottom: 10 }]}>
         <View style={TravelStyles.buttonContainer}>
+          <Text style={{ fontFamily: "poppins", fontSize: 20 }}></Text>
           <Pressable
-            style={MapStyles.confirmTripButton}
-            onPress={() => navigation.navigate("Home")}
+            style={[MapStyles.confirmTripButton, { width: (30 * Dimensions.get("window").width) / 100, marginRight: 10 }]}
+            onPress={() => comeBack(navigation)}
           >
             <Text
               style={{
@@ -131,24 +180,8 @@ export default function TripDetails({ route, navigation }) {
               Volver atras
             </Text>
           </Pressable>
-          {(driverScore == 0) && (<Pressable
-            style={MapStyles.confirmTripButton}
-            onPress={() => sendRatingToDriver(navigation)}
-          >
-            <Text
-              style={{
-                fontFamily: "poppins-bold",
-                color: "white",
-                textAlign: "center",
-                lineHeight: 38,
-              }}
-            >
-              Enviar Puntuacion
-            </Text>
-          </Pressable>
-          )}
           <Pressable
-            style={MapStyles.confirmTripButton}
+            style={[MapStyles.confirmTripButton, { width: (30 * Dimensions.get("window").width) / 100, marginRight: 10 }]}
             onPress={() => sendReport(navigation)}
           >
             <Text
@@ -162,9 +195,32 @@ export default function TripDetails({ route, navigation }) {
               Denunciar
             </Text>
           </Pressable>
-
+          {!alreadyRated ? (
+            <Pressable
+              style={
+                [driverScore != 0
+                  ? MapStyles.confirmTripButton
+                  : [MapStyles.confirmTripButton, { backgroundColor: "#bbb" }, { width: (30 * Dimensions.get("window").width) / 100 }]]
+              }
+              disabled={driverScore == 0}
+              onPress={() => sendRatingToDriver()}
+            >
+              <Text
+                style={{
+                  fontFamily: "poppins-bold",
+                  textAlign: "center",
+                  lineHeight: 38,
+                  color: "white",
+                }}
+              >
+                Puntuar
+              </Text>
+            </Pressable>
+          ) : (
+            <></>
+          )}
         </View>
       </View>
-    </View >
+    </View>
   );
 }

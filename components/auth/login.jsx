@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Modal, Pressable, Text, TextInput, View } from "react-native";
-import { get, post } from "../../utils/requests";
+import { get, post, handlerUnauthorizedError } from "../../utils/requests";
 import { LandingStyles, modalStyles } from "../styles";
 import { Entypo } from "@expo/vector-icons";
 import * as SecureStore from "expo-secure-store";
@@ -17,12 +17,14 @@ export default function LoginModal({ ...props }) {
   const { API_URL, _ } = envs;
 
   const getUserInfo = async (id, token) => {
-    return get(`${API_URL}/users/${id}`, token).then(({ data }) => data);
+    return get(`${API_URL}/users/${id}`, token)
+      .then(({ data }) => data)
+      .catch((error) => handlerUnauthorizedError(navigation, error));
   };
 
   const onSignIn = () => {
-    const body = { email:"A@n", password:"12" };
-    return post(`${API_URL}/login`, body)
+    const body = { email, password };
+    return post(`${API_URL}/login`, body, () => { })
       .then(async ({ data: { id, token } }) => {
         await SecureStore.setItemAsync("token", token);
         await SecureStore.setItemAsync("id", id.toString());
@@ -50,22 +52,22 @@ export default function LoginModal({ ...props }) {
   return (
     <Modal animationType="slide" transparent={true} visible={props.visible}>
       <View style={[modalStyles.modal_extern_view, { fontFamily: "poppins" }]}>
-        <View style={[modalStyles.modal_view, { fontFamily: "poppins" }]}>
+        <View style={modalStyles.modal_view}>
           <Pressable onPress={props.toggle}>
-            <Entypo name="cross" size={24} color="black" />
+            <Entypo name="cross" size={26} color="white" />
           </Pressable>
           <View style={[modalStyles.flex_modal, { fontFamily: "poppins" }]}>
             <TextInput
-              style={[modalStyles.modal_input, { fontFamily: "poppins" }]}
+              style={modalStyles.modal_input}
               placeholder="Email"
               value={email}
-              placeholderTextColor="#343437"
+              placeholderTextColor="white"
               onChangeText={(email) => setEmail(email)}
             />
             <TextInput
-              style={[modalStyles.modal_input, { fontFamily: "poppins" }]}
+              style={modalStyles.modal_input}
               placeholder="Contraseña"
-              placeholderTextColor="#343437"
+              placeholderTextColor="white"
               value={password}
               secureTextEntry={true}
               onChangeText={(password) => setPassword(password)}

@@ -16,17 +16,17 @@ export default function TravelFindedModal({
   const { API_URL, _ } = envs;
   const travelDetailsData = useSelector((store) => store.travelDetailsData);
   const currentTravel = useSelector((store) => store.currentTravel);
-  const travelData = useSelector((store) => store.currentTravel);
 
   const acceptTravel = async () => {
     const id = await SecureStore.getItemAsync("id");
+    const driverId = await SecureStore.getItemAsync("driverId");
     const token = await SecureStore.getItemAsync("token");
-    // FIXME sacar el id del viaje hardcodeado
-    return authPost(`${API_URL}/travels/${travelData._id}/accept`, token, {
-      driverId: id,
+    return authPost(`${API_URL}/travels/${currentTravel._id}/accept`, token, {
+      driverId: driverId,
       currentDriverPosition: travelDetailsData.origin
-    })
-    .then(() => navigation.navigate("TravelInProgressDriver"));
+    }).then(
+      navigation.navigate("TravelInProgressDriver")
+    ).catch(error => functionError(navigation, error));
   };
 
   return (
