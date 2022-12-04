@@ -45,6 +45,7 @@ export default function TravelSearch({ navigation }) {
       const response = await SecureStore.getItemAsync("travelInfo").then(response => response ? JSON.parse(response) : null);
 
       if (response !== null) {
+        console.log(response);
 
         await SecureStore.setItemAsync('askForTravel', 'false');
         const { driverLocation, ...travel } = response;
@@ -56,17 +57,17 @@ export default function TravelSearch({ navigation }) {
         // para mostrar en el mapa
         dispatch(setUserLocation({ userLocation: travel.source }));
         // setea el id del viaje para aceptar/cancelar/actualizar posicion
-        dispatch(setNewTravel({ _id: data.data._id }));
+        dispatch(setNewTravel({ _id: response._id }));
 
         setModalTravelFindedVisible(!modalTravelFindedVisible);
       }
     }, 10000);
 
-    return () => {
-      setIsSearching(false);
-      setModalTravelFindedVisible(true);
-      clearInterval(interval);
-    };
+    // return () => {
+    //   setIsSearching(false);
+    //   setModalTravelFindedVisible(true);
+    //   clearInterval(interval);
+    // };
 
   }, []));
 

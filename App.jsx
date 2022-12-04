@@ -73,7 +73,6 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
 });
 
 export default function App() {
-
   const startBackgroundUpdate = async () => {
     const { granted } = await Location.getBackgroundPermissionsAsync();
     if (!granted) {
@@ -90,8 +89,7 @@ export default function App() {
     const hasStarted = await Location.hasStartedLocationUpdatesAsync(LOCATION_TASK_NAME);
   
     if (hasStarted) {
-      console.log("Already started");
-      return;
+      await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME);
     }
   
     await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
@@ -103,7 +101,19 @@ export default function App() {
         notificationBody: "Location tracking in background",
         notificationColor: "#fff",
       }
-    });
+    })
+    .catch(() => Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
+        accuracy: Location.Accuracy.BestForNavigation,
+        showsBackgroundLocationIndicator: true,
+        distanceInterval: 100,
+        foregroundService: {
+          notificationTitle: "Location",
+          notificationBody: "Location tracking in background",
+          notificationColor: "#fff",
+        }
+      })
+    )
+    .then(res => res);
   }
   
   const requestPermissions = async () => {

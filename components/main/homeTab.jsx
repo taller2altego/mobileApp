@@ -113,26 +113,17 @@ export default function HomeTab({ navigation }) {
 
   const registerForPushNotificationsAsync = async () => {
     try {
-      setStep(1);
       const { status: existingStatus } =
         await Notifications.getPermissionsAsync();
-      setStep(2);
       let finalStatus = existingStatus;
       if (existingStatus !== "granted") {
         const { status } = await Notifications.requestPermissionsAsync();
         finalStatus = status;
       }
-      setStep(3);
       if (finalStatus !== "granted") {
         throw new Error("Permission not granted!");
       }
-      setStep(4);
       const token = (await Notifications.getExpoPushTokenAsync()).data;
-      setStep(5);
-      setInterval(async () => {
-        await get(`${API_URL}/travels/test?token=${token}`);
-      }, 20000);
-      setStep(6);
 
       if (Platform.OS === "android") {
         Notifications.setNotificationChannelAsync("default", {
