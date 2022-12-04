@@ -30,7 +30,6 @@ export default function TravelInProgressDriver({ navigation }) {
   // redux
   const tripData = useSelector((store) => store.travelDetailsData);
   const travelData = useSelector((store) => store.currentTravel);
-  const [locationSubscription, setLocationSubscription] = useState(null);
 
   // state
   const [actualTripState, setActualTripState] = useState({
@@ -63,23 +62,17 @@ export default function TravelInProgressDriver({ navigation }) {
   });
 
   const updateDriverPosition = async () => {
-    const locSubscription = await Location.watchPositionAsync(
-      { accuracy: Location.Accuracy.High, distanceInterval: 10 },
-      (location) => {
-        const newLatitude = location.coords.latitude;
-        const newLongitude = location.coords.longitude;
-        animate(newLatitude, newLongitude);
-        setActualTripState({
-          ...actualTripState,
-          currentLoc: { latitude: newLatitude, longitude: newLongitude },
-        });
-      },
-      (error) => {
-        console.log("hay error aca"), console.log(error);
-      }
-    );
+    return setInterval(async () => {
+      const { latitude, longitude } = await SecureStore
+        .getItemAsync('updatingLocation')
+        .then(location => ({ latitude: location.latitude, longitude: location.longitude }));
 
-    setLocationSubscription(locSubscription);
+      animate(latitude, longitude);
+      setActualTripState({
+        ...actualTripState,
+        currentLoc: { latitude, longitude }
+      });
+    }, 20000);  
   };
 
   const animate = (latitude, longitude) => {
@@ -96,12 +89,12 @@ export default function TravelInProgressDriver({ navigation }) {
   };
 
   useFocusEffect(
-    useCallback(() => {
-      updateDriverPosition();
+    useCallback(async () => {
+      const interval = await updateDriverPosition();
       return () => {
-        locationSubscription.remove();
+        clearInterval(interval);
       };
-    }, []),
+    }, [])
   );
 
   const updateDistance = (args, tripPart) => {
@@ -125,6 +118,8 @@ export default function TravelInProgressDriver({ navigation }) {
   const finishTravel = async () => {
     const id = await SecureStore.getItemAsync("id");
     const token = await SecureStore.getItemAsync("token");
+    await SecureStore.deleteItemAsync("updatingLocation");
+
     const travel = await get(`${API_URL}/travels/${travelData._id}`, token);
     const body = {
       driverId: travel.data.data.driverId,
@@ -137,6 +132,7 @@ export default function TravelInProgressDriver({ navigation }) {
   };
 
   const cancelTravel = async () => {
+    await SecureStore.deleteItemAsync("updatingLocation");
     const token = await SecureStore.getItemAsync("token");
     const travel = await get(`${API_URL}/travels/${travelData._id}`, token);
     const user = await get(`${API_URL}/users/${travel.data.data.userId}`, token)

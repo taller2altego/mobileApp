@@ -8,25 +8,26 @@ import { authPost, handlerUnauthorizedError } from "../../utils/requests";
 import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
 
-export default function TravelFindedModal({
-  navigation,
-  setModalTravelFindedVisible,
-  ...props
-}) {
+export default function TravelFindedModal({ navigation, setModalTravelFindedVisible, ...props }) {
   const { API_URL, _ } = envs;
   const travelDetailsData = useSelector((store) => store.travelDetailsData);
   const currentTravel = useSelector((store) => store.currentTravel);
 
   const acceptTravel = async () => {
+
     const id = await SecureStore.getItemAsync("id");
     const driverId = await SecureStore.getItemAsync("driverId");
     const token = await SecureStore.getItemAsync("token");
-    return authPost(`${API_URL}/travels/${currentTravel._id}/accept`, token, {
+    await SecureStore.setItemAsync("updatingLocation", JSON.stringify({ updating: "true" }));
+
+    const body = {
       driverId: driverId,
       currentDriverPosition: travelDetailsData.origin
-    }).then(
-      navigation.navigate("TravelInProgressDriver")
-    ).catch(error => handlerUnauthorizedError(navigation, error));
+    };
+
+    return authPost(`${API_URL}/travels/${currentTravel._id}/accept`, token, body)
+      .then(() => navigation.navigate("TravelInProgressDriver"))
+      .catch(error => handlerUnauthorizedError(navigation, error));
   };
 
   return (

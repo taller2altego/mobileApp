@@ -41,9 +41,6 @@ export default function HomeTab({ navigation }) {
   // redux
   const currentUserData = useSelector((store) => store.userData);
   const dispatch = useDispatch();
-  const [fakeState, setFakeState] = useState(false);
-  const [step, setStep] = useState(0);
-  const [textStep, setTextStep] = useState('');
 
   // envs
   const { API_URL, GOOGLE_API_KEY } = envs;
@@ -83,34 +80,26 @@ export default function HomeTab({ navigation }) {
       latitude: currentUserData.defaultLocation.latitude,
       longitude: currentUserData.defaultLocation.longitude,
     });
-  }, [currentUserData])
+  }, [currentUserData]);
 
-  useFocusEffect(useCallback(() => {
+  useEffect(() => {
     (async () => {
 
       await registerForPushNotificationsAsync()
-        .then(token => SecureStore.setItemAsync("pushToken", token))
-        .catch(err => {
-          setTextStep(err.message);
-          setFakeState(true);
-        });
+        .then(token => SecureStore.setItemAsync("pushToken", token));
 
       const id = await SecureStore.getItemAsync("id");
       const token = await SecureStore.getItemAsync("token");
-      const params = {
-        page: 1,
-        limit: 4,
-      };
+      const params = { page: 1, limit: 4 };
 
       await get(`${API_URL}/travels/users/${id}`, token, {}, params)
-        .then(
-          ({ data: { data } }) => {
-            const dataFiltered = data.filter(item => item.status === 'finished');
-            setData(dataFiltered);
-          })
+        .then(({ data: { data } }) => {
+          const dataFiltered = data.filter(item => item.status === 'finished');
+          setData(dataFiltered);
+        })
         .catch(err => handlerUnauthorizedError(navigation, err));
     })();
-  }, []));
+  });
 
   const onConfirmationTravel = () => {
     dispatch(
@@ -121,16 +110,18 @@ export default function HomeTab({ navigation }) {
 
   const registerForPushNotificationsAsync = async () => {
     try {
-      const { status: existingStatus } =
-        await Notifications.getPermissionsAsync();
+      const { status: existingStatus } = await Notifications.getPermissionsAsync();
       let finalStatus = existingStatus;
+
       if (existingStatus !== "granted") {
         const { status } = await Notifications.requestPermissionsAsync();
         finalStatus = status;
       }
+
       if (finalStatus !== "granted") {
         throw new Error("Permission not granted!");
       }
+
       const token = (await Notifications.getExpoPushTokenAsync()).data;
 
       if (Platform.OS === "android") {
@@ -141,8 +132,6 @@ export default function HomeTab({ navigation }) {
           lightColor: "#FF231F7C"
         });
       }
-
-      setStep(7);
 
       return token;
     } catch (error) {

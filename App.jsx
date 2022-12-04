@@ -54,23 +54,30 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
     }
 
     if (location) {
-      interval = setInterval(async () => {
-        const flag = await SecureStore.getItemAsync('askForTravel');
 
-        console.log(flag);
+      const updatePositionIsRequired = await SecureStore.getItemAsync('updatingLocation');
 
-        if (flag === 'true') {
-          const token = await SecureStore.getItemAsync("token");
-          const pushToken = await SecureStore.getItemAsync("pushToken");
-
-          const url = `${API_URL}/travels?latitude=${location.coords.latitude}&longitude=${location.coords.longitude}&token=${pushToken}`;
-          await get(url, token)
-            .then(({ data: { data } }) => data)
-            .then(data => SecureStore.setItemAsync('travelInfo', JSON.stringify({ ...data, driverLocation: location.coords })))
-            .then(() => {});
-        }
-
-      }, 20000);
+      if (updatePositionIsRequired) {
+        await SecureStore.setItemAsync("updatingLocation", JSON.stringify({ driverLocation: location.coords }));
+      } else {
+        interval = setInterval(async () => {
+          const flag = await SecureStore.getItemAsync('askForTravel');
+  
+          console.log(flag);
+  
+          if (flag === 'true') {
+            const token = await SecureStore.getItemAsync("token");
+            const pushToken = await SecureStore.getItemAsync("pushToken");
+  
+            const url = `${API_URL}/travels?latitude=${location.coords.latitude}&longitude=${location.coords.longitude}&token=${pushToken}`;
+            await get(url, token)
+              .then(({ data: { data } }) => data)
+              .then(data => SecureStore.setItemAsync('travelInfo', JSON.stringify({ ...data, driverLocation: location.coords })))
+              .then(() => {});
+          }
+  
+        }, 20000);
+      }
     }
   }
 });
