@@ -44,17 +44,17 @@ export default function TripDetails({ route, navigation }) {
     const token = await SecureStore.getItemAsync("token");
     setAlreadyRated(true);
     return patch(`${API_URL}/drivers/${driver}`, token, {
-      score: driverScore,
+      score: Math.floor(driverScore),
     }).then(() => {
       return patch(`${API_URL}/travels/${route.params.travelId}`, token, {
-        driverScore,
+        driverScore: Math.floor(driverScore),
       }).then(async () => {
         if (comment != "") {
           await authPost(`${API_URL}/comments/driver`, token, { userId: driver, description: comment })
         }
         navigation.navigate("Home");
-      }).catch(error => functionError(navigation, error));
-    }).catch(error => functionError(navigation, error));
+      }).catch(error => handlerUnauthorizedError(navigation, error));
+    }).catch(error => handlerUnauthorizedError(navigation, error));
   };
 
   const months = {

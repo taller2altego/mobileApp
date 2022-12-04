@@ -2,10 +2,9 @@ import { useState } from "react";
 import { MapStyles, Profilestyles, RecoverStyles, LandingStyles } from "../styles";
 import { View, Text, TextInput, Pressable } from "react-native";
 import { useFonts } from "expo-font";
-import { post } from "../../utils/requests";
+import { post, handlerUnauthorizedError } from "../../utils/requests";
 import validator from 'validator';
 import envs from "../../config/env";
-
 export default function RecoverPassword({ navigation }) {
     // redux
 
@@ -26,7 +25,7 @@ export default function RecoverPassword({ navigation }) {
             return post(`${API_URL}/recover`, { email: email })
                 .then(() => {
                     navigation.navigate("AuthToken");
-                }).catch(error => functionError(navigation, error));
+                }).catch(error => handlerUnauthorizedError(navigation, error));
         }
     };
 
