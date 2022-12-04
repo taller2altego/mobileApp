@@ -1,4 +1,5 @@
 import {
+  CLEAR_TRAVEL_DETAILS,
   SET_TRAVEL_DETAILS,
   SET_TRAVEL_INFO,
   SET_USER_LOCATION,
@@ -30,6 +31,15 @@ const modifyUserTravelDetailsReducer = (state = initialState, action) => {
         ...state,
         originAddress: action.payload.originAddress,
         destinationAddress: action.payload.destinationAddress,
+      };
+    case CLEAR_TRAVEL_DETAILS:
+      return {
+        ...state,
+        originAddress: initialState.originAddress,
+        destinationAddress: initialState.destinationAddress,
+        userLocation: initialState.userLocation,
+        origin: initialState.origin,
+        destination: initialState.destination,
       };
     default:
       return state;
