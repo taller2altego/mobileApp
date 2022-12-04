@@ -10,17 +10,7 @@ import * as SecureStore from "expo-secure-store";
 import HomeTab from "./homeTab";
 import ProfileTab from "./profileTab";
 import envs from "../../config/env";
-import * as Notifications from "expo-notifications";
-import * as TaskManager from "expo-task-manager";
-import { handleNewNotification } from "../notifications/Notifications";
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: true,
-  }),
-});
 
 export default function Home({ navigation }) {
   const Tab = createBottomTabNavigator();

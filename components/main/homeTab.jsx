@@ -18,11 +18,24 @@ import TravelItem from "../travel/TravelItem";
 import { setTravelDetails } from "../../redux/actions/UpdateTravelDetails";
 import { get } from "../../utils/requests";
 
+import * as Notifications from "expo-notifications";
+import { handleNewNotification } from "../notifications/Notifications";
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+  }),
+});
+
 export default function HomeTab({ navigation }) {
   // redux
   const currentUserData = useSelector((store) => store.userData);
   const dispatch = useDispatch();
   const [fakeState, setFakeState] = useState(false);
+  const [step, setStep] = useState(0);
+  const [textStep, setTextStep] = useState('');
 
   // envs
   const { API_URL, GOOGLE_API_KEY } = envs;
@@ -58,6 +71,7 @@ export default function HomeTab({ navigation }) {
       await registerForPushNotificationsAsync()
         .then(token => SecureStore.setItemAsync("pushToken", token))
         .catch(err => {
+          setTextStep(err.message);
           setFakeState(true);
         });
 
@@ -85,21 +99,26 @@ export default function HomeTab({ navigation }) {
 
   const registerForPushNotificationsAsync = async () => {
     try {
+      setStep(1);
       const { status: existingStatus } =
         await Notifications.getPermissionsAsync();
+      setStep(2);
       let finalStatus = existingStatus;
       if (existingStatus !== "granted") {
         const { status } = await Notifications.requestPermissionsAsync();
         finalStatus = status;
       }
+      setStep(3);
       if (finalStatus !== "granted") {
         throw new Error("Permission not granted!");
       }
+      setStep(4);
       const token = (await Notifications.getExpoPushTokenAsync()).data;
-
+      setStep(5);
       setInterval(async () => {
         await get(`${API_URL}/travels/test?token=${token}`);
       }, 20000);
+      setStep(6);
 
       if (Platform.OS === "android") {
         Notifications.setNotificationChannelAsync("default", {
@@ -109,6 +128,8 @@ export default function HomeTab({ navigation }) {
           lightColor: "#FF231F7C"
         });
       }
+
+      setStep(7);
 
       return token;
     } catch (error) {
@@ -128,6 +149,8 @@ export default function HomeTab({ navigation }) {
           <View style={[{ flex: 0.3 }]}></View>
           <View style={[{ flex: 0.5 }]}>
             {(!fakeState) && <Text style={{ fontSize: 32, padding: 25, paddingBottom: 10 }}> Actividades </Text>}
+            <Text style={{ fontSize: 32, padding: 25, paddingBottom: 10 }}> {step} </Text>
+            <Text style={{ fontSize: 32, padding: 25, paddingBottom: 10 }}> {textStep} </Text>
           </View>
           <View style={[{ flex: 0.2 }]}></View>
 

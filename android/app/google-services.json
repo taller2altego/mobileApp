@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "900360567852",
+    "project_id": "first-medium-project-312521",
+    "storage_bucket": "first-medium-project-312521.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:900360567852:android:171a5cc613a5235397a589",
+        "android_client_info": {
+          "package_name": "com.altego.fiuber"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "900360567852-kd9ehf82v88e777rb286mk7d6cjpfno1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAhG6N52FvyMQyXUg9Ysu7ypDfOb4fvgKo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "900360567852-kd9ehf82v88e777rb286mk7d6cjpfno1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
