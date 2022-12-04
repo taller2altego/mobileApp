@@ -55,7 +55,7 @@ export default function Landing({ navigation }) {
         <Image
           style={LandingStyles.tinyLogo}
           source={{
-            uri: "https://reactnative.dev/img/tiny_logo.png",
+            uri: "https://png.pngtree.com/png-clipart/20190520/original/pngtree-auto-logo-car-png-image_4236175.jpg",
           }}
         />
       </View>

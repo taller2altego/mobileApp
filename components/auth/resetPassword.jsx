@@ -2,7 +2,7 @@ import { useState } from "react";
 import { MapStyles, TravelStyles, Profilestyles, RecoverStyles } from "../styles";
 import { View, Text, TextInput, Pressable } from "react-native";
 import { useFonts } from "expo-font";
-import { patch } from "../../utils/requests";
+import { patch, handlerUnauthorizedError } from "../../utils/requests";
 import envs from "../../config/env";
 import jwt from 'jwt-decode'
 
@@ -30,6 +30,7 @@ export default function ResetPassword({ route, navigation }) {
             .then(() => {
                 navigation.navigate("Landing");
             })
+            .catch(error => handlerUnauthorizedError(navigation, error));
     };
 
     const comeBack = (navigation) => {

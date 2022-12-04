@@ -1,4 +1,5 @@
 import React from "react";
+import { StyleSheet, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
@@ -20,6 +21,7 @@ import TripDetailsScreen from "./components/main/TripDetails";
 import RecoverPassword from "./components/auth/recoverPassword";
 import ResetPassword from "./components/auth/resetPassword";
 import AuthToken from "./components/auth/authToken";
+import DefaultLocationRequest from "./components/auth/DefaultLocationRequest";
 
 import * as SecureStore from "expo-secure-store";
 import * as TaskManager from "expo-task-manager";
@@ -125,6 +127,11 @@ export default function App() {
           <Stack.Screen
             name="Register"
             component={RegisterModal}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="DefaultLocationRequest"
+            component={DefaultLocationRequest}
             options={{ headerShown: false }}
           />
           <Stack.Screen

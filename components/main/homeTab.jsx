@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import {
   View,
   FlatList,
@@ -12,11 +12,22 @@ import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplet
 import { useDispatch, useSelector } from "react-redux";
 import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
+import { useFocusEffect } from '@react-navigation/native';
 
 import { Homestyles, Profilestyles } from "../styles";
 import TravelItem from "../travel/TravelItem";
 import { setTravelDetails } from "../../redux/actions/UpdateTravelDetails";
-import { get } from "../../utils/requests";
+import { get, handlerUnauthorizedError } from "../../utils/requests";
+
+import * as Notifications from "expo-notifications";
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+  }),
+});
 
 import * as Notifications from "expo-notifications";
 import { handleNewNotification } from "../notifications/Notifications";
@@ -45,8 +56,12 @@ export default function HomeTab({ navigation }) {
   const [destDetails, setDestDetails] = useState("");
   const [data_travels, setData] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
-  const [correctSrcInput, setCorrectSrcInput] = useState(false);
+  const [correctSrcInput, setCorrectSrcInput] = useState(true);
   const [correctDestInput, setCorrectDestInput] = useState(false);
+  const [originInput, setOriginInput] = useState(
+    currentUserData.defaultLocation
+  );
+  const [firstTimeChange, setFirstTimeChange] = useState(true);
 
   const handleSelectedTrip = (item) => {
     setSelectedId(item.id);
@@ -65,7 +80,7 @@ export default function HomeTab({ navigation }) {
     );
   }
 
-  useEffect(() => {
+  useFocusEffect(useCallback(() => {
     (async () => {
 
       await registerForPushNotificationsAsync()
@@ -82,13 +97,15 @@ export default function HomeTab({ navigation }) {
         limit: 4,
       };
 
-      await get(`${API_URL}/travels/users/${id}`, token, {}, params).then(
-        ({ data: { data } }) => {
-          setData(data);
-        }
-      );
+      await get(`${API_URL}/travels/users/${id}`, token, {}, params)
+        .then(
+          ({ data: { data } }) => {
+            const dataFiltered = data.filter(item => item.status === 'finished');
+            setData(dataFiltered);
+          })
+        .catch(err => handlerUnauthorizedError(navigation, err));
     })();
-  }, []);
+  }, []));
 
   const onConfirmationTravel = () => {
     dispatch(
@@ -147,10 +164,18 @@ export default function HomeTab({ navigation }) {
       <ScrollView keyboardShouldPersistTaps={"handled"}>
         <ScrollView keyboardShouldPersistTaps={"handled"}>
           <View style={[{ flex: 0.3 }]}></View>
-          <View style={[{ flex: 0.5 }]}>
-            {(!fakeState) && <Text style={{ fontSize: 32, padding: 25, paddingBottom: 10 }}> Actividades </Text>}
-            <Text style={{ fontSize: 32, padding: 25, paddingBottom: 10 }}> {step} </Text>
-            <Text style={{ fontSize: 32, padding: 25, paddingBottom: 10 }}> {textStep} </Text>
+          <View style={[{ flex: 0.5, alignItems: "center" }]}>
+            <Text
+              style={{
+                fontSize: 30,
+                padding: 25,
+                paddingBottom: 10,
+                fontFamily: "poppins",
+                fontWeight: "bold",
+              }}
+            >
+              Actividades
+            </Text>
           </View>
           <View style={[{ flex: 0.2 }]}></View>
 
@@ -170,9 +195,14 @@ export default function HomeTab({ navigation }) {
               fetchDetails
               enablePoweredByContainer={false}
               textInputProps={{
-                onChangeText: (_) => {
-                  setCorrectSrcInput(false);
+                onChangeText: (text) => {
+                  if (text != "" || !firstTimeChange) {
+                    setCorrectSrcInput(false);
+                    setOriginInput(text);
+                    setFirstTimeChange(false);
+                  }
                 },
+                value: originInput,
               }}
               listEmptyComponent={() => (
                 <View style={{ flex: 1 }}>
@@ -180,6 +210,7 @@ export default function HomeTab({ navigation }) {
                 </View>
               )}
               onPress={(data, details) => {
+                setOriginInput(data.description);
                 setCorrectSrcInput(true);
                 setSrcDetails({
                   latitude: details.geometry.location.lat,

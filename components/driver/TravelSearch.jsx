@@ -5,11 +5,22 @@ import { useDispatch } from "react-redux";
 
 // // modules
 import TravelFindedModal from "./TravelFindedModal";
+import { getItemAsync } from "expo-secure-store";
+import { useCallback, useEffect, useState } from "react";
+import { View, Text, ActivityIndicator, Pressable } from "react-native";
+import TravelFindedModal from "./TravelFindedModal";
+import * as Location from "expo-location";
+import * as SecureStore from "expo-secure-store";
+import envs from "../../config/env";
+import { useFocusEffect } from '@react-navigation/native';
+// modules
+import { get, handlerUnauthorizedError } from "../../utils/requests";
 import {
   setTravelDetails,
   setTravelInfo,
   setUserLocation,
 } from "../../redux/actions/UpdateTravelDetails";
+import { setNewTravel } from "../../redux/actions/UpdateCurrentTravel";
 
 export default function TravelSearch({ navigation }) {
   const [modalTravelFindedVisible, setModalTravelFindedVisible] = useState(false);
@@ -17,7 +28,7 @@ export default function TravelSearch({ navigation }) {
   const dispatch = useDispatch();
   const [isSearching, setIsSearching] = useState(true);
 
-  useEffect(() => {
+  useFocusEffect(useCallback(() => {
     setIsSearching(true);
 
     console.log(1);
@@ -48,6 +59,8 @@ export default function TravelSearch({ navigation }) {
         dispatch(setTravelInfo({ originAddress: travel.sourceAddress, destinationAddress: travel.destinationAddress }));
         // para mostrar en el mapa
         dispatch(setUserLocation({ userLocation: travel.source }));
+        // setea el id del viaje para aceptar/cancelar/actualizar posicion
+        dispatch(setNewTravel({ _id: data.data._id }));
 
         setModalTravelFindedVisible(!modalTravelFindedVisible);
       }
@@ -59,7 +72,7 @@ export default function TravelSearch({ navigation }) {
       clearInterval(interval);
     };
 
-  }, []);
+  }, []));
 
   const toggleCancel = async () => {
     setModalTravelFindedVisible(!modalTravelFindedVisible);

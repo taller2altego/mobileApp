@@ -1,21 +1,34 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Pressable, Modal, Text, View } from "react-native";
 import { Entypo } from "@expo/vector-icons";
 
-import { LandingStyles, modalStyles } from "../styles";
+import { modalStyles } from "../styles";
 import { useSelector } from "react-redux";
+import { authPost } from "../../utils/requests";
+import * as SecureStore from "expo-secure-store";
+import envs from "../../config/env";
+import { handlerUnauthorizedError } from "./../../utils/requests";
 
 export default function TravelFindedModal({
   navigation,
   setModalTravelFindedVisible,
   ...props
 }) {
-  // Redux
-  const currentTravel = useSelector((store) => store.travelDetailsData);
+  const { API_URL, _ } = envs;
+  const travelDetailsData = useSelector((store) => store.travelDetailsData);
+  const currentTravel = useSelector((store) => store.currentTravel);
 
-  // useEffect(() => {
-  //   sendNotification();
-  // }, []);
+  const acceptTravel = async () => {
+    const id = await SecureStore.getItemAsync("id");
+    const driverId = await SecureStore.getItemAsync("driverId");
+    const token = await SecureStore.getItemAsync("token");
+    return authPost(`${API_URL}/travels/${currentTravel._id}/accept`, token, {
+      driverId: driverId,
+      currentDriverPosition: travelDetailsData.origin
+    }).then(
+      navigation.navigate("TravelInProgressDriver")
+    ).catch(error => handlerUnauthorizedError(navigation, error));
+  };
 
   return (
     <Modal animationType="slide" transparent={false} visible={props.visible}>
@@ -27,22 +40,17 @@ export default function TravelFindedModal({
           <View style={[modalStyles.flex_modal]}>
             <Text style={{ fontSize: 25, alignSelf: "center" }}>
               {" "}
-              {currentTravel.originAddress}
+              {travelDetailsData.originAddress}
             </Text>
             <Text style={{ fontSize: 25, alignSelf: "center" }}>
               {" "}
-              {currentTravel.destinationAddress}{" "}
+              {travelDetailsData.destinationAddress}{" "}
             </Text>
-            <Pressable
-              style={{ alignSelf: "center" }}
-              onPress={() => {
-                navigation.navigate("TravelInProgressDriver");
-              }}
-            >
+            <Pressable style={{ alignSelf: "center" }} onPress={acceptTravel}>
               <Text style={{ fontSize: 25 }}> Aceptar Viaje </Text>
             </Pressable>
 
-            <Pressable style={{ alignSelf: "center" }} onPress={props.toggleCancel}>
+            <Pressable style={{ alignSelf: "center" }} onPress={props.toggle}>
               <Text style={{ fontSize: 25 }}>Volver</Text>
             </Pressable>
           </View>

@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 import { useDispatch } from "react-redux";
 import { setDriverData } from "../../redux/actions/UpdateDriverData";
-import { authPost } from "../../utils/requests";
+import { authPost, handlerUnauthorizedError } from "../../utils/requests";
+import { setIsDriver } from "../../redux/actions/UpdateUserData";
 import { DriverStyles } from "../styles";
 import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
@@ -18,22 +19,17 @@ export default function Driver({ navigation }) {
   const confirmData = async () => {
     const id = await SecureStore.getItemAsync("id");
     const token = await SecureStore.getItemAsync("token");
-    authPost(`${API_URL}/users/${id}/driver`, token, {
-      license,
-      model,
-      licensePlate,
-    })
-      .then(() => {
-        dispatch(
-          setDriverData({
-            license: license,
-            model: model,
-            licensePlate: licensePlate,
-          })
-        );
+    authPost(`${API_URL}/users/${id}/driver`, token, { license, model, licensePlate })
+      .then(async ({ data }) => {
+        await SecureStore.setItemAsync("driverId", data.id.toString());
+        dispatch(setDriverData({ license, model, licensePlate }));
+        dispatch(setIsDriver({ isDriver: true }));
         navigation.navigate("Home");
       })
-      .catch((error) => setErrorMessage(error.response.data.message));
+      .catch(error => {
+        handlerUnauthorizedError(navigation, error);
+        setErrorMessage(error);
+      });
   };
 
   return (
