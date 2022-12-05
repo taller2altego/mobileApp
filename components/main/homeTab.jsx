@@ -29,14 +29,6 @@ Notifications.setNotificationHandler({
   }),
 });
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: true,
-  }),
-});
-
 export default function HomeTab({ navigation }) {
   // redux
   const currentUserData = useSelector((store) => store.userData);
@@ -75,7 +67,10 @@ export default function HomeTab({ navigation }) {
   }
 
   useEffect(() => {
-    originRef.current?.setAddressText(currentUserData.defaultLocation.address)
+    if (currentUserData.defaultLocation.address) {
+      originRef.current?.setAddressText(currentUserData.defaultLocation.address)
+    }
+
     setSrcDetails({
       latitude: currentUserData.defaultLocation.latitude,
       longitude: currentUserData.defaultLocation.longitude,

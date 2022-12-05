@@ -2,9 +2,13 @@ import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 
 const handlerUnauthorizedError = (navigation, error) => {
-  if (error.response.status == 401) {
+  if (error.response && error.response.status == 401) {
     SecureStore.deleteItemAsync("token");
     navigation.navigate("Landing");
+    return error;
+  } else {
+    console.log('handler error');
+    console.log(error);
     return error;
   }
 };
