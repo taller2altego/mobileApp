@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState } from "react";
 import { Modal, Pressable, Text, TextInput, View } from "react-native";
 import { post } from "../../utils/requests";
 import { LandingStyles, modalStyles } from "../styles";
-import { Picker } from "@react-native-picker/picker";
 import { Entypo } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";
 import { setIsDriver, setUserData } from "../../redux/actions/UpdateUserData";
@@ -15,9 +14,7 @@ export default function RegisterModal({ ...props }) {
   const [phone, setPhone] = useState("");
   const [name, setName] = useState("");
   const [lastname, setLastName] = useState("");
-  const [driverSelected, setDriverSelected] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const dispatch = useDispatch();
   const { API_URL, _ } = envs;
 
   const onSignUp = () => {
@@ -27,7 +24,7 @@ export default function RegisterModal({ ...props }) {
       phoneNumber: Number(phone),
       email,
       password,
-      role: "user"
+      role: "user",
     };
 
     const loginBody = { email, password };
@@ -38,21 +35,14 @@ export default function RegisterModal({ ...props }) {
         await SecureStore.setItemAsync("token", data.token);
         return data;
       })
-      .then(( data ) => SecureStore.setItemAsync("id", data.id.toString()))
+      .then((data) => SecureStore.setItemAsync("id", data.id.toString()))
       .then(() => {
-        dispatch(setUserData({ name, lastname, email, phoneNumber: phone }));
-        dispatch(setIsDriver({ isDriver: driverSelected }));
         props.toggle();
-        if (driverSelected) {
-          props.navigation.navigate("Driver");
-        } else {
-          props.navigation.navigate("Home");
-        }
+        props.navigation.navigate("DefaultLocationRequest");
       })
       .catch((error) => {
-          setErrorMessage(JSON.stringify(error.response.data.message))
-        }
-      );
+        setErrorMessage(JSON.stringify(error.response.data.message));
+      });
   };
 
   return (
@@ -60,53 +50,43 @@ export default function RegisterModal({ ...props }) {
       <View style={modalStyles.modal_extern_view}>
         <View style={[modalStyles.modal_view]}>
           <Pressable onPress={props.toggle}>
-            <Entypo name="cross" size={24} color="black" />
+            <Entypo name="cross" size={26} color="white" />
           </Pressable>
           <View style={[modalStyles.flex_modal]}>
             <TextInput
-              style={[modalStyles.modal_input, { fontFamily: "poppins" }]}
+              style={modalStyles.modal_input}
               placeholder="Nombre"
-              placeholderTextColor="#343437"
+              placeholderTextColor="white"
               onChangeText={(name) => setName(name)}
             />
             <TextInput
-              style={[modalStyles.modal_input, { fontFamily: "poppins" }]}
+              style={modalStyles.modal_input}
               placeholder="Apellido"
-              placeholderTextColor="#343437"
+              placeholderTextColor="white"
               onChangeText={(password) => setLastName(password)}
             />
             <TextInput
-              style={[modalStyles.modal_input, { fontFamily: "poppins" }]}
+              style={modalStyles.modal_input}
               placeholder="Email"
-              placeholderTextColor="#343437"
+              placeholderTextColor="white"
               onChangeText={(email) => setEmail(email)}
             />
             <TextInput
-              style={[modalStyles.modal_input, { fontFamily: "poppins" }]}
+              style={modalStyles.modal_input}
               placeholder="Telefono"
-              placeholderTextColor="#343437"
+              placeholderTextColor="white"
               keyboardType="numeric"
               onChangeText={(phone) => {
                 setPhone(phone.replace(/[^0-9]/, ""));
               }}
             />
             <TextInput
-              style={[modalStyles.modal_input, { fontFamily: "poppins" }]}
+              style={modalStyles.modal_input}
               placeholder="Contraseña"
-              placeholderTextColor="#343437"
+              placeholderTextColor="white"
               secureTextEntry={true}
               onChangeText={(password) => setPassword(password)}
             />
-            <Picker
-              selectedValue={driverSelected}
-              onValueChange={(driverSelected, ItemIndex) =>
-                setDriverSelected(driverSelected)
-              }
-              style={[modalStyles.modal_picker, { fontFamily: "poppins" }]}
-            >
-              <Picker.Item label="Conductor" value={true} />
-              <Picker.Item label="Pasajero" value={false} />
-            </Picker>
             <Pressable
               style={modalStyles.modal_button}
               onPress={() => onSignUp()}

@@ -5,8 +5,6 @@ import MapViewDirections from "react-native-maps-directions";
 import { View, Text, Pressable, Image } from "react-native";
 import { useSelector } from "react-redux";
 import { useFonts } from "expo-font";
-import { get } from "../../utils/requests";
-import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
 
 const PRICE_PER_KM = 100;

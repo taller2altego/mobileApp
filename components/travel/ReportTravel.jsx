@@ -1,20 +1,10 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { MapStyles, TravelStyles, Profilestyles, ReportStyles } from "../styles";
 import * as SecureStore from "expo-secure-store";
-import { View, Text, TextInput, Pressable, FlatList } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
+import { View, Text, TextInput, Pressable } from "react-native";
 import { useFonts } from "expo-font";
-import { authPost } from "../../utils/requests";
-import TravelItem from "../travel/TravelItem";
-const API_KEY = "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ";
+import { authPost, handlerUnauthorizedError } from "../../utils/requests";
 import envs from "../../config/env";
-
-const edgePadding = {
-    top: 100,
-    right: 100,
-    bottom: 100,
-    left: 100,
-};
 
 export default function ReportTravel({ route, navigation }) {
     // redux
@@ -33,12 +23,13 @@ export default function ReportTravel({ route, navigation }) {
         const id = await SecureStore.getItemAsync("id");
         const token = await SecureStore.getItemAsync("token");
         const data = {
-            userId: id,
+            userId: parseInt(id),
             driverId: item.driver,
             description: reportText
         };
         return authPost(`${API_URL}/reports`, token, data)
             .then(() => navigation.navigate("TripDetails", { travelId: item.travelId }))
+            .catch(error => handlerUnauthorizedError(navigation, error))
     };
 
     const comeBack = (navigation) => {

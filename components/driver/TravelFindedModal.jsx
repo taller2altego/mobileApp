@@ -3,8 +3,31 @@ import { Pressable, Modal, Text, View } from "react-native";
 import { Entypo } from "@expo/vector-icons";
 
 import { LandingStyles, modalStyles } from "../styles";
+import { useSelector } from "react-redux";
+import { authPost, handlerUnauthorizedError } from "../../utils/requests";
+import * as SecureStore from "expo-secure-store";
+import envs from "../../config/env";
 
-export default function WaitingDriverModal({ navigation, setModalTravelFindedVisible, ...props }) {
+export default function TravelFindedModal({
+  navigation,
+  setModalTravelFindedVisible,
+  ...props
+}) {
+  const { API_URL, _ } = envs;
+  const travelDetailsData = useSelector((store) => store.travelDetailsData);
+  const currentTravel = useSelector((store) => store.currentTravel);
+
+  const acceptTravel = async () => {
+    const id = await SecureStore.getItemAsync("id");
+    const driverId = await SecureStore.getItemAsync("driverId");
+    const token = await SecureStore.getItemAsync("token");
+    return authPost(`${API_URL}/travels/${currentTravel._id}/accept`, token, {
+      driverId: driverId,
+      currentDriverPosition: travelDetailsData.origin
+    }).then(
+      navigation.navigate("TravelInProgressDriver")
+    ).catch(error => handlerUnauthorizedError(navigation, error));
+  };
 
   return (
     <Modal animationType="slide" transparent={false} visible={props.visible}>
@@ -14,18 +37,20 @@ export default function WaitingDriverModal({ navigation, setModalTravelFindedVis
             <Entypo name="cross" size={24} color="black" />
           </Pressable>
           <View style={[modalStyles.flex_modal]}>
-            <Pressable
-              style={modalStyles.modal_button}
-              onPress={() => { navigation.navigate("TravelInProgressDriver"); }}>
-              <Text> Aceptar Viaje </Text>
+            <Text style={{ fontSize: 25, alignSelf: "center" }}>
+              {" "}
+              {travelDetailsData.originAddress}
+            </Text>
+            <Text style={{ fontSize: 25, alignSelf: "center" }}>
+              {" "}
+              {travelDetailsData.destinationAddress}{" "}
+            </Text>
+            <Pressable style={{ alignSelf: "center" }} onPress={acceptTravel}>
+              <Text style={{ fontSize: 25 }}> Aceptar Viaje </Text>
             </Pressable>
 
-            <Pressable
-              style={modalStyles.modal_button}
-              onPress={props.toggle}>
-              <Text>
-                Volver
-              </Text>
+            <Pressable style={{ alignSelf: "center" }} onPress={props.toggle}>
+              <Text style={{ fontSize: 25 }}>Volver</Text>
             </Pressable>
           </View>
         </View>
@@ -33,9 +58,3 @@ export default function WaitingDriverModal({ navigation, setModalTravelFindedVis
     </Modal>
   );
 }
-
-
-
-
-
-

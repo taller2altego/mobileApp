@@ -1,77 +1,156 @@
-import { useRef, useState } from "react";
-import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import { useCallback, useRef, useState } from "react";
+import MapView, {
+  AnimatedRegion,
+  Marker,
+  PROVIDER_GOOGLE,
+} from "react-native-maps";
 import { MapStyles, TravelStyles } from "../styles";
 import MapViewDirections from "react-native-maps-directions";
-import { View, Text, Pressable, Image } from "react-native";
+import { View, Text, Pressable, Image, Dimensions } from "react-native";
 import { useSelector } from "react-redux";
 import { useFonts } from "expo-font";
-import { get } from "../../utils/requests";
-import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
+import { useEffect } from "react";
+import * as Location from "expo-location";
+import { authPost, get, handlerUnauthorizedError } from "../../utils/requests";
+import * as SecureStore from "expo-secure-store";
+import { useFocusEffect } from "@react-navigation/native";
 
-const PRICE_PER_KM = 100;
+const screen = Dimensions.get("window");
+const ASPECT_RATIO = screen.width / screen.height;
+const LATITUDE_DELTA = 0.02;
+const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
-const edgePadding = {
-  top: 100,
-  right: 100,
-  bottom: 100,
-  left: 100,
-};
-const INITIAL_POSITION = {
-  latitude: -34.6035,
-  longitude: -58.4611,
-  latitudeDelta: 0.1,
-  longitudeDelta: 0.1,
-};
+const { API_URL, GOOGLE_API_KEY } = envs;
 
 export default function TravelInProgressDriver({ navigation }) {
-  const currentTravelData = useSelector((store) => store.travelDetailsData);
-  const [distance, setDistance] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [driver, setDriver] = useState("Raul Gomez");
-  const [modalWaitingVisible, setModalWaitingVisible] = useState(false);
-  const origin = currentTravelData.origin;
-  const destination = currentTravelData.destination;
-
-  const { API_URL, GOOGLE_API_KEY} = envs;
-  // origen -- actual conductor hasta llegar a la casa del usuario
-  // destino -- casa del usuario
-
-  // origen actual posicion del conductor con el usuario, inicial en domicilio del usuario
-  // destino -- travel.destination
-
-  // const driverId = await SecureStore.getItemAsync("id");
-  // const token = await SecureStore.getItemAsync("token");
-  // get()
-
-  const cancelTravel = (navigation) => {
-    // request para eliminar el driver del tralel
-    // limpiar inputs de destino y origen en main
-    navigation.navigate("Home");
-  };
-
+  // refs
+  const markerRef = useRef(null);
   const mapRef = useRef(null);
+
+  // redux
+  const tripData = useSelector((store) => store.travelDetailsData);
+  const travelData = useSelector((store) => store.currentTravel);
+  const [locationSubscription, setLocationSubscription] = useState(null);
+
+  // state
+  const [actualTripState, setActualTripState] = useState({
+    currentLoc: {
+      latitude: tripData.origin.latitude,
+      longitude: tripData.origin.longitude,
+    },
+    destinationCoords: {
+      latitude: tripData.destination.latitude,
+      longitude: tripData.destination.longitude,
+    },
+    userCoords: {
+      latitude: tripData.userLocation.latitude,
+      longitude: tripData.userLocation.longitude,
+    },
+    animatedcoords: new AnimatedRegion({
+      latitude: tripData.origin.latitude,
+      longitude: tripData.origin.longitude,
+      latitudeDelta: LATITUDE_DELTA,
+      longitudeDelta: LONGITUDE_DELTA,
+    }),
+  });
+  const [arriveOnUserLocation, setArriveOnUserLocation] = useState(false);
+  const [arriveOnDestination, setArriveOnDestination] = useState(false);
+  const [roadTofinalDestination, setRoadTofinalDestination] = useState(false);
+
   const [fontsLoaded] = useFonts({
     poppins: require("../../assets/fonts/Poppins-Regular.ttf"),
     "poppins-bold": require("../../assets/fonts/Poppins-Bold.ttf"),
   });
 
-  // const onDriverSearch = () => {
-  //   navigation.navigate("DriverSearch");
-  // };
+  const updateDriverPosition = async () => {
+    const locSubscription = await Location.watchPositionAsync(
+      { accuracy: Location.Accuracy.High, distanceInterval: 10 },
+      (location) => {
+        const newLatitude = location.coords.latitude;
+        const newLongitude = location.coords.longitude;
+        animate(newLatitude, newLongitude);
+        setActualTripState({
+          ...actualTripState,
+          currentLoc: { latitude: newLatitude, longitude: newLongitude },
+        });
+      },
+      (error) => {
+        console.log("hay error aca"), console.log(error);
+      }
+    );
 
-  const updateTripProps = (args) => {
-    if (args) {
-      setDistance(args.distance.toFixed(2));
-      setDuration(Math.ceil(args.duration));
+    setLocationSubscription(locSubscription);
+  };
+
+  const animate = (latitude, longitude) => {
+    const newCoordinate = { latitude, longitude };
+    if (markerRef.current) {
+      actualTripState.animatedcoords.timing(newCoordinate).start();
+      mapRef.current.animateToRegion({
+        latitude: newCoordinate.latitude,
+        longitude: newCoordinate.longitude,
+        longitudeDelta: LONGITUDE_DELTA,
+        latitudeDelta: LATITUDE_DELTA,
+      });
     }
   };
 
-  const zoomOnDirections = () => {
-    mapRef.current.fitToSuppliedMarkers(["originMark", "destMark"], {
-      animated: true,
-      edgePadding: edgePadding,
-    });
+  useFocusEffect(
+    useCallback(() => {
+      updateDriverPosition();
+      return () => {
+        locationSubscription.remove();
+      };
+    }, []),
+  );
+
+  const updateDistance = (args, tripPart) => {
+    const setArrive =
+      tripPart === "start" ? setArriveOnUserLocation : setArriveOnDestination;
+    if (args.distance.toFixed(2) < 0.05) {
+      setArrive(true);
+    } else {
+      setArrive(false);
+    }
+  };
+
+  const startTrip = async () => {
+    const id = await SecureStore.getItemAsync("id");
+    const token = await SecureStore.getItemAsync("token");
+    setRoadTofinalDestination(true);
+    setArriveOnUserLocation(false);
+    authPost(`${API_URL}/travels/${travelData._id}/start`, token)
+  };
+
+  const finishTravel = async () => {
+    const id = await SecureStore.getItemAsync("id");
+    const token = await SecureStore.getItemAsync("token");
+    const travel = await get(`${API_URL}/travels/${travelData._id}`, token);
+    const body = {
+      driverId: travel.data.data.driverId,
+      price: travel.data.data.price,
+      paidWithCredits: true,
+      payToDriver: true,
+    };
+    return authPost(`${API_URL}/travels/${travelData._id}/finish`, token, body)
+      .then(navigation.navigate("UserProfileVisualization", { travelId: travelData._id, userId: travel.data.data.userId }));
+  };
+
+  const cancelTravel = async () => {
+    const token = await SecureStore.getItemAsync("token");
+    const travel = await get(`${API_URL}/travels/${travelData._id}`, token);
+    const user = await get(`${API_URL}/users/${travel.data.data.userId}`, token)
+    const body = {
+      userId: travel.data.data.userId,
+      email: user.data.email,
+      price: travel.data.data.price,
+      paidWithCredits: travel.data.data.paidWithCredits,
+      payToDriver: false,
+    };
+    return authPost(`${API_URL}/travels/${travelData._id}/reject?isTravelCancelled='true'`, token, body)
+      .then(navigation.navigate("Home"))
+      .catch(error => handlerUnauthorizedError(navigation, error));
   };
 
   if (!fontsLoaded) {
@@ -84,81 +163,75 @@ export default function TravelInProgressDriver({ navigation }) {
         ref={mapRef}
         style={MapStyles.map}
         provider={PROVIDER_GOOGLE}
-        onMapLoaded={() => {
-          zoomOnDirections();
+        initialRegion={{
+          latitude: tripData.origin.latitude,
+          longitude: tripData.origin.longitude,
+          latitudeDelta: LATITUDE_DELTA,
+          longitudeDelta: LONGITUDE_DELTA,
         }}
-        initialRegion={INITIAL_POSITION}
       >
-        {origin && <Marker coordinate={origin} identifier="originMark" />}
-        {destination && (
-          <Marker coordinate={destination} identifier="destMark" />
+        <Marker.Animated
+          ref={markerRef}
+          coordinate={actualTripState.animatedcoords}
+        />
+        <Marker
+          coordinate={actualTripState.destinationCoords}
+          identifier="destMark"
+        />
+        {!roadTofinalDestination && (
+          <Marker
+            coordinate={actualTripState.userCoords}
+            identifier="userMark"
+          />
         )}
-        {origin && destination && (
+        {!roadTofinalDestination &&
+          actualTripState.currentLoc &&
+          actualTripState.userCoords && (
+            <MapViewDirections
+              apikey={GOOGLE_API_KEY}
+              origin={actualTripState.currentLoc}
+              destination={actualTripState.userCoords}
+              strokeColor="black"
+              optimizeWaypoints={true}
+              strokeWidth={5}
+              onReady={(args) => updateDistance(args, "start")}
+            />
+          )}
+        {actualTripState.userCoords && actualTripState.destinationCoords && (
           <MapViewDirections
             apikey={GOOGLE_API_KEY}
-            origin={origin}
-            destination={destination}
+            origin={
+              roadTofinalDestination
+                ? actualTripState.currentLoc
+                : actualTripState.userCoords
+            }
+            destination={actualTripState.destinationCoords}
             strokeColor="black"
+            optimizeWaypoints={true}
             strokeWidth={5}
-            onReady={updateTripProps}
+            onReady={(args) => updateDistance(args, "end")}
           />
         )}
       </MapView>
-      <View style={MapStyles.tripInfoContainer}>
-        <View style={{ paddingLeft: 35 }}></View>
-        <Image
-          style={MapStyles.carImage}
-          source={{
-            uri: "https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,w_896,h_504/f_auto,q_auto/products/carousel/UberX.png",
-          }}
-        />
-        <View style={{ paddingRight: 20 }}>
-          <Text style={{ fontFamily: "poppins", fontSize: 15 }}>
-            {" "}
-            Cliente: {driver}
-          </Text>
-          <Text style={{ fontFamily: "poppins", fontSize: 15 }}>
-            {" "}
-            {distance} km
-          </Text>
-        </View>
-      </View>
-      <View style={TravelStyles.travelContainer}>
-        <View style={TravelStyles.buttonContainer}>
-          <Pressable
-            style={MapStyles.confirmTripButton}
-            onPress={() => cancelTravel(navigation)}
-          >
-            <Text
-              style={{
-                fontFamily: "poppins-bold",
-                color: "white",
-                textAlign: "center",
-                lineHeight: 38,
-              }}
-            >
-              Cancelar viaje
-            </Text>
+      {arriveOnUserLocation ? (
+        <View>
+          <Pressable onPress={startTrip}>
+            <Text> INICIAR VIAJE </Text>
+          </Pressable>
+          <Pressable onPress={cancelTravel}>
+            <Text> CANCELAR </Text>
           </Pressable>
         </View>
-        <View style={TravelStyles.buttonContainer}>
-          <Pressable
-            style={MapStyles.confirmTripButton}
-            onPress={() => navigation.navigate("ProfileVisualization")}
-          >
-            <Text
-              style={{
-                fontFamily: "poppins-bold",
-                color: "white",
-                textAlign: "center",
-                lineHeight: 38,
-              }}
-            >
-              Visualizar Cliente
-            </Text>
-          </Pressable>
-        </View>
-      </View>
+      ) : (
+        <></>
+      )}
+      {arriveOnDestination ? (
+        <Pressable onPress={finishTravel}>
+          <Text> FINALIZAR VIAJE </Text>
+        </Pressable>
+      ) : (
+        <></>
+      )}
     </View>
   );
 }

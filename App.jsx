@@ -1,31 +1,36 @@
 import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
+import ReportTravel from "./components/travel/ReportTravel";
 import LandingScreen from "./components/auth/landing";
 import RegisterModal from "./components/auth/register";
 import LoginModal from "./components/auth/login";
 import HomeScreen from "./components/main/home";
 import DriverScreen from "./components/auth/driver";
-import TravelInProgress from "./components/travel/TravelInProgress"
-import ReportTravel from "./components/travel/ReportTravel"
-import TravelSearch from "./components/driver/TravelSearch"
-import ProfileVisualization from "./components/main/profileVisualization"
+import TravelInProgress from "./components/travel/TravelInProgress";
+import TravelSearch from "./components/driver/TravelSearch";
+import DriverProfileVisualization from "./components/main/DriverProfileVisualization";
+import UserProfileVisualization from "./components/driver/UserProfileVisualization";
 import store from "./redux/store/store";
 import { Provider } from "react-redux";
 import ConfirmationTravel from "./components/travel/ConfirmationTravel";
 import DriverIncoming from "./components/travel/DriverIncoming";
+import TravelFindedModal from "./components/driver/TravelFindedModal";
+import RateUser from "./components/driver/RateUser";
+import TravelInProgressDriver from "./components/driver/TravelInProgressDriver";
 import TripDetailsScreen from "./components/main/TripDetails";
 import RecoverPassword from "./components/auth/recoverPassword";
 import ResetPassword from "./components/auth/resetPassword";
 import AuthToken from "./components/auth/authToken";
 import WalletVisualization from "./components/driver/WalletVisualization";
+import DefaultLocationRequest from "./components/auth/DefaultLocationRequest";
 
 const Stack = createNativeStackNavigator();
 
-export default function App(props) {
+export default function App() {
   return (
     <Provider store={store}>
       <NavigationContainer>
@@ -38,6 +43,11 @@ export default function App(props) {
           <Stack.Screen
             name="Register"
             component={RegisterModal}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="DefaultLocationRequest"
+            component={DefaultLocationRequest}
             options={{ headerShown: false }}
           />
           <Stack.Screen
@@ -61,8 +71,8 @@ export default function App(props) {
             options={{ headerShown: false }}
           />
           <Stack.Screen
-            name="TravelInProgress"
-            component={TravelInProgress}
+            name="TravelInProgressDriver"
+            component={TravelInProgressDriver}
             options={{ headerShown: false }}
           />
           <Stack.Screen
@@ -71,13 +81,18 @@ export default function App(props) {
             options={{ headerShown: false }}
           />
           <Stack.Screen
-            name="ProfileVisualization"
-            component={ProfileVisualization}
+            name="DriverProfileVisualization"
+            component={DriverProfileVisualization}
             options={{ headerShown: false }}
           />
           <Stack.Screen
             name="TravelSearch"
             component={TravelSearch}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="TravelFindedModal"
+            component={TravelFindedModal}
             options={{ headerShown: false }}
           />
           <Stack.Screen
@@ -108,6 +123,16 @@ export default function App(props) {
           <Stack.Screen
             name="WalletVisualization"
             component={WalletVisualization}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="UserProfileVisualization"
+            component={UserProfileVisualization}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="RateUser"
+            component={RateUser}
             options={{ headerShown: false }}
           />
         </Stack.Navigator>

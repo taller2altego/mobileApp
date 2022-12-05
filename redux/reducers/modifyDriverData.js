@@ -1,10 +1,9 @@
-import { SET_DRIVER_DATA } from "../actions/UpdateDriverData";
+import { SET_DRIVER_DATA, CLEAR_DRIVER_DATA } from "../actions/UpdateDriverData";
 
 const initialState = {
   license: "",
   model: "",
   licensePlate: "",
-  working: "false",
 };
 
 const modifyDriverDataReducer = (state = initialState, action) => {
@@ -15,7 +14,13 @@ const modifyDriverDataReducer = (state = initialState, action) => {
         license: action.payload.license,
         model: action.payload.model,
         licensePlate: action.payload.licensePlate,
-        working: action.payload.working,
+      };
+    case CLEAR_DRIVER_DATA:
+      return {
+        ...state,
+        license: initialState.license,
+        model: initialState.model,
+        licensePlate: initialState.licensePlate,
       };
     default:
       return state;

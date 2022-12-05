@@ -9,9 +9,8 @@ import { View, Text, Pressable, Image, Modal, StyleSheet } from "react-native";
 import WaitingModal from "./Waiting";
 import { useDispatch, useSelector } from "react-redux";
 import { useFonts } from "expo-font";
-import { authPost, get } from "../../utils/requests";
+import { authPost, get, handlerUnauthorizedError } from "../../utils/requests";
 import { setNewTravel } from "../../redux/actions/UpdateCurrentTravel";
-const API_KEY = "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ";
 import envs from "../../config/env";
 const PRICE_PER_KM = 100;
 
@@ -74,9 +73,11 @@ export default function ConfirmationTravel({ navigation }) {
       };
       const id = await SecureStore.getItemAsync("id");
       const token = await SecureStore.getItemAsync("token");
-      await get(`${API_URL}/price/${id}`, token, null, params).then(({ data }) => {
-        setPrice(data.data.price)
-      });
+      await get(`${API_URL}/price/${id}`, token, null, params)
+        .then(({ data }) => {
+          setPrice(data.data.price)
+        })
+        .catch(err => handlerUnauthorizedError(navigation, err));
     }
   };
 
@@ -90,19 +91,17 @@ export default function ConfirmationTravel({ navigation }) {
   const createTravel = async (navigation) => {
     const id = await SecureStore.getItemAsync("id");
     const token = await SecureStore.getItemAsync("token");
-    const srcAddress = await fetch('https://maps.googleapis.com/maps/api/geocode/json?address=' + origin.latitude + ',' + origin.longitude + '&key=' + API_KEY)
+    const srcAddress = await fetch('https://maps.googleapis.com/maps/api/geocode/json?address=' + origin.latitude + ',' + origin.longitude + '&key=' + GOOGLE_API_KEY)
       .then((response) => response.json())
       .then((responseJson) => {
         return responseJson.results[0].formatted_address
       });
-    const dstAddress = await fetch('https://maps.googleapis.com/maps/api/geocode/json?address=' + destination.latitude + ',' + destination.longitude + '&key=' + API_KEY)
+    const dstAddress = await fetch('https://maps.googleapis.com/maps/api/geocode/json?address=' + destination.latitude + ',' + destination.longitude + '&key=' + GOOGLE_API_KEY)
       .then((response) => response.json())
-      .then((responseJson) => {
-        return responseJson.results[0].formatted_address
-      });
+      .then((responseJson) => responseJson.results[0].formatted_address);
 
-    // TODO : Arreglar el price de los travels asi no toma valores muy altos, algo logico es por abajo de 1
     const body = {
+      paidWithCredits: true,
       userId: id,
       email: currentUserData.email,
       price: 0.001,
@@ -120,8 +119,9 @@ export default function ConfirmationTravel({ navigation }) {
         dispatch(setNewTravel({ _id: data.data._id }));
         setModalWaitingVisible(!modalWaitingVisible);
       })
-      .catch(() => {
+      .catch((error) => {
         setModalVisible(true);
+        return handlerUnauthorizedError(navigation, error)
       });
   };
 
@@ -194,7 +194,7 @@ export default function ConfirmationTravel({ navigation }) {
           </Text>
           <Text style={{ fontFamily: "poppins", fontSize: 15 }}>
             {" "}
-            {price.toFixed(6)} ARS (est.)
+            {price.toFixed(6)} Ethereum (est.)
           </Text>
         </View>
       </View>
