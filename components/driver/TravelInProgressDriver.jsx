@@ -67,14 +67,8 @@ export default function TravelInProgressDriver({ navigation }) {
         .getItemAsync('updatingLocation')
         .then(location => JSON.parse(location))
         .then(location => {
-          console.log('fetching updatingLocaiton');
-          console.log(location);
           return { latitude: location.driverLocation.latitude, longitude: location.driverLocation.longitude };
         });
-
-      console.log('update driver position');
-      console.log(latitude);
-      console.log(longitude);
 
       animate(latitude, longitude);
       setActualTripState({

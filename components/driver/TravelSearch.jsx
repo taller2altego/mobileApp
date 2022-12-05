@@ -36,8 +36,6 @@ export default function TravelSearch({ navigation }) {
 
         await SecureStore.setItemAsync('askForTravel', 'false');
         const { driverLocation, ...travel } = response;
-
-        console.log(response);
         
         // destino actual del conductor
         dispatch(setTravelDetails({ 
