@@ -336,6 +336,23 @@ export default function ProfileTab({ navigation }) {
               Cerrar sesión
             </Text>
           </Pressable>
+        
+        <Pressable
+          onPress={() =>
+            navigation.navigate("WalletVisualization")
+          }
+          style={Profilestyles.edit_profile_button}
+        >
+          <Text style={Profilestyles.edit_button_text}>Wallet</Text>
+        </Pressable>
+        <Pressable
+          onPress={() =>
+            logOut(navigation)
+          }
+          style={Profilestyles.edit_profile_button}
+        >
+          <Text style={Profilestyles.edit_button_text}>Cerrar sesión</Text>
+        </Pressable>
         </View>
       </View>
     </ScrollView>

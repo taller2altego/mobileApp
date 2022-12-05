@@ -1,10 +1,11 @@
 import { useRef, useState } from "react";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
-import { MapStyles, TravelStyles } from "../styles";
+import CheckBox from 'expo-checkbox';
+import { MapStyles, TravelStyles, modalStyles } from "../styles";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import * as SecureStore from "expo-secure-store";
 import MapViewDirections from "react-native-maps-directions";
-import { View, Text, Pressable, Image } from "react-native";
+import { View, Text, Pressable, Image, Modal, StyleSheet } from "react-native";
 import WaitingModal from "./Waiting";
 import { useDispatch, useSelector } from "react-redux";
 import { useFonts } from "expo-font";
@@ -27,18 +28,22 @@ const INITIAL_POSITION = {
 };
 
 export default function ConfirmationTravel({ navigation }) {
-  // export default function ConfirmationTravel({ navigation }) {
   // redux
   const currentTravelData = useSelector((store) => store.travelDetailsData);
+  const currentUserData = useSelector((store) => store.userData);
+
   const origin = currentTravelData.origin;
   const destination = currentTravelData.destination;
 
   const dispatch = useDispatch();
 
   // states
+  const [payWithCreditsBox, setPayWithCredits] = useState(false)
   const [distance, setDistance] = useState(0);
   const [duration, setDuration] = useState(0);
   const [price, setPrice] = useState(0);
+  const [insufficientFunds, setInsufficientFunds] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
   const date = new Date().toISOString();
 
   const [modalWaitingVisible, setModalWaitingVisible] = useState(false);
@@ -98,12 +103,15 @@ export default function ConfirmationTravel({ navigation }) {
     const body = {
       paidWithCredits: true,
       userId: id,
-      price: price,
+      email: currentUserData.email,
+      price: 0.001,
+      // price: price,
       source: origin,
       sourceAddress: srcAddress,
       destination: destination,
       destinationAddress: dstAddress,
       date: date,
+      paidWithCredits: payWithCreditsBox,
     };
 
     return authPost(`${API_URL}/travels`, token, body)
@@ -111,7 +119,10 @@ export default function ConfirmationTravel({ navigation }) {
         dispatch(setNewTravel({ _id: data.data._id }));
         setModalWaitingVisible(!modalWaitingVisible);
       })
-      .catch(error => handlerUnauthorizedError(navigation, error));
+      .catch((error) => {
+        setModalVisible(true);
+        return handlerUnauthorizedError(navigation, error)
+      });
   };
 
   if (!fontsLoaded) {
@@ -154,6 +165,24 @@ export default function ConfirmationTravel({ navigation }) {
             }}
           />
         </View>
+        <View style={{
+          right: 0,
+          width: 75,
+          height: 50,
+          margin: 10,
+          marginTop: 12,
+          zIndex: 100,
+        }}>
+          <Text>
+            FIUCreditos
+          </Text>
+          <CheckBox
+            tintColors={{ true: '#F15927', false: 'black' }}
+            style={{ left: 25, marginTop: 10 }}
+            value={payWithCreditsBox}
+            onValueChange={(newValue) => setPayWithCredits(newValue)}
+          />
+        </View>
         <View style={{ paddingRight: 20 }}>
           <Text style={{ fontFamily: "poppins", fontSize: 15 }}>
             {" "}
@@ -169,6 +198,8 @@ export default function ConfirmationTravel({ navigation }) {
           </Text>
         </View>
       </View>
+
+
       <View style={TravelStyles.travelContainer}>
         <View style={TravelStyles.buttonContainer}>
           <Pressable
@@ -203,6 +234,27 @@ export default function ConfirmationTravel({ navigation }) {
               Iniciar Viaje
             </Text>
           </Pressable>
+          <Modal
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => {
+              setModalVisible(!modalVisible);
+            }}
+          >
+            <View style={modalStyles.centered_view}>
+              <View style={modalStyles.modal_view_travel}>
+                <Text style={modalStyles.text_modal_style}>Fondos Insuficientes </Text>
+                <Pressable
+                  style={[modalStyles.button, modalStyles.button_close]}
+                  onPress={() => setModalVisible(!modalVisible)}
+                >
+                  <Text style={modalStyles.text_style}>Cerrar</Text>
+                </Pressable>
+              </View>
+            </View>
+          </Modal>
+        </View>
+        <View>
         </View>
       </View>
     </View>
