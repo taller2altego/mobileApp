@@ -4,10 +4,15 @@ import { AirbnbRating } from "react-native-ratings";
 import * as SecureStore from "expo-secure-store";
 import moment from "moment";
 import { Ionicons } from "@expo/vector-icons";
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect } from "@react-navigation/native";
 
 import { MapStyles, TravelStyles } from "../styles";
-import { get, patch, handlerUnauthorizedError, authPost } from "../../utils/requests";
+import {
+  get,
+  patch,
+  handlerUnauthorizedError,
+  authPost,
+} from "../../utils/requests";
 import envs from "../../config/env";
 
 export default function TripDetails({ route, navigation }) {
@@ -22,40 +27,60 @@ export default function TripDetails({ route, navigation }) {
 
   const { API_URL, _ } = envs;
 
-  useFocusEffect(useCallback(() => {
-    (async () => {
-      const token = await SecureStore.getItemAsync("token");
-      await get(`${API_URL}/travels/${route.params.travelId}`, token).then(
-        ({ data: { data } }) => {
-          if (data.driverScore != 0) {
-            setAlreadyRated(true);
-          }
-          setSource(data.sourceAddress);
-          setDestination(data.destinationAddress);
-          setDriver(data.driverId);
-          setPrice(data.price);
-          setDate(data.date);
-          setDriverScore(data.driverScore);
-        }
-      ).then(err => handlerUnauthorizedError(navigation, err));
-    })();
-  }, []));
+  useFocusEffect(
+    useCallback(() => {
+      (async () => {
+        const token = await SecureStore.getItemAsync("token");
+        await get(`${API_URL}/travels/${route.params.travelId}`, token)
+          .then(({ data: { data } }) => {
+            if (data.driverScore != 0) {
+              setAlreadyRated(true);
+            }
+            setSource(data.sourceAddress);
+            setDestination(data.destinationAddress);
+            setPrice(data.price);
+            setDate(data.date);
+            setDriverScore(data.driverScore);
+            return data
+          })
+          .then(async ({ driverId }) => {
+            await get(`${API_URL}/drivers/${driverId}`, token).then(
+              ({
+                data: {
+                  user: { name, lastname },
+                },
+              }) => {
+                setDriver(`${name} ${lastname}`);
+              }
+            );
+          })
+          .catch((err) => handlerUnauthorizedError(navigation, err));
+      })();
+    }, [])
+  );
 
   const sendRatingToDriver = async () => {
     const token = await SecureStore.getItemAsync("token");
     setAlreadyRated(true);
     return patch(`${API_URL}/drivers/${driver}`, token, {
       score: Math.floor(driverScore),
-    }).then(() => {
-      return patch(`${API_URL}/travels/${route.params.travelId}`, token, {
-        driverScore: Math.floor(driverScore),
-      }).then(async () => {
-        if (comment != "") {
-          await authPost(`${API_URL}/comments/driver`, token, { userId: driver, description: comment })
-        }
-        navigation.navigate("Home");
-      }).catch(error => handlerUnauthorizedError(navigation, error));
-    }).catch(error => handlerUnauthorizedError(navigation, error));
+    })
+      .then(() => {
+        return patch(`${API_URL}/travels/${route.params.travelId}`, token, {
+          driverScore: Math.floor(driverScore),
+        })
+          .then(async () => {
+            if (comment != "") {
+              await authPost(`${API_URL}/comments/driver`, token, {
+                userId: driver,
+                description: comment,
+              });
+            }
+            navigation.navigate("Home");
+          })
+          .catch((error) => handlerUnauthorizedError(navigation, error));
+      })
+      .catch((error) => handlerUnauthorizedError(navigation, error));
   };
 
   const months = {
@@ -90,7 +115,7 @@ export default function TripDetails({ route, navigation }) {
   };
 
   const comeBack = (navigation) => {
-    navigation.navigate("Home")
+    navigation.navigate("Home");
   };
 
   return (
@@ -145,29 +170,38 @@ export default function TripDetails({ route, navigation }) {
           ? `Puntua tu viaje con el driver ${driver}`
           : `${driverScore} estrellas`}
       </Text>
-      {!alreadyRated && <AirbnbRating
-        defaultRating={driverScore}
-        size={35}
-        selectedColor="black"
-        showRating={false}
-        isDisabled={alreadyRated}
-        onFinishRating={(rating) => setDriverScore(rating)}
-      />}
-      {!alreadyRated &&
+      {!alreadyRated && (
+        <AirbnbRating
+          defaultRating={driverScore}
+          size={35}
+          selectedColor="black"
+          showRating={false}
+          isDisabled={alreadyRated}
+          onFinishRating={(rating) => setDriverScore(rating)}
+        />
+      )}
+      {!alreadyRated && (
         <View style={TravelStyles.comment_container}>
           <TextInput
             style={[TravelStyles.input_text, { width: 300 }]}
             placeholder="Comente su experiencia aqui..."
-            onChangeText={newText => setComment(newText)}
+            onChangeText={(newText) => setComment(newText)}
             defaultValue={comment}
             maxLength={500}
           />
-        </View>}
+        </View>
+      )}
       <View style={[TravelStyles.travelContainer, { marginBottom: 10 }]}>
         <View style={TravelStyles.buttonContainer}>
           <Text style={{ fontFamily: "poppins", fontSize: 20 }}></Text>
           <Pressable
-            style={[MapStyles.confirmTripButton, { width: (30 * Dimensions.get("window").width) / 100, marginRight: 10 }]}
+            style={[
+              MapStyles.confirmTripButton,
+              {
+                width: (30 * Dimensions.get("window").width) / 100,
+                marginRight: 10,
+              },
+            ]}
             onPress={() => comeBack(navigation)}
           >
             <Text
@@ -182,7 +216,13 @@ export default function TripDetails({ route, navigation }) {
             </Text>
           </Pressable>
           <Pressable
-            style={[MapStyles.confirmTripButton, { width: (30 * Dimensions.get("window").width) / 100, marginRight: 10 }]}
+            style={[
+              MapStyles.confirmTripButton,
+              {
+                width: (30 * Dimensions.get("window").width) / 100,
+                marginRight: 10,
+              },
+            ]}
             onPress={() => sendReport(navigation)}
           >
             <Text
@@ -198,11 +238,15 @@ export default function TripDetails({ route, navigation }) {
           </Pressable>
           {!alreadyRated ? (
             <Pressable
-              style={
-                [driverScore != 0
+              style={[
+                driverScore != 0
                   ? MapStyles.confirmTripButton
-                  : [MapStyles.confirmTripButton, { backgroundColor: "#bbb" }, { width: (30 * Dimensions.get("window").width) / 100 }]]
-              }
+                  : [
+                      MapStyles.confirmTripButton,
+                      { backgroundColor: "#bbb" },
+                      { width: (30 * Dimensions.get("window").width) / 100 },
+                    ],
+              ]}
               disabled={driverScore == 0}
               onPress={() => sendRatingToDriver()}
             >
