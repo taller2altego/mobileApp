@@ -19,6 +19,24 @@ import TravelItem from "../travel/TravelItem";
 import { setTravelDetails } from "../../redux/actions/UpdateTravelDetails";
 import { get, handlerUnauthorizedError } from "../../utils/requests";
 
+import * as Notifications from "expo-notifications";
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+  }),
+});
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+  }),
+});
+
 export default function HomeTab({ navigation }) {
   // redux
   const currentUserData = useSelector((store) => store.userData);
@@ -35,6 +53,9 @@ export default function HomeTab({ navigation }) {
   const [selectedId, setSelectedId] = useState(null);
   const [correctSrcInput, setCorrectSrcInput] = useState(true);
   const [correctDestInput, setCorrectDestInput] = useState(false);
+  const [originInput, setOriginInput] = useState(
+    currentUserData.defaultLocation
+  );
 
   const handleSelectedTrip = (item) => {
     setSelectedId(item.id);
@@ -59,32 +80,64 @@ export default function HomeTab({ navigation }) {
       latitude: currentUserData.defaultLocation.latitude,
       longitude: currentUserData.defaultLocation.longitude,
     });
-  }, [currentUserData])
+  }, [currentUserData]);
 
-  useFocusEffect(useCallback(() => {
+  useEffect(() => {
     (async () => {
+
+      await registerForPushNotificationsAsync()
+        .then(token => SecureStore.setItemAsync("pushToken", token));
+
       const id = await SecureStore.getItemAsync("id");
       const token = await SecureStore.getItemAsync("token");
-      const params = {
-        page: 1,
-        limit: 4,
-      };
+      const params = { page: 1, limit: 4 };
 
       await get(`${API_URL}/travels/users/${id}`, token, {}, params)
-        .then(
-          ({ data: { data } }) => {
-            const dataFiltered = data.filter(item => item.status === 'finished');
-            setData(dataFiltered);
-          })
+        .then(({ data: { data } }) => {
+          const dataFiltered = data.filter(item => item.status === 'finished');
+          setData(dataFiltered);
+        })
         .catch(err => handlerUnauthorizedError(navigation, err));
     })();
-  }, []));
+  }, []);
 
   const onConfirmationTravel = () => {
     dispatch(
       setTravelDetails({ origin: srcDetails, destination: destDetails })
     );
     navigation.navigate("ConfirmationTravel");
+  };
+
+  const registerForPushNotificationsAsync = async () => {
+    try {
+      const { status: existingStatus } = await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+
+      if (existingStatus !== "granted") {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+
+      if (finalStatus !== "granted") {
+        throw new Error("Permission not granted!");
+      }
+
+      const token = (await Notifications.getExpoPushTokenAsync()).data;
+
+      if (Platform.OS === "android") {
+        Notifications.setNotificationChannelAsync("default", {
+          name: "default",
+          importance: Notifications.AndroidImportance.MAX,
+          vibrationPattern: [0, 250, 250, 250],
+          lightColor: "#FF231F7C"
+        });
+      }
+
+      return token;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
   };
 
   return (
@@ -140,6 +193,7 @@ export default function HomeTab({ navigation }) {
                 </View>
               )}
               onPress={(data, details) => {
+                setOriginInput(data.description);
                 setCorrectSrcInput(true);
                 setSrcDetails({
                   latitude: details.geometry.location.lat,

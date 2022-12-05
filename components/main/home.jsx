@@ -1,20 +1,16 @@
 import React, { useCallback } from "react";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { get, handlerUnauthorizedError } from "../../utils/requests";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  setDefaultLocation,
-  setIsDriver,
-  setUserData,
-} from "../../redux/actions/UpdateUserData";
-import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from '@react-navigation/native';
 import * as SecureStore from "expo-secure-store";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { Ionicons } from "@expo/vector-icons";
 
+import { get, handlerUnauthorizedError } from "../../utils/requests";
+import { setDefaultLocation, setIsDriver, setUserData } from "../../redux/actions/UpdateUserData";
+import { setDriverData } from "../../redux/actions/UpdateDriverData";
 import HomeTab from "./homeTab";
 import ProfileTab from "./profileTab";
 import envs from "../../config/env";
-import { setDriverData } from "../../redux/actions/UpdateDriverData";
 
 export default function Home({ navigation }) {
   const Tab = createBottomTabNavigator();

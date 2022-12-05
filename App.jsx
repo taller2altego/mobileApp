@@ -1,4 +1,3 @@
-import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
@@ -28,9 +27,116 @@ import AuthToken from "./components/auth/authToken";
 import WalletVisualization from "./components/driver/WalletVisualization";
 import DefaultLocationRequest from "./components/auth/DefaultLocationRequest";
 
+import * as SecureStore from "expo-secure-store";
+import * as TaskManager from "expo-task-manager";
+import * as Location from "expo-location";
+
+import { get } from "./utils/requests";
+import envs from "./config/env";
+const { API_URL, _ } = envs;
+
 const Stack = createNativeStackNavigator();
 
+const LOCATION_TASK_NAME = "LOCATION_TASK_NAME";
+let interval = undefined;
+
+TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  if (data) {
+    const { locations } = data;
+    const location = locations[0];
+
+    if (interval !== undefined) {
+      clearInterval(interval);
+    }
+
+    if (location) {
+      console.log(location);
+
+      const updatePositionIsRequired = await SecureStore.getItemAsync('updatingLocation');
+
+      if (updatePositionIsRequired) {
+        await SecureStore.setItemAsync("updatingLocation", JSON.stringify({ driverLocation: location.coords }));
+      } else {
+        interval = setInterval(async () => {
+          const flag = await SecureStore.getItemAsync('askForTravel');
+  
+          console.log(flag);
+  
+          if (flag === 'true') {
+            const token = await SecureStore.getItemAsync("token");
+            const pushToken = await SecureStore.getItemAsync("pushToken");
+  
+            const url = `${API_URL}/travels?latitude=${location.coords.latitude}&longitude=${location.coords.longitude}&token=${pushToken}`;
+            await get(url, token)
+              .then(({ data: { data } }) => data)
+              .then(data => SecureStore.setItemAsync('travelInfo', JSON.stringify({ ...data, driverLocation: location.coords })))
+              .then(() => {});
+          }
+  
+        }, 20000);
+      }
+    }
+  }
+});
+
 export default function App() {
+  const startBackgroundUpdate = async () => {
+    const { granted } = await Location.getBackgroundPermissionsAsync();
+    if (!granted) {
+      console.log("location tracking denied");
+      return;
+    }
+  
+    const isTaskDefined = await TaskManager.isTaskDefined(LOCATION_TASK_NAME);
+    if (!isTaskDefined) {
+      console.log("Task is not defined");
+      return;
+    }
+  
+    const hasStarted = await Location.hasStartedLocationUpdatesAsync(LOCATION_TASK_NAME);
+  
+    if (hasStarted) {
+      await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME);
+    }
+  
+    await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
+      accuracy: Location.Accuracy.BestForNavigation,
+      showsBackgroundLocationIndicator: true,
+      distanceInterval: 100,
+      foregroundService: {
+        notificationTitle: "Location",
+        notificationBody: "Location tracking in background",
+        notificationColor: "#fff",
+      }
+    })
+    .catch(() => Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
+        accuracy: Location.Accuracy.BestForNavigation,
+        showsBackgroundLocationIndicator: true,
+        distanceInterval: 100,
+        foregroundService: {
+          notificationTitle: "Location",
+          notificationBody: "Location tracking in background",
+          notificationColor: "#fff",
+        }
+      })
+    )
+    .then(res => res);
+  }
+  
+  const requestPermissions = async () => {
+    const foreground = await Location.requestForegroundPermissionsAsync();
+    if (foreground.granted) await Location.requestBackgroundPermissionsAsync();
+  }
+  
+  requestPermissions()
+    .then(() => startBackgroundUpdate())
+    .then(() => {});
+
   return (
     <Provider store={store}>
       <NavigationContainer>

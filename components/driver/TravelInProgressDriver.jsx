@@ -4,13 +4,12 @@ import MapView, {
   Marker,
   PROVIDER_GOOGLE,
 } from "react-native-maps";
-import { MapStyles, TravelStyles } from "../styles";
+import { MapStyles } from "../styles";
 import MapViewDirections from "react-native-maps-directions";
-import { View, Text, Pressable, Image, Dimensions } from "react-native";
+import { View, Text, Pressable, Dimensions } from "react-native";
 import { useSelector } from "react-redux";
 import { useFonts } from "expo-font";
 import envs from "../../config/env";
-import { useEffect } from "react";
 import * as Location from "expo-location";
 import { authPost, get, handlerUnauthorizedError } from "../../utils/requests";
 import * as SecureStore from "expo-secure-store";
@@ -31,7 +30,6 @@ export default function TravelInProgressDriver({ navigation }) {
   // redux
   const tripData = useSelector((store) => store.travelDetailsData);
   const travelData = useSelector((store) => store.currentTravel);
-  const [locationSubscription, setLocationSubscription] = useState(null);
 
   // state
   const [actualTripState, setActualTripState] = useState({
@@ -64,23 +62,20 @@ export default function TravelInProgressDriver({ navigation }) {
   });
 
   const updateDriverPosition = async () => {
-    const locSubscription = await Location.watchPositionAsync(
-      { accuracy: Location.Accuracy.High, distanceInterval: 10 },
-      (location) => {
-        const newLatitude = location.coords.latitude;
-        const newLongitude = location.coords.longitude;
-        animate(newLatitude, newLongitude);
-        setActualTripState({
-          ...actualTripState,
-          currentLoc: { latitude: newLatitude, longitude: newLongitude },
+    return setInterval(async () => {
+      const { latitude, longitude } = await SecureStore
+        .getItemAsync('updatingLocation')
+        .then(location => JSON.parse(location))
+        .then(location => {
+          return { latitude: location.driverLocation.latitude, longitude: location.driverLocation.longitude };
         });
-      },
-      (error) => {
-        console.log("hay error aca"), console.log(error);
-      }
-    );
 
-    setLocationSubscription(locSubscription);
+      animate(latitude, longitude);
+      setActualTripState({
+        ...actualTripState,
+        currentLoc: { latitude, longitude }
+      });
+    }, 20000);  
   };
 
   const animate = (latitude, longitude) => {
@@ -97,18 +92,19 @@ export default function TravelInProgressDriver({ navigation }) {
   };
 
   useFocusEffect(
-    useCallback(() => {
-      updateDriverPosition();
+    useCallback(async () => {
+      console.log(actualTripState);
+      const interval = await updateDriverPosition();
       return () => {
-        locationSubscription.remove();
+        clearInterval(interval);
       };
-    }, []),
+    }, [])
   );
 
   const updateDistance = (args, tripPart) => {
     const setArrive =
       tripPart === "start" ? setArriveOnUserLocation : setArriveOnDestination;
-    if (args.distance.toFixed(2) < 0.05) {
+    if (args.distance.toFixed(2) < 1) {
       setArrive(true);
     } else {
       setArrive(false);
@@ -126,6 +122,8 @@ export default function TravelInProgressDriver({ navigation }) {
   const finishTravel = async () => {
     const id = await SecureStore.getItemAsync("id");
     const token = await SecureStore.getItemAsync("token");
+    await SecureStore.deleteItemAsync("updatingLocation");
+
     const travel = await get(`${API_URL}/travels/${travelData._id}`, token);
     const body = {
       driverId: travel.data.data.driverId,
@@ -138,6 +136,7 @@ export default function TravelInProgressDriver({ navigation }) {
   };
 
   const cancelTravel = async () => {
+    await SecureStore.deleteItemAsync("updatingLocation");
     const token = await SecureStore.getItemAsync("token");
     const travel = await get(`${API_URL}/travels/${travelData._id}`, token);
     const user = await get(`${API_URL}/users/${travel.data.data.userId}`, token)

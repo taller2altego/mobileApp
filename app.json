@@ -7,13 +7,25 @@
       "**/*"
     ],
     "android": {
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "FOREGROUND_SERVICE"
+      ],
       "package": "com.altego.fiuber",
+      "googleServicesFile": "./android/app/google-services.json",
       "config": {"googleMaps": {"apiKey": "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ"}}
     },
     "ios": {
       "bundleIdentifier": "com.altego.fiuber"
     },
-    "scheme": "googleredirect"
+    "scheme": "googleredirect",
+    "extra": {
+      "eas": {
+        "projectId": "a0a8f54b-61cf-43c7-9713-20263a97b2a2"
+      }
+    }
   },
   "name": "fiuber",
   "plugins": [

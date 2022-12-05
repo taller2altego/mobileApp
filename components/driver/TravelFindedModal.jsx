@@ -1,39 +1,40 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Pressable, Modal, Text, View } from "react-native";
 import { Entypo } from "@expo/vector-icons";
 
-import { LandingStyles, modalStyles } from "../styles";
+import { modalStyles } from "../styles";
 import { useSelector } from "react-redux";
 import { authPost, handlerUnauthorizedError } from "../../utils/requests";
 import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
 
-export default function TravelFindedModal({
-  navigation,
-  setModalTravelFindedVisible,
-  ...props
-}) {
+export default function TravelFindedModal({ navigation, setModalTravelFindedVisible, ...props }) {
   const { API_URL, _ } = envs;
   const travelDetailsData = useSelector((store) => store.travelDetailsData);
   const currentTravel = useSelector((store) => store.currentTravel);
 
   const acceptTravel = async () => {
+
     const id = await SecureStore.getItemAsync("id");
     const driverId = await SecureStore.getItemAsync("driverId");
     const token = await SecureStore.getItemAsync("token");
-    return authPost(`${API_URL}/travels/${currentTravel._id}/accept`, token, {
+    await SecureStore.setItemAsync("updatingLocation", JSON.stringify({ updating: "true" }));
+
+    const body = {
       driverId: driverId,
       currentDriverPosition: travelDetailsData.origin
-    }).then(
-      navigation.navigate("TravelInProgressDriver")
-    ).catch(error => handlerUnauthorizedError(navigation, error));
+    };
+
+    return authPost(`${API_URL}/travels/${currentTravel._id}/accept`, token, body)
+      .then(() => navigation.navigate("TravelInProgressDriver"))
+      .catch(error => handlerUnauthorizedError(navigation, error));
   };
 
   return (
     <Modal animationType="slide" transparent={false} visible={props.visible}>
       <View style={[modalStyles.modal_extern_view, { fontFamily: "poppins" }]}>
         <View style={[modalStyles.modal_view, { fontFamily: "poppins" }]}>
-          <Pressable onPress={props.toggle}>
+          <Pressable onPress={props.toggleAccept}>
             <Entypo name="cross" size={24} color="black" />
           </Pressable>
           <View style={[modalStyles.flex_modal]}>

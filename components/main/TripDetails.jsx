@@ -1,13 +1,14 @@
 import { useState, useCallback } from "react";
-import { MapStyles, TravelStyles, ReportStyles } from "../styles";
 import { View, Text, TextInput, Pressable, Dimensions } from "react-native";
-import { get, patch, handlerUnauthorizedError, authPost } from "../../utils/requests";
 import { AirbnbRating } from "react-native-ratings";
 import * as SecureStore from "expo-secure-store";
 import moment from "moment";
-import envs from "../../config/env";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from '@react-navigation/native';
+
+import { MapStyles, TravelStyles } from "../styles";
+import { get, patch, handlerUnauthorizedError, authPost } from "../../utils/requests";
+import envs from "../../config/env";
 
 export default function TripDetails({ route, navigation }) {
   const [alreadyRated, setAlreadyRated] = useState(false);
