@@ -54,6 +54,7 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
     }
 
     if (location) {
+      console.log(location);
 
       const updatePositionIsRequired = await SecureStore.getItemAsync('updatingLocation');
 

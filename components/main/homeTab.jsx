@@ -99,7 +99,7 @@ export default function HomeTab({ navigation }) {
         })
         .catch(err => handlerUnauthorizedError(navigation, err));
     })();
-  });
+  }, []);
 
   const onConfirmationTravel = () => {
     dispatch(

@@ -36,9 +36,17 @@ export default function TravelSearch({ navigation }) {
 
         await SecureStore.setItemAsync('askForTravel', 'false');
         const { driverLocation, ...travel } = response;
+
+        console.log(response);
         
         // destino actual del conductor
-        dispatch(setTravelDetails({ origin: driverLocation, destination: travel.destination }));
+        dispatch(setTravelDetails({ 
+          origin: {
+            latitude: driverLocation.latitude, 
+            longitude: driverLocation.longitude
+          }, 
+          destination: travel.destination 
+        }));
         // modal
         dispatch(setTravelInfo({ originAddress: travel.sourceAddress, destinationAddress: travel.destinationAddress }));
         // para mostrar en el mapa

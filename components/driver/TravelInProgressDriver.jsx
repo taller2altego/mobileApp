@@ -65,7 +65,16 @@ export default function TravelInProgressDriver({ navigation }) {
     return setInterval(async () => {
       const { latitude, longitude } = await SecureStore
         .getItemAsync('updatingLocation')
-        .then(location => ({ latitude: location.latitude, longitude: location.longitude }));
+        .then(location => JSON.parse(location))
+        .then(location => {
+          console.log('fetching updatingLocaiton');
+          console.log(location);
+          return { latitude: location.driverLocation.latitude, longitude: location.driverLocation.longitude };
+        });
+
+      console.log('update driver position');
+      console.log(latitude);
+      console.log(longitude);
 
       animate(latitude, longitude);
       setActualTripState({
@@ -90,6 +99,7 @@ export default function TravelInProgressDriver({ navigation }) {
 
   useFocusEffect(
     useCallback(async () => {
+      console.log(actualTripState);
       const interval = await updateDriverPosition();
       return () => {
         clearInterval(interval);
@@ -100,7 +110,7 @@ export default function TravelInProgressDriver({ navigation }) {
   const updateDistance = (args, tripPart) => {
     const setArrive =
       tripPart === "start" ? setArriveOnUserLocation : setArriveOnDestination;
-    if (args.distance.toFixed(2) < 0.05) {
+    if (args.distance.toFixed(2) < 1) {
       setArrive(true);
     } else {
       setArrive(false);
