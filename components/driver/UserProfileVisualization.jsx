@@ -8,13 +8,17 @@ import { FontAwesome } from "@expo/vector-icons";
 import { useFocusEffect } from '@react-navigation/native';
 import { MapStyles, TravelStyles } from "../styles";
 import CommentItem from "../travel/CommentItem";
+import { useSelector } from "react-redux";
 
-export default function VisualizationTab({ route, navigation }) {
+export default function VisualizationTab({ navigation }) {
     // States
     const [name, setName] = useState();
     const [lastname, setLastName] = useState();
     const [userScore, setUserScore] = useState();
     const [data, setData] = useState([]);
+    const currentTravelData = useSelector((store) => store.currentTravel);
+    const travelId = currentTravelData._id;
+    const userId = currentTravelData.userId;
 
     const { API_URL, _ } = envs;
 
@@ -30,7 +34,6 @@ export default function VisualizationTab({ route, navigation }) {
     useFocusEffect(useCallback(() => {
         (async () => {
             const token = await SecureStore.getItemAsync("token");
-            const { userId } = route.params;
 
             await get(`${API_URL}/users/${userId}`, token).then(
                 ({ data: { name, lastname, totalScore } }) => {
@@ -38,6 +41,7 @@ export default function VisualizationTab({ route, navigation }) {
                     setLastName(lastname);
                     setUserScore(totalScore);
                 });
+
             await get(`${API_URL}/comments/user/${userId}`, token)
                 .then((data) => {
                     setData(data.data.comments);
@@ -97,8 +101,7 @@ export default function VisualizationTab({ route, navigation }) {
                 <Pressable
                     style={MapStyles.confirmTripButton}
                     onPress={() => {
-                        const { travelId } = route.params;
-                        navigation.navigate("RateUser", { travelId });
+                        navigation.navigate("RateUser");
                     }}
                 >
                     <Text

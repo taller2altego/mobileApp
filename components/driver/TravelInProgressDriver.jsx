@@ -104,7 +104,7 @@ export default function TravelInProgressDriver({ navigation }) {
   const updateDistance = (args, tripPart) => {
     const setArrive =
       tripPart === "start" ? setArriveOnUserLocation : setArriveOnDestination;
-    if (args.distance.toFixed(2) < 1) {
+    if (args.distance.toFixed(2) < 100000) {
       setArrive(true);
     } else {
       setArrive(false);
@@ -131,8 +131,11 @@ export default function TravelInProgressDriver({ navigation }) {
       paidWithCredits: true,
       payToDriver: true,
     };
-    return authPost(`${API_URL}/travels/${travelData._id}/finish`, token, body)
-      .then(navigation.navigate("UserProfileVisualization", { travelId: travelData._id, userId: travel.data.data.userId }));
+
+    // si tenemos tiempo pasar a redux
+    
+
+    return authPost(`${API_URL}/travels/${travelData._id}/finish`, token, body).then(navigation.navigate("UserProfileVisualization"));
   };
 
   const cancelTravel = async () => {

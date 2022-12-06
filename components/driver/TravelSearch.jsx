@@ -50,7 +50,7 @@ export default function TravelSearch({ navigation }) {
         // para mostrar en el mapa
         dispatch(setUserLocation({ userLocation: travel.source }));
         // setea el id del viaje para aceptar/cancelar/actualizar posicion
-        dispatch(setNewTravel({ _id: response._id }));
+        dispatch(setNewTravel({ _id: response._id, userId: response.userId }));
 
         setModalTravelFindedVisible(!modalTravelFindedVisible);
       }
