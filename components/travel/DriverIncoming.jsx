@@ -147,7 +147,7 @@ export default function DriverIncoming({ navigation }) {
         <View style={{ paddingRight: 20 }}>
           <Text style={{ fontFamily: "poppins", fontSize: 15 }}>
             {" "}
-            Driver: {driver}
+            Driver: {driverId}
           </Text>
           <Text style={{ fontFamily: "poppins", fontSize: 15 }}>
             {" "}

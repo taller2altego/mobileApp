@@ -1,13 +1,11 @@
 import { useRef, useState } from "react";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
-import { MapStyles, TravelStyles } from "../styles";
+import { MapStyles, TravelStyles, modalStyles } from "../styles";
 import MapViewDirections from "react-native-maps-directions";
-import { View, Text, Pressable, Image } from "react-native";
+import { View, Text, Pressable, Image, Modal } from "react-native";
 import { useSelector } from "react-redux";
 import { useFonts } from "expo-font";
 import envs from "../../config/env";
-
-const PRICE_PER_KM = 100;
 
 const edgePadding = {
   top: 100,
@@ -15,49 +13,50 @@ const edgePadding = {
   bottom: 100,
   left: 100,
 };
-const INITIAL_POSITION = {
-  latitude: -34.6035,
-  longitude: -58.4611,
-  latitudeDelta: 0.1,
-  longitudeDelta: 0.1,
-};
+
+const screen = Dimensions.get("window");
+const ASPECT_RATIO = screen.width / screen.height;
+const LATITUDE_DELTA = 0.02;
+const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 export default function TravelInProgress({ navigation }) {
   const currentTravelData = useSelector((store) => store.travelDetailsData);
+  const travelDetails = useSelector((store) => store.currentTravel);
   const [distance, setDistance] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [driver, setDriver] = useState("Raul Gomez");
-  const [modalWaitingVisible, setModalWaitingVisible] = useState(false);
+  const [modalFinishVisible, setModalFinishVisible] = useState(false);
+  const [currentOrigin, setCurrentOrigin] = useState(origin);
   const origin = currentTravelData.origin;
   const destination = currentTravelData.destination;
+  const travelId = travelDetails._id;
+  const driverId = currentTravelData.driverId;
 
   const { API_URL, GOOGLE_API_KEY } = envs;
 
-  // origen -- actual conductor hasta llegar a la casa del usuario
-  // destino -- casa del usuario
+  useFocusEffect(useCallback(() => {
+    let interval = setInterval(async () => {
+      const token = await SecureStore.getItemAsync("token");
 
-  // origen actual posicion del conductor con el usuario, inicial en domicilio del usuario
-  // destino -- travel.destination
-
-  // const driverId = await SecureStore.getItemAsync("id");
-  // const token = await SecureStore.getItemAsync("token");
-  // get()
-
-  const cancelTravel = (navigation) => {
-    // request para eliminar el viaje en el travel
-    // limpiar inputs de destino y origen en main
-    navigation.navigate("Home");
-  };
+      await get(`${API_URL}/travels/${travelId}/driver`, token).then(({ data }) => {
+        if (data.data.isFinished) {
+          setModalFinishVisible(true);
+        }
+        
+        const position = data.data.currentDriverPosition;
+        setCurrentOrigin(position);
+      }
+      );
+    }, 10000);
+    return () => {
+      clearInterval(interval);
+    };
+  }, []));
 
   const mapRef = useRef(null);
   const [fontsLoaded] = useFonts({
     poppins: require("../../assets/fonts/Poppins-Regular.ttf"),
     "poppins-bold": require("../../assets/fonts/Poppins-Bold.ttf"),
   });
-
-  // const onDriverSearch = () => {
-  //   navigation.navigate("DriverSearch");
-  // };
 
   const updateTripProps = (args) => {
     if (args) {
@@ -79,6 +78,7 @@ export default function TravelInProgress({ navigation }) {
 
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
+      {modalFinishVisible && <WaitingModal navigation={navigation}></WaitingModal>}
       <MapView
         ref={mapRef}
         style={MapStyles.map}
@@ -86,7 +86,12 @@ export default function TravelInProgress({ navigation }) {
         onMapLoaded={() => {
           zoomOnDirections();
         }}
-        initialRegion={INITIAL_POSITION}
+        initialRegion={{
+          latitude: origin.latitude,
+          longitude: origin.longitude,
+          latitudeDelta: LATITUDE_DELTA,
+          longitudeDelta: LONGITUDE_DELTA,
+        }}
       >
         {origin && <Marker coordinate={origin} identifier="originMark" />}
         {destination && (
@@ -114,7 +119,7 @@ export default function TravelInProgress({ navigation }) {
         <View style={{ paddingRight: 20 }}>
           <Text style={{ fontFamily: "poppins", fontSize: 15 }}>
             {" "}
-            Driver: {driver}
+            Driver: {driverId}
           </Text>
           <Text style={{ fontFamily: "poppins", fontSize: 15 }}>
             {" "}
@@ -122,11 +127,30 @@ export default function TravelInProgress({ navigation }) {
           </Text>
         </View>
       </View>
+      <Modal
+        transparent={true}
+        visible={modalFinishVisible}
+        onRequestClose={() => {
+          setModalFinishVisible(!modalFinishVisible);
+        }}
+      >
+        <View style={modalStyles.centered_view}>
+          <View style={modalStyles.modal_view_travel}>
+            <Text style={modalStyles.text_modal_style}>Has llegado a destino!</Text>
+            <Pressable
+              style={[modalStyles.button, modalStyles.button_close]}
+              onPress={() => navigation.navigate("Home")}
+            >
+              <Text style={modalStyles.text_style}>Finalizar Viaje</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
       <View style={TravelStyles.travelContainer}>
         <View style={TravelStyles.buttonContainer}>
           <Pressable
             style={MapStyles.confirmTripButton}
-            onPress={() => navigation.navigate("ProfileVisualization")}
+            onPress={() => navigation.navigate("DriverProfileVisualization")}
           >
             <Text
               style={{
