@@ -53,18 +53,14 @@ export default function DriverIncoming({ navigation }) {
     let interval = setInterval(async () => {
       const token = await SecureStore.getItemAsync("token");
 
-      await get(`${API_URL}/travels/${travelId}/driver`, token).then(
-        ({ data }) => {
-          const position = data.data.currentDriverPosition;
-          setCurrentOrigin(position);
+      await get(`${API_URL}/travels/${travelId}/driver`, token).then(({ data }) => {
+        const position = data.data.currentDriverPosition;
+        setCurrentOrigin(position);
 
-          // TODO: seguro la posicion final, no sea igual... calcular un aproximado
-          const isSameLat = position.latitude == destination.latitude;
-          const isSameLong = position.longitude == destination.longitude;
-          if (isSameLat && isSameLong) {
-            navigation.navigate("TravelInProgress");
-          }
+        if (data.data.isStarted) {
+          navigation.navigate("TravelInProgress");
         }
+      }
       );
     }, 10000);
     return () => {
