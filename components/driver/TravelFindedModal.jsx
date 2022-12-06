@@ -1,5 +1,5 @@
 import React from "react";
-import { Pressable, Modal, Text, View } from "react-native";
+import { Pressable, Modal, Text, View, Dimensions } from "react-native";
 import { Entypo } from "@expo/vector-icons";
 
 import { modalStyles } from "../styles";
@@ -38,21 +38,30 @@ export default function TravelFindedModal({ navigation, setModalTravelFindedVisi
             <Entypo name="cross" size={24} color="black" />
           </Pressable>
           <View style={[modalStyles.flex_modal]}>
-            <Text style={{ fontSize: 25, alignSelf: "center" }}>
+            <Text style={{ fontSize: 25, alignSelf: "center", color: "white" }}>
               {" "}
               {travelDetailsData.originAddress}
             </Text>
-            <Text style={{ fontSize: 25, alignSelf: "center" }}>
+            <Text style={{ fontSize: 25, alignSelf: "center", color: "white" }}>
               {" "}
               {travelDetailsData.destinationAddress}{" "}
             </Text>
-            <Pressable style={{ alignSelf: "center" }} onPress={acceptTravel}>
-              <Text style={{ fontSize: 25 }}> Aceptar Viaje </Text>
-            </Pressable>
-
-            <Pressable style={{ alignSelf: "center" }} onPress={props.toggle}>
-              <Text style={{ fontSize: 25 }}>Volver</Text>
-            </Pressable>
+            <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+              <Pressable style={[modalStyles.modal_button, {
+                width: (45 * Dimensions.get("window").width) / 100,
+                alignItems: "center", justifyContent: "center",
+                marginLeft: 6
+              }]} onPress={props.toggle}>
+                <Text style={{ fontSize: 20, fontWeight: "bold", color: "white" }}>Volver</Text>
+              </Pressable>
+              <Pressable style={[modalStyles.modal_button, {
+                width: (45 * Dimensions.get("window").width) / 100,
+                alignItems: "center", justifyContent: "center",
+                marginRight: 6
+              }]} onPress={acceptTravel}>
+                <Text style={{ fontSize: 20, fontWeight: "bold", color: "white" }}> Aceptar Viaje </Text>
+              </Pressable>
+            </View>
           </View>
         </View>
       </View>

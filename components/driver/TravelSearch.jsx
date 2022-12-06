@@ -36,14 +36,14 @@ export default function TravelSearch({ navigation }) {
 
         await SecureStore.setItemAsync('askForTravel', 'false');
         const { driverLocation, ...travel } = response;
-        
+
         // destino actual del conductor
-        dispatch(setTravelDetails({ 
+        dispatch(setTravelDetails({
           origin: {
-            latitude: driverLocation.latitude, 
+            latitude: driverLocation.latitude,
             longitude: driverLocation.longitude
-          }, 
-          destination: travel.destination 
+          },
+          destination: travel.destination
         }));
         // modal
         dispatch(setTravelInfo({ originAddress: travel.sourceAddress, destinationAddress: travel.destinationAddress }));
@@ -94,7 +94,7 @@ export default function TravelSearch({ navigation }) {
         {isSearching && <ActivityIndicator size={80} color="#000000" />}
       </View>
       <View style={{ bottom: 200, alignSelf: "center" }}>
-        <Pressable onPress={onCancelSearch}>
+        <Pressable onPress={onCancelSearch} style={{ borderColor: "black" }}>
           <Text style={{ fontSize: 25, fontFamily: "poppins" }}> Cancelar </Text>
         </Pressable>
       </View>
