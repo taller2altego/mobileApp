@@ -81,7 +81,11 @@ export default function HomeTab({ navigation }) {
     (async () => {
 
       await registerForPushNotificationsAsync()
-        .then(token => SecureStore.setItemAsync("pushToken", token));
+        .then(async token => {
+          
+          console.log(token);
+          await SecureStore.setItemAsync("pushToken", token);
+        });
 
       const id = await SecureStore.getItemAsync("id");
       const token = await SecureStore.getItemAsync("token");

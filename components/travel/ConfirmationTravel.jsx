@@ -123,7 +123,7 @@ export default function ConfirmationTravel({ navigation }) {
 
     return authPost(`${API_URL}/travels`, token, body)
       .then(({ data }) => {
-        dispatch(setNewTravel({ _id: data.data._id }));
+        dispatch(setNewTravel({ _id: data.data._id, userId: data.data.userId }));
         setModalWaitingVisible(!modalWaitingVisible);
       })
       .catch((error) => {

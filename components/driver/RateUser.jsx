@@ -7,16 +7,16 @@ import * as SecureStore from "expo-secure-store";
 import moment from "moment";
 import envs from "../../config/env";
 import { AirbnbRating } from "react-native-ratings";
+import { useSelector } from "react-redux";
 
 const API_KEY = "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ";
 
-export default function RateUser({ route, navigation }) {
+export default function RateUser({ navigation }) {
     const [fontsLoaded] = useFonts({
         poppins: require("../../assets/fonts/Poppins-Regular.ttf"),
         "poppins-bold": require("../../assets/fonts/Poppins-Bold.ttf"),
     });
     const [rating, handleRating] = useState();
-    const [userId, setUserId] = useState();
     const [userScore, setUserScore] = useState();
     const [source, setSource] = useState();
     const [destination, setDestination] = useState();
@@ -26,9 +26,12 @@ export default function RateUser({ route, navigation }) {
     const [comment, setComment] = useState("");
     const { API_URL, _ } = envs;
 
+    const currentTravelData = useSelector((store) => store.currentTravel);
+    const travelId = currentTravelData._id;
+    const userId = currentTravelData.userId;
+
     useEffect(() => {
         (async () => {
-            const { travelId } = route.params;
             const token = await SecureStore.getItemAsync("token");
             await get(`${API_URL}/travels/${travelId}`, token)
                 .then(
@@ -41,7 +44,6 @@ export default function RateUser({ route, navigation }) {
                         setPrice(data.price);
                         setDate(data.date);
                         setUserScore(data.userScore);
-                        setUserId(data.userId);
                     });
         })();
     }, []);
@@ -50,9 +52,9 @@ export default function RateUser({ route, navigation }) {
         setAlreadyRated(true);
         const token = await SecureStore.getItemAsync("token");
         return patch(`${API_URL}/users/${userId}`, token, { score: Math.floor(rating) }).then(() => {
-            return patch(`${API_URL}/travels/${route.params.travelId}`, token, { userScore: Math.floor(rating) }).then(async () => {
+            return patch(`${API_URL}/travels/${travelId}`, token, { userScore: Math.floor(rating) }).then(async () => {
                 if (comment != "") {
-                    await authPost(`${API_URL}/comments/user`, token, { userId: userId, description: comment })
+                    await authPost(`${API_URL}/comments/user`, token, { userId, description: comment })
                 }
                 navigation.navigate("Home");
             }).catch(error => handlerUnauthorizedError(navigation, error));
@@ -124,7 +126,7 @@ export default function RateUser({ route, navigation }) {
                 <View style={TravelStyles.buttonContainer}>
                     <Pressable
                         style={MapStyles.confirmTripButton}
-                        onPress={() => navigation.navigate("UserProfileVisualization", { userId: userId })}
+                        onPress={() => navigation.navigate("UserProfileVisualization")}
                     >
                         <Text
                             style={{
