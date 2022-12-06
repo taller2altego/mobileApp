@@ -11,6 +11,7 @@ import envs from "../../config/env";
 export default function WalletVisualization({ navigation }) {
   const [balance, setBalance] = useState(0);
   const [actualBalance, setActualBalance] = useState(0);
+  const [fiuCreditos, setFiuCreditos] = useState(0);
   const [insufficientFunds, setInsufficientFunds] = useState(false);
   const [isDriver, setIsDriver] = useState(false)
   // states
@@ -27,11 +28,12 @@ export default function WalletVisualization({ navigation }) {
       await get(`${API_URL}/users/${id}`, token).then(async (user) => {
         if (user.data.driverId) {
           setIsDriver(true);
+          await get(`${API_URL}/drivers/${user.data.driverId}`, token)
+            .then((data) => {
+              setActualBalance(data.data.balance);
+            });
         }
-        await get(`${API_URL}/drivers/${user.data.driverId}`, token)
-          .then((data) => {
-            setActualBalance(data.data.balance);
-          });
+        setFiuCreditos(user.data.balance);
       });
     })();
   }, []);
@@ -66,12 +68,15 @@ export default function WalletVisualization({ navigation }) {
         </Text>
       </View>
       <View style={Profilestyles.profile_container}>
-        <Text style={Profilestyles.profile_visualization}>
-          Saldo actual: {actualBalance} ethers
+        <Text style={[Profilestyles.profile_visualization, { fontWeight: "bold" }]}>
+          FIUCreditos: {fiuCreditos} ethers
+        </Text>
+        <Text style={[Profilestyles.profile_visualization, { fontWeight: "bold" }]}>
+          Ganancias: {actualBalance} ethers
         </Text>
       </View>
       {(isDriver) && <TextInput
-        style={[modalStyles.modal_input, { fontFamily: "poppins", width: 200, textAlign: "center" }]}
+        style={[modalStyles.modal_input, { fontFamily: "poppins", width: 200, textAlign: "center", color: "black", borderColor: "black" }]}
         placeholder="Cantidad"
         placeholderTextColor="#343437"
         keyboardType="numeric"
