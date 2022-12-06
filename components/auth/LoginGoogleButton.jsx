@@ -51,8 +51,9 @@ export default function LoginGoogleButton({ setErrorMessage, ...props }) {
   };
 
   return (
-    <Pressable onPress={() => promptAsync()} style={{ alignSelf: "center" }}>
-      <AntDesign name="google" size={24} color="white" />
+    <Pressable onPress={() => promptAsync()} style={{ alignSelf: "center", minHeight: 50,alignItems: "center", flexDirection:"row", backgroundColor: "#999", height: 10, padding: 10, borderRadius: 5 }}>
+      <AntDesign name="google" size={30} color="black" />
+      <Text style={{fontFamily: "poppins", marginLeft: 20, marginTop: 5}}>Continuar con google</Text>
     </Pressable>
   );
 }

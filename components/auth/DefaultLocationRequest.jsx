@@ -28,7 +28,8 @@ export default function DefaultLocationRequest({ navigation }) {
   };
 
   return (
-    <View style={{ flex: 1, top: 100, margin: 10 }}>
+    <ScrollView style={{top: "10%", padding: 20}} keyboardShouldPersistTaps="always">
+      <View>
       <Text
         style={{
           alignSelf: "center",
@@ -50,7 +51,8 @@ export default function DefaultLocationRequest({ navigation }) {
       >
         Esta ubicacion va a ser usada como predeterminada para tus viajes
       </Text>
-      <View style={{ top: 60, height: 300 }}>
+      </View>
+      <View style={{marginTop: 50}}>
         <GooglePlacesAutocomplete
           styles={{ textInput: Homestyles.searchInput }}
           placeholder="Direccion Predeterminada"
@@ -79,10 +81,10 @@ export default function DefaultLocationRequest({ navigation }) {
             language: "en",
           }}
         />
-      </View>
+        </View>
       {correctInput ? (
         <Pressable
-          style={{ alignSelf: "center", marginTop: 100 }}
+          style={{ alignSelf: "center", marginTop: 20 }}
           onPress={() => {
             handleConfirm();
           }}
@@ -91,7 +93,7 @@ export default function DefaultLocationRequest({ navigation }) {
         </Pressable>
       ) : (
         <Pressable
-          style={{ alignSelf: "center", marginTop: 100 }}
+          style={{ alignSelf: "center", marginTop: 20 }}
           disabled={true}
         >
           <Text style={{ fontFamily: "poppins", fontSize: 20, color: "gray" }}>
@@ -99,6 +101,6 @@ export default function DefaultLocationRequest({ navigation }) {
           </Text>
         </Pressable>
       )}
-    </View>
+    </ScrollView>
   );
 }

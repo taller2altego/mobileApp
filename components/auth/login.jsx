@@ -54,20 +54,20 @@ export default function LoginModal({ ...props }) {
       <View style={[modalStyles.modal_extern_view, { fontFamily: "poppins" }]}>
         <View style={modalStyles.modal_view}>
           <Pressable onPress={props.toggle}>
-            <Entypo name="cross" size={26} color="white" />
+            <Entypo name="cross" size={26} color="black" style={{left: 5, top: 5}}/>
           </Pressable>
           <View style={[modalStyles.flex_modal, { fontFamily: "poppins" }]}>
             <TextInput
               style={modalStyles.modal_input}
               placeholder="Email"
               value={email}
-              placeholderTextColor="white"
+              placeholderTextColor="black"
               onChangeText={(email) => setEmail(email)}
             />
             <TextInput
-              style={modalStyles.modal_input}
+              style={[modalStyles.modal_input]}
               placeholder="Contraseña"
-              placeholderTextColor="white"
+              placeholderTextColor="black"
               value={password}
               secureTextEntry={true}
               onChangeText={(password) => setPassword(password)}
@@ -86,19 +86,19 @@ export default function LoginModal({ ...props }) {
               navigation={props.navigation}
               setErrorMessage={setErrorMessage}
             ></LoginGoogleButton>
-            <View style={LandingStyles.land_buttons_login}>
+            <View style={{flexDirection: "column", alignItems: "center"}}>
               <Pressable
                 onPress={() => props.navigation.navigate("RecoverPassword")}
               >
                 <Text
-                  style={[LandingStyles.simpleText, { fontFamily: "poppins" }]}
+                  style={{ fontFamily: "poppins", color: "black", fontSize: 15, marginBottom: 10 }}
                 >
                   Forgot Password
                 </Text>
               </Pressable>
               <Pressable onPress={() => props.navigation.navigate("AuthToken")}>
                 <Text
-                  style={[LandingStyles.simpleText, { fontFamily: "poppins" }]}
+                  style={{ fontFamily: "poppins", fontSize: 15, color: "black" }}
                 >
                   Have a Token
                 </Text>

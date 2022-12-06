@@ -4,9 +4,11 @@ import { useDispatch } from "react-redux";
 import { setDriverData } from "../../redux/actions/UpdateDriverData";
 import { authPost, handlerUnauthorizedError } from "../../utils/requests";
 import { setIsDriver } from "../../redux/actions/UpdateUserData";
-import { DriverStyles } from "../styles";
+import { DriverStyles, modalStyles, LandingStyles } from "../styles";
 import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
+import { ScrollView } from "react-native-gesture-handler";
+import { KeyboardAvoidingView } from "react-native-web";
 
 export default function Driver({ navigation }) {
   const [license, setLicense] = useState("");
@@ -37,8 +39,8 @@ export default function Driver({ navigation }) {
   };
 
   return (
-    <View style={DriverStyles.driver_container}>
-      <View style={DriverStyles.driver_text}>
+    <View style={{padding: 20, flex: 1}}>
+      <View style={{flex: 1, top: "10%"}}>
         <Text style={[DriverStyles.driver_title, { fontFamily: "poppins" }]}>
           Gracias por manejar con nosotros
         </Text>
@@ -46,19 +48,19 @@ export default function Driver({ navigation }) {
           Ingresa los siguientes datos para poder empezar a usar fiuber
         </Text>
       </View>
-      <View style={DriverStyles.driver_inputs}>
+      <View style={{flex: 4, justifyContent: "space-evenly"}}>
         <TextInput
-          style={[DriverStyles.profile_input, { fontFamily: "poppins" }]}
+          style={{ fontFamily: "poppins", borderWidth: 1, borderRadius: 3, paddingLeft: 10, fontSize: 15, height: 40 }}
           onChangeText={setLicense}
           placeholder="N de Licencia"
         />
         <TextInput
-          style={[DriverStyles.profile_input, { fontFamily: "poppins" }]}
+          style={{ fontFamily: "poppins", borderWidth: 1, borderRadius: 3, paddingLeft: 10,  fontSize: 15, height: 40   }}
           onChangeText={setLicensePlate}
           placeholder="N de Patente"
         />
         <TextInput
-          style={[DriverStyles.profile_input, { fontFamily: "poppins" }]}
+          style={{ fontFamily: "poppins", borderWidth: 1, borderRadius: 3, paddingLeft: 10, fontSize: 15, height: 40   }}
           onChangeText={setModel}
           placeholder="Modelo"
         />
@@ -85,7 +87,20 @@ export default function Driver({ navigation }) {
           </Pressable>
         </View>
       </View>
+      <View style={{flex: 1, justifyContent: "flex-end"}}>
+      <Pressable
+              style={modalStyles.modal_button}
+              onPress={confirmData}
+            >
+              <Text
+                style={[LandingStyles.textButton, { fontFamily: "poppins" }]}
+              >
+                Confirmar
+              </Text>
+            </Pressable>
+        </View>
       <Text style={DriverStyles.error_modal}>{errorMessage}</Text>
+
     </View>
   );
 }

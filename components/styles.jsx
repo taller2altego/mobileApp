@@ -11,14 +11,14 @@ const LandingStyles = StyleSheet.create({
   regButton: {
     backgroundColor: PRIMARY_BLUE,
     borderRadius: 10,
-    width: 175,
-    height: 65,
+    width: 200,
+    height: 50,
   },
   textButton: {
     textAlign: "center",
     textJustify: "center",
     color: "white",
-    lineHeight: 65,
+    lineHeight: 55,
     fontSize: 20,
   },
   simpleText: {
@@ -82,8 +82,8 @@ const LandingStyles = StyleSheet.create({
 const modalStyles = StyleSheet.create({
   modal_view: {
     height: "75%",
-    backgroundColor: PRIMARY_BLUE,
-    borderTopRightRadius: 80,
+    backgroundColor: "white",
+    borderRadius: 15,
     overflow: "hidden",
   },
   modal_container: {
@@ -106,18 +106,18 @@ const modalStyles = StyleSheet.create({
   modal_button: {
     backgroundColor: PRIMARY_BLUE,
     borderRadius: 10,
-    width: 150,
-    height: 65,
+    width: 200,
+    height: 60,
     alignSelf: "center",
     borderWidth: 2,
     borderColor: "white",
   },
   modal_input: {
     borderWidth: 1,
-    borderColor: "white",
-    color: "white",
+    borderColor: "black",
+    color: "black",
     fontFamily: "poppins",
-    borderRadius: 10,
+    borderRadius: 5,
     height: 45,
     paddingLeft: 10,
     fontSize: 15,
@@ -312,12 +312,10 @@ const DriverStyles = StyleSheet.create({
   driver_title: {
     alignSelf: "center",
     fontSize: 22,
-    top: 40,
   },
   driver_subtitle: {
     alignSelf: "center",
     fontSize: 12,
-    top: 50,
   },
   driver_inputs: {
     flex: 4,
@@ -326,15 +324,9 @@ const DriverStyles = StyleSheet.create({
   },
   profile_input: {
     fontSize: 14,
-    marginLeft: 50,
-    width: 250,
     borderWidth: 1,
     borderColor: "#343437",
-    borderRadius: 10,
-    height: 40,
-    paddingLeft: 10,
-    marginLeft: 30,
-    marginRight: 30,
+    borderRadius: 5,
     outlineStyle: "none",
   },
   confirm_button: {
@@ -380,7 +372,7 @@ const MapStyles = StyleSheet.create({
   map: {
     top: 0,
     width: Dimensions.get("window").width,
-    height: (80 * Dimensions.get("window").height) / 100,
+    height: (75 * Dimensions.get("window").height) / 100,
   },
   searchContainer: {
     width: "90%",
@@ -400,9 +392,13 @@ const MapStyles = StyleSheet.create({
   },
   tripInfoContainer: {
     flex: 1,
+    padding: 8,
+    margin: 5,
+    borderWidth: 1,
+    borderRadius: 10,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "center",
     backgroundColor: "#e4e4e4",
     borderBottomColor: "black",
   },
@@ -488,6 +484,184 @@ const ReportStyles = StyleSheet.create({
   }
 });
 
+const customMap = [
+  {
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#f5f5f5"
+      }
+    ]
+  },
+  {
+    "elementType": "labels.icon",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#616161"
+      }
+    ]
+  },
+  {
+    "elementType": "labels.text.stroke",
+    "stylers": [
+      {
+        "color": "#f5f5f5"
+      }
+    ]
+  },
+  {
+    "featureType": "administrative.land_parcel",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#bdbdbd"
+      }
+    ]
+  },
+  {
+    "featureType": "poi",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#eeeeee"
+      }
+    ]
+  },
+  {
+    "featureType": "poi",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#757575"
+      }
+    ]
+  },
+  {
+    "featureType": "poi.park",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#e5e5e5"
+      }
+    ]
+  },
+  {
+    "featureType": "poi.park",
+    "elementType": "geometry.fill",
+    "stylers": [
+      {
+        "color": "#8ff0a4"
+      }
+    ]
+  },
+  {
+    "featureType": "poi.park",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#9e9e9e"
+      }
+    ]
+  },
+  {
+    "featureType": "road",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#ffffff"
+      }
+    ]
+  },
+  {
+    "featureType": "road.arterial",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#757575"
+      }
+    ]
+  },
+  {
+    "featureType": "road.highway",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#dadada"
+      }
+    ]
+  },
+  {
+    "featureType": "road.highway",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#616161"
+      }
+    ]
+  },
+  {
+    "featureType": "road.local",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#9e9e9e"
+      }
+    ]
+  },
+  {
+    "featureType": "transit.line",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#e5e5e5"
+      }
+    ]
+  },
+  {
+    "featureType": "transit.station",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#eeeeee"
+      }
+    ]
+  },
+  {
+    "featureType": "water",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#c9c9c9"
+      }
+    ]
+  },
+  {
+    "featureType": "water",
+    "elementType": "geometry.fill",
+    "stylers": [
+      {
+        "color": "#99c1f1"
+      }
+    ]
+  },
+  {
+    "featureType": "water",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#9e9e9e"
+      }
+    ]
+  }
+]
 export {
   DriverStyles,
   LandingStyles,
@@ -498,4 +672,5 @@ export {
   TravelStyles,
   RecoverStyles,
   ReportStyles,
+  customMap
 };
