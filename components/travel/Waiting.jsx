@@ -25,6 +25,7 @@ export default function WaitingDriverModal({ navigation, ...props }) {
 
       await get(`${API_URL}/travels/${travelId}/driver`, token).then(
         ({ data }) => {
+          console.log(data.data);
           if (data.data.driverId) {
             dispatch(setDriverId({ driverId: data.data.driverId }));
             navigation.replace("DriverIncoming");

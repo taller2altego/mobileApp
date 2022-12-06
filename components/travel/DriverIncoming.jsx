@@ -3,12 +3,13 @@ import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { MapStyles, TravelStyles } from "../styles";
 import MapViewDirections from "react-native-maps-directions";
 import { View, Text, Pressable, Image } from "react-native";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useFonts } from "expo-font";
 import { get, authPost, handlerUnauthorizedError } from "../../utils/requests";
 import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
 import { useFocusEffect } from '@react-navigation/native';
+import { clearCurrentTravel } from "../../redux/actions/UpdateCurrentTravel";
 
 const PRICE_PER_KM = 100;
 
@@ -28,6 +29,7 @@ const INITIAL_POSITION = {
 
 export default function DriverIncoming({ navigation }) {
   // redux
+  const dispatch = useDispatch();
   const travelDetailsData = useSelector((store) => store.travelDetailsData);
   const origin = travelDetailsData.origin;
   const destination = travelDetailsData.destination;
@@ -80,6 +82,9 @@ export default function DriverIncoming({ navigation }) {
       paidWithCredits: true,
       payToDriver: false,
     };
+
+    dispatch(clearCurrentTravel());
+
     return authPost(`${API_URL}/travels/${travelId}/reject?isTravelCancelled='true'`, token, body)
       .then(navigation.navigate("Home"))
       .catch(error => handlerUnauthorizedError(navigation, error));

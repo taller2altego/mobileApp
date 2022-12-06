@@ -73,9 +73,15 @@ export default function ConfirmationTravel({ navigation }) {
       };
       const id = await SecureStore.getItemAsync("id");
       const token = await SecureStore.getItemAsync("token");
+      console.log('antes de hacer el request a price');
       await get(`${API_URL}/price/${id}`, token, null, params)
         .then(({ data }) => {
-          setPrice(data.data.price)
+          console.log('price');
+          console.log(data);
+          console.log(data.data);
+          console.log(data.data.price);
+          console.log(data.data.price.toFixed(8));
+          setPrice(data.data.price.toFixed(8));
         })
         .catch(err => handlerUnauthorizedError(navigation, err));
     }
@@ -100,18 +106,19 @@ export default function ConfirmationTravel({ navigation }) {
       .then((response) => response.json())
       .then((responseJson) => responseJson.results[0].formatted_address);
 
+    const pushToken = await SecureStore.getItemAsync("pushToken");
+
     const body = {
-      paidWithCredits: true,
       userId: id,
       email: currentUserData.email,
-      price: 0.001,
-      // price: price,
       source: origin,
       sourceAddress: srcAddress,
       destination: destination,
       destinationAddress: dstAddress,
-      date: date,
       paidWithCredits: payWithCreditsBox,
+      token: pushToken,
+      price,
+      date
     };
 
     return authPost(`${API_URL}/travels`, token, body)
@@ -194,7 +201,7 @@ export default function ConfirmationTravel({ navigation }) {
           </Text>
           <Text style={{ fontFamily: "poppins", fontSize: 15 }}>
             {" "}
-            {price.toFixed(6)} Ethereum (est.)
+            {price} Ethereum (est.)
           </Text>
         </View>
       </View>
