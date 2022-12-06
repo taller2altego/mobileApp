@@ -50,40 +50,40 @@ export default function RegisterModal({ ...props }) {
       <View style={modalStyles.modal_extern_view}>
         <View style={[modalStyles.modal_view]}>
           <Pressable onPress={props.toggle}>
-            <Entypo name="cross" size={26} color="white" />
+            <Entypo name="cross" size={26} color="black" style={{left: 5, top: 5}}/>
           </Pressable>
           <View style={[modalStyles.flex_modal]}>
             <TextInput
               style={modalStyles.modal_input}
               placeholder="Nombre"
-              placeholderTextColor="white"
+              placeholderTextColor="black"
               onChangeText={(name) => setName(name)}
             />
             <TextInput
               style={modalStyles.modal_input}
               placeholder="Apellido"
-              placeholderTextColor="white"
+              placeholderTextColor="black"
               onChangeText={(password) => setLastName(password)}
             />
             <TextInput
               style={modalStyles.modal_input}
               placeholder="Email"
-              placeholderTextColor="white"
+              placeholderTextColor="black"
               onChangeText={(email) => setEmail(email)}
             />
             <TextInput
               style={modalStyles.modal_input}
               placeholder="Telefono"
-              placeholderTextColor="white"
+              placeholderTextColor="black"
               keyboardType="numeric"
               onChangeText={(phone) => {
-                setPhone(phone.replace(/[^0-9]/, ""));
+                setPhone(phone);
               }}
             />
             <TextInput
               style={modalStyles.modal_input}
               placeholder="Contraseña"
-              placeholderTextColor="white"
+              placeholderTextColor="black"
               secureTextEntry={true}
               onChangeText={(password) => setPassword(password)}
             />

@@ -24,7 +24,7 @@ export default function TravelFindedModal({ navigation, setModalTravelFindedVisi
       driverId: driverId,
       currentDriverPosition: travelDetailsData.origin
     };
-
+    props.toggleAccept()
     return authPost(`${API_URL}/travels/${currentTravel._id}/accept`, token, body)
       .then(() => navigation.navigate("TravelInProgressDriver"))
       .catch(error => handlerUnauthorizedError(navigation, error));

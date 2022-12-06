@@ -89,9 +89,9 @@ export default function TravelSearch({ navigation }) {
       }
 
       <View style={[{ flex: 1, top: 200 }]}>
-        <Text style={{ fontSize: 32, alignSelf: "center", paddingBottom: 50 }}> Buscando Viaje </Text>
+        <Text style={{ fontSize: 32, alignSelf: "center", paddingBottom: 50, fontFamily: "poppins" }}> Buscando Viaje </Text>
 
-        {isSearching && <ActivityIndicator size={80} color="#000000" />}
+        {isSearching && <ActivityIndicator size={70} color="#000000" />}
       </View>
       <View style={{ bottom: 200, alignSelf: "center" }}>
         <Pressable onPress={onCancelSearch} style={{ borderColor: "black" }}>
