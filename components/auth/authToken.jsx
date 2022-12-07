@@ -35,11 +35,6 @@ export default function AuthToken({ navigation }) {
 
     return (
         <View style={Profilestyles.profile_container}>
-            <View style={RecoverStyles.info_container}>
-                <Text style={RecoverStyles.destination_text}>{ }</Text>
-                <Text style={RecoverStyles.other_info_text}>{ }</Text>
-                <Text style={RecoverStyles.other_info_text}>{ }</Text>
-            </View>
             <View style={RecoverStyles.input_text}>
                 <TextInput
                     style={RecoverStyles.input_text_container}

@@ -86,6 +86,12 @@ const modalStyles = StyleSheet.create({
     borderRadius: 15,
     overflow: "hidden",
   },
+  modal_view_find: {
+    height: "50%",
+    backgroundColor: "white",
+    borderRadius: 15,
+    overflow: "hidden",
+  },
   modal_container: {
     flex: 1,
     position: "absolute",
@@ -249,6 +255,7 @@ const Profilestyles = StyleSheet.create({
   profile_container: {
     flex: 1,
     alignItems: "center",
+    justifyContent: "space-between"
   },
   profile_text_container: {
     flex: 1,
@@ -372,6 +379,11 @@ const MapStyles = StyleSheet.create({
     top: 0,
     width: Dimensions.get("window").width,
     height: (75 * Dimensions.get("window").height) / 100,
+  },
+  mapDriverComing: {
+    top: 0,
+    width: Dimensions.get("window").width,
+    height: (85 * Dimensions.get("window").height) / 100,
   },
   searchContainer: {
     width: "90%",

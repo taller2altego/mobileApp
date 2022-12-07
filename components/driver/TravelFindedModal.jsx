@@ -30,36 +30,46 @@ export default function TravelFindedModal({ navigation, setModalTravelFindedVisi
       .catch(error => handlerUnauthorizedError(navigation, error));
   };
 
+  const rejectTravel = async () => {
+    await SecureStore.deleteItemAsync("updatingLocation");
+    props.toggleCancel()
+  }
+
   return (
-    <Modal animationType="slide" transparent={false} visible={props.visible}>
+    <Modal animationType="slide" transparent={true} visible={props.visible}>
       <View style={[modalStyles.modal_extern_view, { fontFamily: "poppins" }]}>
-        <View style={[modalStyles.modal_view, { fontFamily: "poppins" }]}>
-          <Pressable onPress={props.toggleAccept}>
-            <Entypo name="cross" size={24} color="black" />
-          </Pressable>
-          <View style={[modalStyles.flex_modal]}>
-            <Text style={{ fontSize: 25, alignSelf: "center", color: "white" }}>
-              {" "}
+        <View style={[modalStyles.modal_view_find, { fontFamily: "poppins" }]}>
+          <View style={{padding: 5}}>
+            <View style={{marginBottom: "10%", marginTop: "5%"}}>
+          <Text style={{ fontSize: 20, alignSelf: "center", color: "black", fontFamily: "poppins" }}>
+              Origen
+            </Text>
+            <Text style={{ fontSize: 20, alignSelf: "center", color: "black", fontFamily: "poppins" }}>
               {travelDetailsData.originAddress}
             </Text>
-            <Text style={{ fontSize: 25, alignSelf: "center", color: "white" }}>
-              {" "}
-              {travelDetailsData.destinationAddress}{" "}
+            </View>
+            <View>
+            <Text style={{ fontSize: 20, alignSelf: "center", color: "black", fontFamily: "poppins"}}>
+              Destino
             </Text>
-            <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+            <Text style={{ fontSize: 20, alignSelf: "center", color: "black", fontFamily: "poppins" }}>
+              {travelDetailsData.destinationAddress}
+            </Text>
+            </View>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: "20%" }}>
               <Pressable style={[modalStyles.modal_button, {
                 width: (45 * Dimensions.get("window").width) / 100,
                 alignItems: "center", justifyContent: "center",
                 marginLeft: 6
-              }]} onPress={props.toggle}>
-                <Text style={{ fontSize: 20, fontWeight: "bold", color: "white" }}>Volver</Text>
+              }]} onPress={rejectTravel}>
+                <Text style={{ fontSize: 20, color: "white", fontFamily: "poppins"  }}>Volver</Text>
               </Pressable>
               <Pressable style={[modalStyles.modal_button, {
                 width: (45 * Dimensions.get("window").width) / 100,
                 alignItems: "center", justifyContent: "center",
                 marginRight: 6
               }]} onPress={acceptTravel}>
-                <Text style={{ fontSize: 20, fontWeight: "bold", color: "white" }}> Aceptar Viaje </Text>
+                <Text style={{ fontSize: 20, color: "white", fontFamily: "poppins"  }}> Aceptar Viaje </Text>
               </Pressable>
             </View>
           </View>
