@@ -1,27 +1,16 @@
 import { useRef, useState } from "react";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
-import CheckBox from "expo-checkbox";
-import { MapStyles, TravelStyles, modalStyles, customMap } from "../styles";
-import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import * as SecureStore from "expo-secure-store";
 import MapViewDirections from "react-native-maps-directions";
-import {
-  View,
-  Text,
-  Pressable,
-  Image,
-  Modal,
-  StyleSheet,
-  Switch,
-  ToastAndroid,
-} from "react-native";
+import { View, Text, Pressable, Image, Switch, ToastAndroid } from "react-native";
+
 import WaitingModal from "./Waiting";
-import { useDispatch, useSelector } from "react-redux";
-import { useFonts } from "expo-font";
+import { MapStyles, TravelStyles, customMap } from "../styles";
 import { authPost, get, handlerUnauthorizedError } from "../../utils/requests";
 import { setNewTravel } from "../../redux/actions/UpdateCurrentTravel";
 import envs from "../../config/env";
 import { Ionicons } from "@expo/vector-icons";
+import { useDispatch, useSelector } from "react-redux";
 
 const edgePadding = {
   top: 100,
@@ -29,14 +18,13 @@ const edgePadding = {
   bottom: 100,
   left: 100,
 };
+
 const INITIAL_POSITION = {
   latitude: -34.6035,
   longitude: -58.4611,
   latitudeDelta: 0.1,
   longitudeDelta: 0.1,
 };
-
-
 
 export default function ConfirmationTravel({ navigation }) {
   // redux
@@ -76,9 +64,9 @@ export default function ConfirmationTravel({ navigation }) {
         duration: Math.ceil(args.duration),
         paymentMethod: "Ether",
       };
+
       const id = await SecureStore.getItemAsync("id");
       const token = await SecureStore.getItemAsync("token");
-      console.log('antes de hacer el request a price');
       await get(`${API_URL}/price/${id}`, token, null, params)
         .then(({ data }) => {
           setPrice(data.data.price.toFixed(8));
@@ -99,11 +87,11 @@ export default function ConfirmationTravel({ navigation }) {
     const token = await SecureStore.getItemAsync("token");
     const srcAddress = await fetch(
       "https://maps.googleapis.com/maps/api/geocode/json?address=" +
-        origin.latitude +
-        "," +
-        origin.longitude +
-        "&key=" +
-        GOOGLE_API_KEY
+      origin.latitude +
+      "," +
+      origin.longitude +
+      "&key=" +
+      GOOGLE_API_KEY
     )
       .then((response) => response.json())
       .then((responseJson) => {
@@ -111,11 +99,11 @@ export default function ConfirmationTravel({ navigation }) {
       });
     const dstAddress = await fetch(
       "https://maps.googleapis.com/maps/api/geocode/json?address=" +
-        destination.latitude +
-        "," +
-        destination.longitude +
-        "&key=" +
-        GOOGLE_API_KEY
+      destination.latitude +
+      "," +
+      destination.longitude +
+      "&key=" +
+      GOOGLE_API_KEY
     )
       .then((response) => response.json())
       .then((responseJson) => responseJson.results[0].formatted_address);
@@ -171,23 +159,24 @@ export default function ConfirmationTravel({ navigation }) {
             identifier="originMark"
             pinColor="black"
           >
-            <View style={{ backgroundColor: "white", padding:3, borderWidth:1  }}>
-              <Text style={{fontFamily: "poppins", fontSize: 8}}>{currentTravelData.originAddress}</Text>
+            <View style={{ backgroundColor: "white", padding: 3, borderWidth: 1 }}>
+              <Text style={{ fontFamily: "poppins", fontSize: 8 }}>{currentTravelData.originAddress}</Text>
             </View>
           </Marker>
         ) : (
           <></>
         )}
+
         {destination ? (
           <Marker
-          coordinate={destination}
-          identifier="destMark"
-          pinColor="black"
-        >
-          <View style={{ backgroundColor: "white",  padding: 3,  borderWidth:1 }}>
-            <Text style={{fontFamily: "poppins", fontSize: 8}}>{currentTravelData.destinationAddress}</Text>
-          </View>
-        </Marker>
+            coordinate={destination}
+            identifier="destMark"
+            pinColor="black"
+          >
+            <View style={{ backgroundColor: "white", padding: 3, borderWidth: 1 }}>
+              <Text style={{ fontFamily: "poppins", fontSize: 8 }}>{currentTravelData.destinationAddress}</Text>
+            </View>
+          </Marker>
         ) : (
           <></>
         )}
