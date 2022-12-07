@@ -78,6 +78,7 @@ export default function HomeTab({ navigation }) {
   useEffect(() => {
     (async () => {
 
+      await SecureStore.deleteItemAsync('askForTravel');
       await registerForPushNotificationsAsync()
         .then(async token => {
           

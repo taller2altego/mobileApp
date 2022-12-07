@@ -1,5 +1,5 @@
 // modules
-import { View, Text, ActivityIndicator, Pressable } from "react-native";
+import { View, Text, ActivityIndicator, Pressable, ToastAndroid } from "react-native";
 import { useCallback, useState } from "react";
 import * as SecureStore from "expo-secure-store";
 import { useFocusEffect } from '@react-navigation/native';
@@ -22,6 +22,7 @@ export default function TravelSearch({ navigation }) {
       await SecureStore.setItemAsync('askForTravel', 'true');
     })();
 
+    
     const interval = setInterval(async () => {
       const flag = await SecureStore.getItemAsync('askForTravel').then(res => res === 'false');
       if (flag) {
@@ -34,11 +35,7 @@ export default function TravelSearch({ navigation }) {
         const { driverLocation, ...travel } = response;
 
         if (Object.keys(travel).length === 0) {
-          ToastAndroid.showWithGravity(
-            "No se han encontrado viajes!",
-            ToastAndroid.SHORT,
-            ToastAndroid.CENTER
-          );
+          ToastAndroid.showWithGravity("No se han encontrado viajes!", ToastAndroid.SHORT, ToastAndroid.CENTER);
           await SecureStore.setItemAsync('askForTravel', 'false');
           await SecureStore.deleteItemAsync('travelInfo');
           navigation.navigate("Home");
@@ -82,6 +79,7 @@ export default function TravelSearch({ navigation }) {
   const toggleAccept = async () => {
     // Limpio la data del storage que guarda el viaje para un estado limpio.
     await SecureStore.deleteItemAsync('travelInfo');
+    await SecureStore.setItemAsync('askForTravel', 'false');
     setModalTravelFindedVisible(!modalTravelFindedVisible);
   };
 

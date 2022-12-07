@@ -63,19 +63,30 @@ export default function TravelInProgressDriver({ navigation }) {
 
   const updateDriverPosition = async () => {
     return setInterval(async () => {
-      const { latitude, longitude } = await SecureStore
+      const data = await SecureStore
         .getItemAsync('updatingLocation')
-        .then(location => JSON.parse(location))
+        .then(location => location === null ? null : JSON.parse(location))
         .then(location => {
+
+          if (location === null) {
+            return null;
+          }
+          console.log('Sigue ejecutando el set interval')
           return { latitude: location.driverLocation.latitude, longitude: location.driverLocation.longitude };
         });
+
+      if (data === null) {
+        return null;
+      }
+
+      const { latitude, longitude } = data
 
       animate(latitude, longitude);
       setActualTripState({
         ...actualTripState,
         currentLoc: { latitude, longitude }
       });
-    }, 20000);  
+    }, 20000);
   };
 
   const animate = (latitude, longitude) => {
@@ -93,7 +104,6 @@ export default function TravelInProgressDriver({ navigation }) {
 
   useFocusEffect(
     useCallback(async () => {
-      console.log(actualTripState);
       const interval = await updateDriverPosition();
       return () => {
         clearInterval(interval);
@@ -131,7 +141,7 @@ export default function TravelInProgressDriver({ navigation }) {
       paidWithCredits: true,
       payToDriver: true,
     };
-    
+
     return authPost(`${API_URL}/travels/${travelData._id}/finish`, token, body).then(navigation.navigate("UserProfileVisualization"));
   };
 
@@ -217,22 +227,22 @@ export default function TravelInProgressDriver({ navigation }) {
         )}
       </MapView>
       {arriveOnUserLocation ? (
-          <Pressable onPress={startTrip} style={{backgroundColor: "black", padding: 5, width: "70%", alignSelf: "center", marginTop: 10}}>
-            <Text style={{fontFamily: "poppins", color: "white", textAlign: "center"}}> INICIAR VIAJE </Text>
-          </Pressable>
-      ) : (
-        <></>
-      )}
-      {arriveOnDestination ? (
-        <Pressable onPress={finishTravel} style={{backgroundColor: "black", padding: 5, width: "70%", alignSelf: "center", marginTop: 10}}>
-          <Text style={{fontFamily: "poppins", color: "white", textAlign: "center"}}> FINALIZAR VIAJE </Text>
+        <Pressable onPress={startTrip} style={{ backgroundColor: "black", padding: 5, width: "70%", alignSelf: "center", marginTop: 10 }}>
+          <Text style={{ fontFamily: "poppins", color: "white", textAlign: "center" }}> INICIAR VIAJE </Text>
         </Pressable>
       ) : (
         <></>
       )}
-      {!roadTofinalDestination ? <Pressable onPress={cancelTravel} style={{backgroundColor: "#aaa", padding: 5, width: "70%", alignSelf: "center", marginTop: 10}}>
-        <Text style={{fontFamily: "poppins", color: "white", textAlign: "center"}}> CANCELAR </Text>
-      </Pressable>: <></>}
+      {arriveOnDestination ? (
+        <Pressable onPress={finishTravel} style={{ backgroundColor: "black", padding: 5, width: "70%", alignSelf: "center", marginTop: 10 }}>
+          <Text style={{ fontFamily: "poppins", color: "white", textAlign: "center" }}> FINALIZAR VIAJE </Text>
+        </Pressable>
+      ) : (
+        <></>
+      )}
+      {!roadTofinalDestination ? <Pressable onPress={cancelTravel} style={{ backgroundColor: "#aaa", padding: 5, width: "70%", alignSelf: "center", marginTop: 10 }}>
+        <Text style={{ fontFamily: "poppins", color: "white", textAlign: "center" }}> CANCELAR </Text>
+      </Pressable> : <></>}
     </View>
   );
 }
