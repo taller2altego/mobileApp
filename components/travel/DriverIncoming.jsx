@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
-import { MapStyles, TravelStyles } from "../styles";
+import { MapStyles, TravelStyles, customMap } from "../styles";
 import MapViewDirections from "react-native-maps-directions";
 import { View, Text, Pressable, Image } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
@@ -10,8 +10,6 @@ import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
 import { useFocusEffect } from '@react-navigation/native';
 import { clearCurrentTravel } from "../../redux/actions/UpdateCurrentTravel";
-
-const PRICE_PER_KM = 100;
 
 const edgePadding = {
   top: 100,
@@ -86,11 +84,6 @@ export default function DriverIncoming({ navigation }) {
       .catch(error => handlerUnauthorizedError(navigation, error));
   };
 
-  const [fontsLoaded] = useFonts({
-    poppins: require("../../assets/fonts/Poppins-Regular.ttf"),
-    "poppins-bold": require("../../assets/fonts/Poppins-Bold.ttf"),
-  });
-
   const updateTripProps = (args) => {
     if (args) {
       setDistance(args.distance.toFixed(2));
@@ -105,26 +98,23 @@ export default function DriverIncoming({ navigation }) {
     });
   };
 
-  if (!fontsLoaded) {
-    return null;
-  }
-
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
       <MapView
         ref={mapRef}
-        style={MapStyles.map}
+        style={MapStyles.mapDriverComing}
         provider={PROVIDER_GOOGLE}
         onMapLoaded={() => {
           zoomOnDirections();
         }}
+        customMapStyle={customMap}
         initialRegion={INITIAL_POSITION}
       >
-        {origin && <Marker coordinate={origin} identifier="originMark" />}
+        {origin && <Marker coordinate={origin} identifier="originMark" image={require("../../assets/user.png")} />}
         {destination && (
-          <Marker coordinate={destination} identifier="destMark" />
+          <Marker coordinate={destination} identifier="destMark" image={require("../../assets/flag.png")}/>
         )}
-        {currentOrigin && <Marker coordinate={currentOrigin} identifier="s" />}
+        {currentOrigin && <Marker coordinate={currentOrigin} identifier="driverPosition" image={require("../../assets/car.png")} />}
         {origin && destination && (
           <MapViewDirections
             apikey={GOOGLE_API_KEY}
@@ -136,29 +126,18 @@ export default function DriverIncoming({ navigation }) {
           />
         )}
       </MapView>
+
       <View style={MapStyles.tripInfoContainer}>
-        <View style={{ paddingLeft: 35 }}></View>
-        <Image
-          style={MapStyles.carImage}
-          source={{
-            uri: "https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,w_896,h_504/f_auto,q_auto/products/carousel/UberX.png",
-          }}
-        />
         <View style={{ paddingRight: 20 }}>
           <Text style={{ fontFamily: "poppins", fontSize: 15 }}>
-            {" "}
-            Driver: {driver}
-          </Text>
-          <Text style={{ fontFamily: "poppins", fontSize: 15 }}>
-            {" "}
             {distance} km
           </Text>
           <Text style={{ fontFamily: "poppins", fontSize: 15 }}>
-            {" "}
-            {duration} min{" "}
+            {duration} min
           </Text>
         </View>
       </View>
+
       <View style={TravelStyles.travelContainer}>
         <View style={TravelStyles.buttonContainer}>
           <Pressable

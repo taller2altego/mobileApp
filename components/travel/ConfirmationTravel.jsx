@@ -172,7 +172,7 @@ export default function ConfirmationTravel({ navigation }) {
             pinColor="black"
           >
             <View style={{ backgroundColor: "white", padding:3, borderWidth:1  }}>
-              <Text style={{fontFamily: "poppins"}}>Origen</Text>
+              <Text style={{fontFamily: "poppins", fontSize: 8}}>{currentTravelData.originAddress}</Text>
             </View>
           </Marker>
         ) : (
@@ -185,7 +185,7 @@ export default function ConfirmationTravel({ navigation }) {
           pinColor="black"
         >
           <View style={{ backgroundColor: "white",  padding: 3,  borderWidth:1 }}>
-            <Text style={{fontFamily: "poppins"}}>Destino</Text>
+            <Text style={{fontFamily: "poppins", fontSize: 8}}>{currentTravelData.destinationAddress}</Text>
           </View>
         </Marker>
         ) : (
@@ -227,7 +227,7 @@ export default function ConfirmationTravel({ navigation }) {
             {distance} km
           </Text>
           <Text style={{ fontFamily: "poppins", fontSize: 15 }}>
-            {price.toFixed(6)} Ethereum (est.)
+            {parseFloat(price).toFixed(6)} Ethereum (est.)
           </Text>
         </View>
       </View>

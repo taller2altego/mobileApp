@@ -4,7 +4,7 @@ import MapView, {
   Marker,
   PROVIDER_GOOGLE,
 } from "react-native-maps";
-import { MapStyles } from "../styles";
+import { MapStyles, customMap } from "../styles";
 import MapViewDirections from "react-native-maps-directions";
 import { View, Text, Pressable, Dimensions } from "react-native";
 import { useSelector } from "react-redux";
@@ -104,7 +104,7 @@ export default function TravelInProgressDriver({ navigation }) {
   const updateDistance = (args, tripPart) => {
     const setArrive =
       tripPart === "start" ? setArriveOnUserLocation : setArriveOnDestination;
-    if (args.distance.toFixed(2) < 100000) {
+    if (args.distance.toFixed(2) < 0.10) {
       setArrive(true);
     } else {
       setArrive(false);
@@ -131,10 +131,7 @@ export default function TravelInProgressDriver({ navigation }) {
       paidWithCredits: true,
       payToDriver: true,
     };
-
-    // si tenemos tiempo pasar a redux
     
-
     return authPost(`${API_URL}/travels/${travelData._id}/finish`, token, body).then(navigation.navigate("UserProfileVisualization"));
   };
 
@@ -160,11 +157,12 @@ export default function TravelInProgressDriver({ navigation }) {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: "white" }}>
+    <View style={{ flex: 1, backgroundColor: "#eee" }}>
       <MapView
         ref={mapRef}
-        style={MapStyles.map}
+        style={MapStyles.mapDriverComing}
         provider={PROVIDER_GOOGLE}
+        customMapStyle={customMap}
         initialRegion={{
           latitude: tripData.origin.latitude,
           longitude: tripData.origin.longitude,
@@ -175,15 +173,18 @@ export default function TravelInProgressDriver({ navigation }) {
         <Marker.Animated
           ref={markerRef}
           coordinate={actualTripState.animatedcoords}
+          image={require("../../assets/car.png")}
         />
         <Marker
           coordinate={actualTripState.destinationCoords}
           identifier="destMark"
+          image={require("../../assets/flag.png")}
         />
         {!roadTofinalDestination && (
           <Marker
             coordinate={actualTripState.userCoords}
             identifier="userMark"
+            image={require("../../assets/user.png")}
           />
         )}
         {!roadTofinalDestination &&
@@ -216,24 +217,22 @@ export default function TravelInProgressDriver({ navigation }) {
         )}
       </MapView>
       {arriveOnUserLocation ? (
-        <View>
-          <Pressable onPress={startTrip}>
-            <Text> INICIAR VIAJE </Text>
+          <Pressable onPress={startTrip} style={{backgroundColor: "black", padding: 5, width: "70%", alignSelf: "center", marginTop: 10}}>
+            <Text style={{fontFamily: "poppins", color: "white", textAlign: "center"}}> INICIAR VIAJE </Text>
           </Pressable>
-          <Pressable onPress={cancelTravel}>
-            <Text> CANCELAR </Text>
-          </Pressable>
-        </View>
       ) : (
         <></>
       )}
       {arriveOnDestination ? (
-        <Pressable onPress={finishTravel}>
-          <Text> FINALIZAR VIAJE </Text>
+        <Pressable onPress={finishTravel} style={{backgroundColor: "black", padding: 5, width: "70%", alignSelf: "center", marginTop: 10}}>
+          <Text style={{fontFamily: "poppins", color: "white", textAlign: "center"}}> FINALIZAR VIAJE </Text>
         </Pressable>
       ) : (
         <></>
       )}
+      {!roadTofinalDestination ? <Pressable onPress={cancelTravel} style={{backgroundColor: "#aaa", padding: 5, width: "70%", alignSelf: "center", marginTop: 10}}>
+        <Text style={{fontFamily: "poppins", color: "white", textAlign: "center"}}> CANCELAR </Text>
+      </Pressable>: <></>}
     </View>
   );
 }

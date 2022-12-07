@@ -308,9 +308,9 @@ export default function ProfileTab({ navigation }) {
             onPress={() =>
               navigation.navigate("WalletVisualization")
             }
-            style={[Profilestyles.edit_profile_button, { marginTop: 30 }]}
+            style={[Profilestyles.edit_profile_button, { marginTop: 10}]}
           >
-            <Text style={Profilestyles.edit_button_text}>Wallet</Text>
+            <Text style={[Profilestyles.edit_button_text, {fontFamily: "poppins" }]}>Wallet</Text>
           </Pressable>
           {!currentUserData.isDriver ? (
             <Pressable
@@ -338,7 +338,7 @@ export default function ProfileTab({ navigation }) {
             <Text
               style={[
                 Profilestyles.edit_button_text,
-                { fontFamily: "poppins", color: "#e55", marginTop: 20 },
+                { fontFamily: "poppins", color: "#e55", marginTop: 5 },
               ]}
             >
               Cerrar sesión

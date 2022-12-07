@@ -64,28 +64,6 @@ export default function Driver({ navigation }) {
           onChangeText={setModel}
           placeholder="Modelo"
         />
-        <View style={{ flexDirection: "row" }}>
-          <Pressable onPress={comeBack} style={[DriverStyles.confirm_button, { marginRight: 8 }]}>
-            <Text
-              style={[
-                DriverStyles.confirm_button_text,
-                { fontFamily: "poppins" },
-              ]}
-            >
-              Cancelar
-            </Text>
-          </Pressable>
-          <Pressable onPress={confirmData} style={DriverStyles.confirm_button}>
-            <Text
-              style={[
-                DriverStyles.confirm_button_text,
-                { fontFamily: "poppins" },
-              ]}
-            >
-              Confirmar
-            </Text>
-          </Pressable>
-        </View>
       </View>
       <View style={{flex: 1, justifyContent: "flex-end"}}>
       <Pressable
