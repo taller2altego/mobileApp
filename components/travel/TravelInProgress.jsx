@@ -71,12 +71,13 @@ export default function TravelInProgress({ navigation }) {
   const animate = (latitude, longitude) => {
     const newCoordinate = { latitude, longitude };
     if (userMarkerRef.current) {
-      currentOrigin.timing(newCoordinate).start();
-      mapRef.current.animateToRegion({
-        latitude: newCoordinate.latitude,
-        longitude: newCoordinate.longitude,
-        longitudeDelta: LONGITUDE_DELTA,
-        latitudeDelta: LATITUDE_DELTA,
+      currentOrigin.timing(newCoordinate).start(() => {
+        mapRef.current.animateToRegion({
+          latitude: newCoordinate.latitude,
+          longitude: newCoordinate.longitude,
+          longitudeDelta: LONGITUDE_DELTA,
+          latitudeDelta: LATITUDE_DELTA,
+        });
       });
     }
   };
@@ -102,11 +103,11 @@ export default function TravelInProgress({ navigation }) {
           longitudeDelta: LONGITUDE_DELTA,
         }}
       >
-        <Marker.Animated ref={userMarkerRef} coordinate={currentOrigin} identifier="originMark" image={require("../../assets/user.png")}/>
+        <Marker.Animated ref={userMarkerRef} coordinate={currentOrigin} image={require("../../assets/user.png")}/>
         {destination && (
           <Marker coordinate={destination} identifier="destMark" image={require("../../assets/flag.png")}/>
         )}
-        {origin && destination && (
+        {position && destination && (
           <MapViewDirections
             apikey={GOOGLE_API_KEY}
             origin={{latitude: position.latitude, longitude: position.longitude}}
