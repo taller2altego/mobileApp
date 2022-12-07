@@ -7,6 +7,8 @@ import { useFonts } from "expo-font";
 import { patch, get } from "../../utils/requests";
 const API_KEY = "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ";
 import envs from "../../config/env";
+import { Ionicons } from "@expo/vector-icons";
+import { FontAwesome5 } from '@expo/vector-icons';
 
 export default function WalletVisualization({ navigation }) {
   const [balance, setBalance] = useState(0);
@@ -61,22 +63,37 @@ export default function WalletVisualization({ navigation }) {
   }
 
   return (
-    <View style={Profilestyles.profile_container}>
-      <View style={Profilestyles.profile_container}>
-        <Text style={Profilestyles.profile_visualization}>
+    <View style={{padding: 10, justifyContent: "center", alignItems: "center"}}>
+      <Ionicons
+        name="arrow-back"
+        size={30}
+        color="black"
+        style={{ position: "absolute", top: 20, left: 5 }}
+        onPress={() => navigation.navigate("Home")}
+      />
+        <Text style={[Profilestyles.profile_visualization, {fontFamily: "poppins-bold", fontSize: 30, marginTop: "10%"}]}>
           Wallet
         </Text>
-      </View>
-      <View style={Profilestyles.profile_container}>
-        <Text style={[Profilestyles.profile_visualization, { fontWeight: "bold" }]}>
-          FIUCreditos: {fiuCreditos} ethers
+        <View style={{borderWidth: 2, alignItems: "center", justifyContent: "center", borderRadius: 5, width: "80%", padding: 15, marginTop: "20%"}}>
+        <Text style={{fontFamily: "poppins-bold", fontSize: 20}}>FIU Creditos</Text>
+        <View style={{flexDirection: "row"}}> 
+        <Text style={{fontFamily: "poppins", marginRight: 5, marginBottom: 10 }}>
+          {fiuCreditos}
         </Text>
-        <Text style={[Profilestyles.profile_visualization, { fontWeight: "bold" }]}>
-          Ganancias: {actualBalance} ethers
+        <FontAwesome5 name="ethereum" size={17} color="black" />
+        </View>
+        <Text style={{fontFamily: "poppins-bold", fontSize: 20}}>
+          Ganancias
         </Text>
+        <View style={{flexDirection: "row"}}> 
+        <Text style={{fontFamily: "poppins", marginRight: 5 }}>
+          {actualBalance}
+        </Text>
+        <FontAwesome5 name="ethereum" size={17} color="black" />
+        </View>
       </View>
       {(isDriver) && <TextInput
-        style={[modalStyles.modal_input, { fontFamily: "poppins", width: 200, textAlign: "center", color: "black", borderColor: "black" }]}
+        style={{ fontFamily: "poppins", width: 200, textAlign: "center", color: "black", borderColor: "black", borderWidth: 1, marginTop: "30%", marginBottom: "10%" }}
         placeholder="Cantidad"
         placeholderTextColor="#343437"
         keyboardType="numeric"
@@ -84,32 +101,12 @@ export default function WalletVisualization({ navigation }) {
           setBalance(balance);
         }}
       />}
-      {(insufficientFunds) && <View style={[Profilestyles.profile_container, { marginTop: 20 }]}>
-        <Text style={[Profilestyles.profile_visualization, { color: "red" }]}>
-          Fondos insuficientes
-        </Text>
-      </View>}
-      <View style={TravelStyles.travelContainer}>
-        <View style={TravelStyles.buttonContainer}>
+        {(isDriver) &&
           <Pressable
-            style={MapStyles.confirmTripButton}
-            onPress={() => navigation.navigate("Home")}
-          >
-            <Text
-              style={{
-                fontFamily: "poppins-bold",
-                color: "white",
-                textAlign: "center",
-                lineHeight: 38,
-              }}
-            >
-              Volver atras
-            </Text>
-          </Pressable>
-        </View>
-        {(isDriver) && <View style={TravelStyles.buttonContainer}>
-          <Pressable
-            style={MapStyles.confirmTripButton}
+            style={{alignSelf: "center",
+            width: 200,
+            backgroundColor: "black",
+            borderRadius: 5,}}
             onPress={() => withdrawFunds(navigation)}
           >
             <Text
@@ -122,10 +119,12 @@ export default function WalletVisualization({ navigation }) {
             >
               Retirar Fondos
             </Text>
-          </Pressable>
-        </View>}
-      </View>
-
+          </Pressable>}
+      {(insufficientFunds) && <View style={{ marginTop: 20 }}>
+        <Text style={[Profilestyles.profile_visualization, { color: "red", fontFamily: "poppins" }]}>
+          Fondos insuficientes
+        </Text>
+      </View>}
     </View>
 
 

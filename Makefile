@@ -11,7 +11,7 @@ setup_emulator:
 	avdmanager create avd -f -n test_disp -k "system-images;android-30;google_apis_playstore;x86" --device "pixel_4_xl"
 
 emulator:
-	emulator @test_disp -gpu swiftshader_indirect
+	emulator @test_disp -gpu swiftshader_indirect -wipe-data
 
 init: 
 	npm install

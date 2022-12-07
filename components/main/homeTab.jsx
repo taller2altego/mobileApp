@@ -16,7 +16,7 @@ import { useFocusEffect } from '@react-navigation/native';
 
 import { Homestyles, Profilestyles } from "../styles";
 import TravelItem from "../travel/TravelItem";
-import { setTravelDetails } from "../../redux/actions/UpdateTravelDetails";
+import { setTravelDetails, setTravelInfo } from "../../redux/actions/UpdateTravelDetails";
 import { get, handlerUnauthorizedError } from "../../utils/requests";
 
 import * as Notifications from "expo-notifications";
@@ -39,15 +39,13 @@ export default function HomeTab({ navigation }) {
 
   // state
   const originRef = useRef();
+  const destinationRef = useRef();
   const [srcDetails, setSrcDetails] = useState("");
   const [destDetails, setDestDetails] = useState("");
   const [data_travels, setData] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
   const [correctSrcInput, setCorrectSrcInput] = useState(true);
   const [correctDestInput, setCorrectDestInput] = useState(false);
-  const [originInput, setOriginInput] = useState(
-    currentUserData.defaultLocation
-  );
 
   const handleSelectedTrip = (item) => {
     setSelectedId(item.id);
@@ -101,9 +99,12 @@ export default function HomeTab({ navigation }) {
   }, []);
 
   const onConfirmationTravel = () => {
+    let originAddress = originRef.current?.getAddressText().split(",")[0];
+    let destinationAddress = destinationRef.current?.getAddressText().split(",")[0];
     dispatch(
-      setTravelDetails({ origin: srcDetails, destination: destDetails })
+      setTravelDetails({ origin: srcDetails, destination: destDetails  })
     );
+    dispatch(setTravelInfo({originAddress: originAddress, destinationAddress: destinationAddress}))
     navigation.navigate("ConfirmationTravel");
   };
 
@@ -154,8 +155,7 @@ export default function HomeTab({ navigation }) {
                 fontSize: 30,
                 padding: 25,
                 paddingBottom: 10,
-                fontFamily: "poppins",
-                fontWeight: "bold",
+                fontFamily: "poppins-bold",
               }}
             >
               Actividades
@@ -192,7 +192,6 @@ export default function HomeTab({ navigation }) {
                 </View>
               )}
               onPress={(data, details) => {
-                setOriginInput(data.description);
                 setCorrectSrcInput(true);
                 setSrcDetails({
                   latitude: details.geometry.location.lat,
@@ -205,6 +204,7 @@ export default function HomeTab({ navigation }) {
               }}
             />
             <GooglePlacesAutocomplete
+              ref={destinationRef}
               styles={{ textInput: Homestyles.searchInput, flex: 1 }}
               placeholder="Punto de llegada"
               fetchDetails
@@ -239,7 +239,7 @@ export default function HomeTab({ navigation }) {
                   }}
                   style={Profilestyles.edit_profile_button}
                 >
-                  <Text style={Profilestyles.edit_button_text}>
+                  <Text style={[Profilestyles.edit_button_text, {fontFamily: "poppins"}]}>
                     Iniciar trabajo
                   </Text>
                 </Pressable>
