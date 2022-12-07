@@ -71,7 +71,7 @@ export default function TravelInProgressDriver({ navigation }) {
           if (location === null) {
             return null;
           }
-          console.log('Sigue ejecutando el set interval')
+
           return { latitude: location.driverLocation.latitude, longitude: location.driverLocation.longitude };
         });
 
