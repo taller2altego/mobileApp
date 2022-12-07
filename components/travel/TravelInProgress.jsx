@@ -1,11 +1,14 @@
-import { useRef, useState } from "react";
-import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
-import { MapStyles, TravelStyles, modalStyles } from "../styles";
+import { useRef, useState, useCallback } from "react";
+import MapView, { AnimatedRegion, Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import { MapStyles, TravelStyles, modalStyles, customMap } from "../styles";
 import MapViewDirections from "react-native-maps-directions";
-import { View, Text, Pressable, Image, Modal } from "react-native";
+import { View, Text, Pressable, Image, Modal, Dimensions } from "react-native";
 import { useSelector } from "react-redux";
 import { useFonts } from "expo-font";
 import envs from "../../config/env";
+import { useFocusEffect } from '@react-navigation/native';
+import * as SecureStore from "expo-secure-store";
+import { get } from "../../utils/requests";
 
 const edgePadding = {
   top: 100,
@@ -21,11 +24,23 @@ const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 export default function TravelInProgress({ navigation }) {
   const currentTravelData = useSelector((store) => store.travelDetailsData);
+  const userMarkerRef = useRef();
   const travelDetails = useSelector((store) => store.currentTravel);
+  const mapRef = useRef(null);
   const [distance, setDistance] = useState(0);
   const [duration, setDuration] = useState(0);
   const [modalFinishVisible, setModalFinishVisible] = useState(false);
-  const [currentOrigin, setCurrentOrigin] = useState(origin);
+  const currentOrigin = new AnimatedRegion({
+      latitude: currentTravelData.origin.latitude,
+      longitude: currentTravelData.origin.longitude,
+      latitudeDelta: LATITUDE_DELTA,
+      longitudeDelta: LONGITUDE_DELTA,
+    })
+  const [position, setPosition] = useState({
+      latitude: currentTravelData.origin.latitude,
+      longitude: currentTravelData.origin.longitude,
+    })
+  
   const origin = currentTravelData.origin;
   const destination = currentTravelData.destination;
   const travelId = travelDetails._id;
@@ -41,9 +56,10 @@ export default function TravelInProgress({ navigation }) {
         if (data.data.isFinished) {
           setModalFinishVisible(true);
         }
-        
+        console.log(data.data)
         const position = data.data.currentDriverPosition;
-        setCurrentOrigin(position);
+        setPosition({latitude: position.latitude, longitude: position.longitude})
+        animate(position.latitude, position.longitude);
       }
       );
     }, 10000);
@@ -52,11 +68,18 @@ export default function TravelInProgress({ navigation }) {
     };
   }, []));
 
-  const mapRef = useRef(null);
-  const [fontsLoaded] = useFonts({
-    poppins: require("../../assets/fonts/Poppins-Regular.ttf"),
-    "poppins-bold": require("../../assets/fonts/Poppins-Bold.ttf"),
-  });
+  const animate = (latitude, longitude) => {
+    const newCoordinate = { latitude, longitude };
+    if (userMarkerRef.current) {
+      currentOrigin.timing(newCoordinate).start();
+      mapRef.current.animateToRegion({
+        latitude: newCoordinate.latitude,
+        longitude: newCoordinate.longitude,
+        longitudeDelta: LONGITUDE_DELTA,
+        latitudeDelta: LATITUDE_DELTA,
+      });
+    }
+  };
 
   const updateTripProps = (args) => {
     if (args) {
@@ -65,27 +88,13 @@ export default function TravelInProgress({ navigation }) {
     }
   };
 
-  const zoomOnDirections = () => {
-    mapRef.current.fitToSuppliedMarkers(["originMark", "destMark"], {
-      animated: true,
-      edgePadding: edgePadding,
-    });
-  };
-
-  if (!fontsLoaded) {
-    return null;
-  }
-
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
-      {modalFinishVisible && <WaitingModal navigation={navigation}></WaitingModal>}
       <MapView
         ref={mapRef}
-        style={MapStyles.map}
+        customMapStyle={customMap}
+        style={MapStyles.mapUserDriverComing}
         provider={PROVIDER_GOOGLE}
-        onMapLoaded={() => {
-          zoomOnDirections();
-        }}
         initialRegion={{
           latitude: origin.latitude,
           longitude: origin.longitude,
@@ -93,14 +102,14 @@ export default function TravelInProgress({ navigation }) {
           longitudeDelta: LONGITUDE_DELTA,
         }}
       >
-        {origin && <Marker coordinate={origin} identifier="originMark" />}
+        <Marker.Animated ref={userMarkerRef} coordinate={currentOrigin} identifier="originMark" image={require("../../assets/user.png")}/>
         {destination && (
-          <Marker coordinate={destination} identifier="destMark" />
+          <Marker coordinate={destination} identifier="destMark" image={require("../../assets/flag.png")}/>
         )}
         {origin && destination && (
           <MapViewDirections
             apikey={GOOGLE_API_KEY}
-            origin={origin}
+            origin={{latitude: position.latitude, longitude: position.longitude}}
             destination={destination}
             strokeColor="black"
             strokeWidth={5}
@@ -108,25 +117,6 @@ export default function TravelInProgress({ navigation }) {
           />
         )}
       </MapView>
-      <View style={MapStyles.tripInfoContainer}>
-        <View style={{ paddingLeft: 35 }}></View>
-        <Image
-          style={MapStyles.carImage}
-          source={{
-            uri: "https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,w_896,h_504/f_auto,q_auto/products/carousel/UberX.png",
-          }}
-        />
-        <View style={{ paddingRight: 20 }}>
-          <Text style={{ fontFamily: "poppins", fontSize: 15 }}>
-            {" "}
-            Driver: {driverId}
-          </Text>
-          <Text style={{ fontFamily: "poppins", fontSize: 15 }}>
-            {" "}
-            {distance} km
-          </Text>
-        </View>
-      </View>
       <Modal
         transparent={true}
         visible={modalFinishVisible}
@@ -136,9 +126,9 @@ export default function TravelInProgress({ navigation }) {
       >
         <View style={modalStyles.centered_view}>
           <View style={modalStyles.modal_view_travel}>
-            <Text style={modalStyles.text_modal_style}>Has llegado a destino!</Text>
+            <Text style={[modalStyles.text_modal_style, {fontFamily: "poppins"}]}>Has llegado a destino!</Text>
             <Pressable
-              style={[modalStyles.button, modalStyles.button_close]}
+              style={[modalStyles.button, modalStyles.button_close, {fontFamily: "poppins-bold"}]}
               onPress={() => navigation.navigate("Home")}
             >
               <Text style={modalStyles.text_style}>Finalizar Viaje</Text>
@@ -146,25 +136,6 @@ export default function TravelInProgress({ navigation }) {
           </View>
         </View>
       </Modal>
-      <View style={TravelStyles.travelContainer}>
-        <View style={TravelStyles.buttonContainer}>
-          <Pressable
-            style={MapStyles.confirmTripButton}
-            onPress={() => navigation.navigate("DriverProfileVisualization")}
-          >
-            <Text
-              style={{
-                fontFamily: "poppins-bold",
-                color: "white",
-                textAlign: "center",
-                lineHeight: 38,
-              }}
-            >
-              Visualizar Chofer
-            </Text>
-          </Pressable>
-        </View>
-      </View>
     </View>
   );
 }

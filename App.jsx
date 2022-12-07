@@ -184,6 +184,11 @@ export default function App() {
             options={{ headerShown: false }}
           />
           <Stack.Screen
+            name="TravelInProgress"
+            component={TravelInProgress}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
             name="DriverIncoming"
             component={DriverIncoming}
             options={{ headerShown: false }}

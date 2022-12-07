@@ -171,13 +171,11 @@ const modalStyles = StyleSheet.create({
   },
   text_style: {
     color: "white",
-    fontWeight: "bold",
     textAlign: "center"
   },
   text_modal_style: {
     marginBottom: 15,
     textAlign: "center",
-    fontWeight: "bold",
   }
 });
 
@@ -379,6 +377,11 @@ const MapStyles = StyleSheet.create({
     top: 0,
     width: Dimensions.get("window").width,
     height: (75 * Dimensions.get("window").height) / 100,
+  },
+  mapUserDriverComing: {
+    top: 0,
+    width: Dimensions.get("window").width,
+    height: Dimensions.get("window").height,
   },
   mapDriverComing: {
     top: 0,
