@@ -23,19 +23,26 @@ export default function TravelSearch({ navigation }) {
     })();
 
     const interval = setInterval(async () => {
-
       const flag = await SecureStore.getItemAsync('askForTravel').then(res => res === 'false');
       if (flag) {
         return;
       }
 
       const response = await SecureStore.getItemAsync("travelInfo").then(response => response ? JSON.parse(response) : null);
-
       if (response !== null) {
-        console.log(response);
-
         await SecureStore.setItemAsync('askForTravel', 'false');
         const { driverLocation, ...travel } = response;
+
+        if (Object.keys(travel).length === 0) {
+          ToastAndroid.showWithGravity(
+            "No se han encontrado viajes!",
+            ToastAndroid.SHORT,
+            ToastAndroid.CENTER
+          );
+          await SecureStore.setItemAsync('askForTravel', 'false');
+          await SecureStore.deleteItemAsync('travelInfo');
+          navigation.navigate("Home");
+        }
 
         // destino actual del conductor
         dispatch(setTravelDetails({
@@ -65,16 +72,22 @@ export default function TravelSearch({ navigation }) {
   }, []));
 
   const toggleCancel = async () => {
+    // cierro el modal y sigo preguntando por viajes, elimino el travel info para que no me sugiera el mismo,
+    // salvo que el backend lo sugiera.
     setModalTravelFindedVisible(!modalTravelFindedVisible);
     await SecureStore.setItemAsync('askForTravel', 'true');
     await SecureStore.deleteItemAsync('travelInfo');
   }
 
-  const toggleAccept = () => {
+  const toggleAccept = async () => {
+    // Limpio la data del storage que guarda el viaje para un estado limpio.
+    await SecureStore.deleteItemAsync('travelInfo');
     setModalTravelFindedVisible(!modalTravelFindedVisible);
   };
 
   const onCancelSearch = async () => {
+    // vuelvo a la vista main
+    // limpio travel info y dejo de pedir viajes.
     await SecureStore.setItemAsync('askForTravel', 'false');
     await SecureStore.deleteItemAsync('travelInfo');
     navigation.navigate("Home");

@@ -73,7 +73,6 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
             const pushToken = await SecureStore.getItemAsync("pushToken");
   
             const url = `${API_URL}/travels?latitude=${location.coords.latitude}&longitude=${location.coords.longitude}&token=${pushToken}`;
-            console.log(url)
             await get(url, token)
               .then(({ data: { data } }) => data)
               .then(data => SecureStore.setItemAsync('travelInfo', JSON.stringify({ ...data, driverLocation: location.coords })))
