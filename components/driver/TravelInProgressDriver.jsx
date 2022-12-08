@@ -58,28 +58,29 @@ export default function TravelInProgressDriver({ navigation }) {
 
   const updateDriverPosition = async () => {
     return setInterval(async () => {
-      const data = await SecureStore
-        .getItemAsync('updatingLocation')
-        .then(location => location === null ? null : JSON.parse(location))
-        .then(location => {
-
+      const data = await SecureStore.getItemAsync("updatingLocation")
+        .then((location) => (location === null ? null : JSON.parse(location)))
+        .then((location) => {
           if (location === null) {
             return null;
           }
 
-          return { latitude: location.driverLocation.latitude, longitude: location.driverLocation.longitude };
+          return {
+            latitude: location.driverLocation.latitude,
+            longitude: location.driverLocation.longitude,
+          };
         });
 
       if (data === null) {
         return null;
       }
 
-      const { latitude, longitude } = data
+      const { latitude, longitude } = data;
 
       animate(latitude, longitude);
       setActualTripState({
         ...actualTripState,
-        currentLoc: { latitude, longitude }
+        currentLoc: { latitude, longitude },
       });
     }, 20000);
   };
@@ -109,7 +110,7 @@ export default function TravelInProgressDriver({ navigation }) {
   const updateDistance = (args, tripPart) => {
     const setArrive =
       tripPart === "start" ? setArriveOnUserLocation : setArriveOnDestination;
-    if (args.distance.toFixed(2) < 0.10) {
+    if (args.distance.toFixed(2) < 0.1) {
       setArrive(true);
     } else {
       setArrive(false);
@@ -121,7 +122,7 @@ export default function TravelInProgressDriver({ navigation }) {
     const token = await SecureStore.getItemAsync("token");
     setRoadTofinalDestination(true);
     setArriveOnUserLocation(false);
-    authPost(`${API_URL}/travels/${travelData._id}/start`, token)
+    authPost(`${API_URL}/travels/${travelData._id}/start`, token);
   };
 
   const finishTravel = async () => {
@@ -137,14 +138,21 @@ export default function TravelInProgressDriver({ navigation }) {
       payToDriver: true,
     };
 
-    return authPost(`${API_URL}/travels/${travelData._id}/finish`, token, body).then(navigation.navigate("UserProfileVisualization"));
+    return authPost(
+      `${API_URL}/travels/${travelData._id}/finish`,
+      token,
+      body
+    ).then(navigation.navigate("UserProfileVisualization"));
   };
 
   const cancelTravel = async () => {
     await SecureStore.deleteItemAsync("updatingLocation");
     const token = await SecureStore.getItemAsync("token");
     const travel = await get(`${API_URL}/travels/${travelData._id}`, token);
-    const user = await get(`${API_URL}/users/${travel.data.data.userId}`, token)
+    const user = await get(
+      `${API_URL}/users/${travel.data.data.userId}`,
+      token
+    );
     const body = {
       userId: travel.data.data.userId,
       email: user.data.email,
@@ -156,7 +164,7 @@ export default function TravelInProgressDriver({ navigation }) {
       .then(() => navigation.replace("Home"))
       .catch(error => handlerUnauthorizedError(navigation, error));
   };
-  
+
   return (
     <View style={{ flex: 1, backgroundColor: "#eee" }}>
       <MapView
@@ -218,22 +226,86 @@ export default function TravelInProgressDriver({ navigation }) {
         )}
       </MapView>
       {arriveOnUserLocation ? (
-        <Pressable onPress={startTrip} style={{ backgroundColor: "black", padding: 5, width: "70%", alignSelf: "center", marginTop: 10 }}>
-          <Text style={{ fontFamily: "poppins", color: "white", textAlign: "center" }}> INICIAR VIAJE </Text>
+        <Pressable
+          onPress={startTrip}
+          style={({ pressed }) => [
+            { backgroundColor: pressed ? "#333" : "black" },
+            {
+              backgroundColor: "black",
+              padding: 5,
+              width: "70%",
+              alignSelf: "center",
+              marginTop: 10,
+            },
+          ]}
+        >
+          <Text
+            style={{
+              fontFamily: "poppins",
+              color: "white",
+              textAlign: "center",
+            }}
+          >
+            {" "}
+            INICIAR VIAJE{" "}
+          </Text>
         </Pressable>
       ) : (
         <></>
       )}
       {arriveOnDestination ? (
-        <Pressable onPress={finishTravel} style={{ backgroundColor: "black", padding: 5, width: "70%", alignSelf: "center", marginTop: 10 }}>
-          <Text style={{ fontFamily: "poppins", color: "white", textAlign: "center" }}> FINALIZAR VIAJE </Text>
+        <Pressable
+          onPress={finishTravel}
+          style={({ pressed }) => [
+            { backgroundColor: pressed ? "#333" : "black" },
+            {
+              backgroundColor: "black",
+              padding: 5,
+              width: "70%",
+              alignSelf: "center",
+              marginTop: 10,
+            },
+          ]}
+        >
+          <Text
+            style={{
+              fontFamily: "poppins",
+              color: "white",
+              textAlign: "center",
+            }}
+          >
+            {" "}
+            FINALIZAR VIAJE{" "}
+          </Text>
         </Pressable>
       ) : (
         <></>
       )}
-      {!roadTofinalDestination ? <Pressable onPress={cancelTravel} style={{ backgroundColor: "#aaa", padding: 5, width: "70%", alignSelf: "center", marginTop: 10 }}>
-        <Text style={{ fontFamily: "poppins", color: "white", textAlign: "center" }}> CANCELAR </Text>
-      </Pressable> : <></>}
+      {!roadTofinalDestination ? (
+        <Pressable
+          onPress={cancelTravel}
+          style={{
+            backgroundColor: "#aaa",
+            padding: 5,
+            width: "70%",
+            alignSelf: "center",
+            marginTop: 10,
+          }}
+        >
+          <Text
+            style={{
+              fontFamily: "poppins",
+              color: "white",
+              textAlign: "center",
+            }}
+          >
+            {" "}
+            CANCELAR{" "}
+          </Text>
+        </Pressable>
+      ) : (
+        <></>
+      )}
     </View>
   );
 }

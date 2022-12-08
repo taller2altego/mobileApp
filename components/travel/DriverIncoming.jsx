@@ -8,7 +8,7 @@ import { useFonts } from "expo-font";
 import { get, authPost, handlerUnauthorizedError } from "../../utils/requests";
 import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect } from "@react-navigation/native";
 import { clearCurrentTravel } from "../../redux/actions/UpdateCurrentTravel";
 
 const edgePadding = {
@@ -47,24 +47,27 @@ export default function DriverIncoming({ navigation }) {
 
   const mapRef = useRef(null);
 
-  useFocusEffect(useCallback(() => {
-    let interval = setInterval(async () => {
-      const token = await SecureStore.getItemAsync("token");
+  useFocusEffect(
+    useCallback(() => {
+      let interval = setInterval(async () => {
+        const token = await SecureStore.getItemAsync("token");
 
-      await get(`${API_URL}/travels/${travelId}/driver`, token).then(({ data }) => {
-        const position = data.data.currentDriverPosition;
-        setCurrentOrigin(position);
+        await get(`${API_URL}/travels/${travelId}/driver`, token).then(
+          ({ data }) => {
+            const position = data.data.currentDriverPosition;
+            setCurrentOrigin(position);
 
-        if (data.data.isStarted) {
-          navigation.navigate("TravelInProgress");
-        }
-      }
-      );
-    }, 10000);
-    return () => {
-      clearInterval(interval);
-    };
-  }, []));
+            if (data.data.isStarted) {
+              navigation.navigate("TravelInProgress");
+            }
+          }
+        );
+      }, 10000);
+      return () => {
+        clearInterval(interval);
+      };
+    }, [])
+  );
 
   const cancelTravel = async () => {
     clearInterval(interval);
@@ -110,11 +113,27 @@ export default function DriverIncoming({ navigation }) {
         customMapStyle={customMap}
         initialRegion={INITIAL_POSITION}
       >
-        {origin && <Marker coordinate={origin} identifier="originMark" image={require("../../assets/user.png")} />}
-        {destination && (
-          <Marker coordinate={destination} identifier="destMark" image={require("../../assets/flag.png")} />
+        {origin && (
+          <Marker
+            coordinate={origin}
+            identifier="originMark"
+            image={require("../../assets/user.png")}
+          />
         )}
-        {currentOrigin && <Marker coordinate={currentOrigin} identifier="driverPosition" image={require("../../assets/car.png")} />}
+        {destination && (
+          <Marker
+            coordinate={destination}
+            identifier="destMark"
+            image={require("../../assets/flag.png")}
+          />
+        )}
+        {currentOrigin && (
+          <Marker
+            coordinate={currentOrigin}
+            identifier="driverPosition"
+            image={require("../../assets/car.png")}
+          />
+        )}
         {origin && destination && (
           <MapViewDirections
             apikey={GOOGLE_API_KEY}
@@ -141,7 +160,10 @@ export default function DriverIncoming({ navigation }) {
       <View style={TravelStyles.travelContainer}>
         <View style={TravelStyles.buttonContainer}>
           <Pressable
-            style={MapStyles.confirmTripButton}
+            style={({ pressed }) => [
+              { backgroundColor: pressed ? "#333" : "black" },
+              MapStyles.confirmTripButton,
+            ]}
             onPress={() => cancelTravel(navigation)}
           >
             <Text
@@ -158,7 +180,10 @@ export default function DriverIncoming({ navigation }) {
         </View>
         <View style={TravelStyles.buttonContainer}>
           <Pressable
-            style={MapStyles.confirmTripButton}
+            style={({ pressed }) => [
+              { backgroundColor: pressed ? "#333" : "black" },
+              MapStyles.confirmTripButton,
+            ]}
             onPress={() => navigation.push("DriverProfileVisualization")}
           >
             <Text

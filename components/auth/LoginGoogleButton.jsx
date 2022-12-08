@@ -37,6 +37,9 @@ export default function LoginGoogleButton({ setErrorMessage, ...props }) {
         ToastAndroid.CENTER
       );
     }
+    return () => {
+      setErrorMessage("");
+    }
   }, [response, accessToken]);
 
   const fetchUserInfo = (authentication) => {

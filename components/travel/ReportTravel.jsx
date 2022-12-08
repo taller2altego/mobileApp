@@ -45,7 +45,16 @@ export default function ReportTravel({ route, navigation }) {
         style={{ top: 35, left: 15, position: "absolute" }}
         onPress={() => navigation.goBack()}
       />
-      <Text style={{fontFamily: "poppins", marginTop: "30%", fontSize: 20, textAlign: "center"}}>{item.driver}</Text>
+      <Text
+        style={{
+          fontFamily: "poppins",
+          marginTop: "30%",
+          fontSize: 20,
+          textAlign: "center",
+        }}
+      >
+        {item.driver}
+      </Text>
       <View style={ReportStyles.input_text}>
         <TextInput
           style={ReportStyles.report_container}
@@ -56,7 +65,10 @@ export default function ReportTravel({ route, navigation }) {
         />
       </View>
       <Pressable
-        style={MapStyles.confirmTripButton}
+        style={({ pressed }) => [
+          { backgroundColor: pressed ? "#333" : "black" },
+          MapStyles.confirmTripButton,
+        ]}
         onPress={() => sendReport(navigation)}
       >
         <Text

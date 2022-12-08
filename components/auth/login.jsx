@@ -16,6 +16,17 @@ export default function LoginModal({ ...props }) {
   const dispatch = useDispatch();
   const { API_URL, _ } = envs;
 
+  const validateInputs = () => {
+    let validInputs = true;
+    [email, password].map((input) => {
+      if (input.trim().length === 0) {
+        validInputs = false
+      }
+    })
+
+    return validInputs
+  }
+
   const getUserInfo = async (id, token) => {
     return get(`${API_URL}/users/${id}`, token)
       .then(({ data }) => data)
@@ -23,8 +34,13 @@ export default function LoginModal({ ...props }) {
   };
 
   const onSignIn = () => {
+    if (!validateInputs()) {
+      setErrorMessage("Todos los campos son obligatorios");
+      return;
+    }
+    setErrorMessage("");
     const body = { email, password };
-    return post(`${API_URL}/login`, body, () => { })
+    return post(`${API_URL}/login`, body, () => {})
       .then(async ({ data: { id, token } }) => {
         await SecureStore.setItemAsync("token", token);
         await SecureStore.setItemAsync("id", id.toString());
@@ -39,7 +55,8 @@ export default function LoginModal({ ...props }) {
         dispatch(setUserData(userData));
         dispatch(setIsDriver({ isDriver: userInfo.isDriver }));
         props.toggle();
-        props.navigation.navigate("Home");
+        setErrorMessage("");
+        props.navigation.replace("Home");
       })
       .catch((e) => {
         const errMessage =
@@ -54,7 +71,12 @@ export default function LoginModal({ ...props }) {
       <View style={[modalStyles.modal_extern_view, { fontFamily: "poppins" }]}>
         <View style={modalStyles.modal_view}>
           <Pressable onPress={props.toggle}>
-            <Entypo name="cross" size={26} color="black" style={{left: 5, top: 5}}/>
+            <Entypo
+              name="cross"
+              size={26}
+              color="black"
+              style={{ left: 5, top: 5 }}
+            />
           </Pressable>
           <View style={[modalStyles.flex_modal, { fontFamily: "poppins" }]}>
             <TextInput
@@ -73,7 +95,10 @@ export default function LoginModal({ ...props }) {
               onChangeText={(password) => setPassword(password)}
             />
             <Pressable
-              style={modalStyles.modal_button}
+              style={({ pressed }) => [
+                modalStyles.modal_button,
+                { backgroundColor: pressed ? "#333" : "black" },
+              ]}
               onPress={() => onSignIn()}
             >
               <Text
@@ -86,19 +111,28 @@ export default function LoginModal({ ...props }) {
               navigation={props.navigation}
               setErrorMessage={setErrorMessage}
             ></LoginGoogleButton>
-            <View style={{flexDirection: "column", alignItems: "center"}}>
+            <View style={{ flexDirection: "column", alignItems: "center" }}>
               <Pressable
                 onPress={() => props.navigation.navigate("RecoverPassword")}
               >
                 <Text
-                  style={{ fontFamily: "poppins", color: "black", fontSize: 15, marginBottom: 10 }}
+                  style={{
+                    fontFamily: "poppins",
+                    color: "black",
+                    fontSize: 15,
+                    marginBottom: 10,
+                  }}
                 >
                   Forgot Password
                 </Text>
               </Pressable>
               <Pressable onPress={() => props.navigation.navigate("AuthToken")}>
                 <Text
-                  style={{ fontFamily: "poppins", fontSize: 15, color: "black" }}
+                  style={{
+                    fontFamily: "poppins",
+                    fontSize: 15,
+                    color: "black",
+                  }}
                 >
                   Have a Token
                 </Text>
