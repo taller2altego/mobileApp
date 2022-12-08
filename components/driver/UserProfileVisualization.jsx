@@ -85,7 +85,7 @@ export default function VisualizationTab({ navigation }) {
             <View style={TravelStyles.buttonContainer}>
                 <Pressable
                     style={MapStyles.confirmTripButton}
-                    onPress={() => navigation.navigate("Home")}
+                    onPress={() => navigation.replace("Home")}
                 >
                     <Text
                         style={{

@@ -76,7 +76,7 @@ export default function TripDetails({ route, navigation }) {
                 description: comment,
               });
             }
-            navigation.navigate("Home");
+            navigation.replace("Home");
           })
           .catch((error) => handlerUnauthorizedError(navigation, error));
       })

@@ -51,7 +51,7 @@ export default function WalletVisualization({ navigation }) {
     const token = await SecureStore.getItemAsync("token");
     return patch(`${API_URL}/drivers/${id}/payment`, token, body)
       .then(() => {
-        navigation.navigate("Home");
+        navigation.replace("Home");
       })
       .catch(() => {
         setInsufficientFunds(true);

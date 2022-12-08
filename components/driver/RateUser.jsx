@@ -56,7 +56,7 @@ export default function RateUser({ navigation }) {
                 if (comment != "") {
                     await authPost(`${API_URL}/comments/user`, token, { userId, description: comment })
                 }
-                navigation.navigate("Home");
+                navigation.replace("Home");
             }).catch(error => handlerUnauthorizedError(navigation, error));
         }).catch(error => handlerUnauthorizedError(navigation, error));
     };

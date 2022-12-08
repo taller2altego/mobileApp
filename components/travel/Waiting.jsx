@@ -52,7 +52,7 @@ export default function WaitingDriverModal({ navigation, ...props }) {
           paidWithCredits: travel.data.data.paidWithCredits,
           payToDriver: false,
         };
-        return authPost(`${API_URL}/travels/${travelId}/reject?isTravelCancelled='true'`, token, body).then(navigation.navigate("Home"));
+        return authPost(`${API_URL}/travels/${travelId}/reject?isTravelCancelled='true'`, token, body).then(navigation.replace("Home"));
       })
   };
 
