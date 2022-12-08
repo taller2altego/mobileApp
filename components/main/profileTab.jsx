@@ -9,7 +9,7 @@ import {
   handlerUnauthorizedError,
 } from "../../utils/requests";
 import { clearUserData, setUserData } from "../../redux/actions/UpdateUserData";
-import { Profilestyles } from "../styles";
+import { Profilestyles, modalStyles } from "../styles";
 import envs from "../../config/env";
 import {
   clearDriverData,
@@ -56,7 +56,8 @@ export default function ProfileTab({ navigation }) {
         dispatch(clearDriverData());
         dispatch(clearUserData());
         dispatch(clearTravelDetails());
-        navigation.navigate("Landing");
+        setErrorMessage("");
+        navigation.replace("Landing");
       })
       .catch((e) => {
         const errMessage =
@@ -68,6 +69,17 @@ export default function ProfileTab({ navigation }) {
   const handleNewDriver = () => {
     navigation.navigate("Driver");
   };
+
+  const validateInputs = () => {
+    let validInputs = true;
+    [nameText, lastnameText, phoneText, modelText, plateText, licenseText, emailText].map((input) => {
+      if (input.trim().length === 0) {
+        validInputs = false
+      }
+    })
+
+    return validInputs
+  }
 
   const handleCancelEdit = () => {
     setIsEditing(!isEditing);
@@ -82,6 +94,11 @@ export default function ProfileTab({ navigation }) {
   };
 
   const handleUpdate = async () => {
+    if (!validateInputs()) {
+      setErrorMessage("El campo no puede ser vacio");
+      return;
+    }
+    
     const id = await SecureStore.getItemAsync("id");
     const token = await SecureStore.getItemAsync("token");
     const body = {
@@ -91,6 +108,7 @@ export default function ProfileTab({ navigation }) {
     };
     patch(`${API_URL}/users/${id}`, token, body)
       .then(() => {
+        setErrorMessage("");
         dispatch(
           setUserData({
             name: nameText,
@@ -110,6 +128,7 @@ export default function ProfileTab({ navigation }) {
       licensePlate: plateText,
     })
       .then(() => {
+        setErrorMessage("");
         dispatch(
           setDriverData({
             license: licenseText,
@@ -308,6 +327,7 @@ export default function ProfileTab({ navigation }) {
             onPress={() =>
               navigation.navigate("WalletVisualization")
             }
+            
             style={[Profilestyles.edit_profile_button, { marginTop: 10}]}
           >
             <Text style={[Profilestyles.edit_button_text, {fontFamily: "poppins" }]}>Wallet</Text>
@@ -344,6 +364,9 @@ export default function ProfileTab({ navigation }) {
               Cerrar sesión
             </Text>
           </Pressable>
+          <Text style={[modalStyles.error_modal, { fontFamily: "poppins" }]}>
+              {errorMessage}
+          </Text>
         </View>
       </View>
     </ScrollView>

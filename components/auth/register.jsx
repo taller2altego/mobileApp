@@ -17,6 +17,17 @@ export default function RegisterModal({ ...props }) {
   const [errorMessage, setErrorMessage] = useState("");
   const { API_URL, _ } = envs;
 
+  const validateInputs = () => {
+    let validInputs = true;
+    [email, password, phone, name, lastname].map((input) => {
+      if (input.trim().length === 0) {
+        validInputs = false
+      }
+    })
+
+    return validInputs
+  }
+
   const onSignUp = () => {
     const signUpBody = {
       name,
@@ -27,6 +38,12 @@ export default function RegisterModal({ ...props }) {
       role: "user",
     };
 
+    if (!validateInputs()) {
+      setErrorMessage("Todos los campos son obligatorios");
+      return;
+    }
+
+    setErrorMessage("");
     const loginBody = { email, password };
 
     return post(`${API_URL}/users`, signUpBody)
@@ -38,9 +55,10 @@ export default function RegisterModal({ ...props }) {
       .then((data) => SecureStore.setItemAsync("id", data.id.toString()))
       .then(() => {
         props.toggle();
-        props.navigation.navigate("DefaultLocationRequest");
+        props.navigation.replace("DefaultLocationRequest");
       })
       .catch((error) => {
+        console.log(error)
         setErrorMessage(JSON.stringify(error.response.data.message));
       });
   };
@@ -50,7 +68,12 @@ export default function RegisterModal({ ...props }) {
       <View style={modalStyles.modal_extern_view}>
         <View style={[modalStyles.modal_view]}>
           <Pressable onPress={props.toggle}>
-            <Entypo name="cross" size={26} color="black" style={{left: 5, top: 5}}/>
+            <Entypo
+              name="cross"
+              size={26}
+              color="black"
+              style={{ left: 5, top: 5 }}
+            />
           </Pressable>
           <View style={[modalStyles.flex_modal]}>
             <TextInput
@@ -69,6 +92,7 @@ export default function RegisterModal({ ...props }) {
               style={modalStyles.modal_input}
               placeholder="Email"
               placeholderTextColor="black"
+              keyboardType="email-address"
               onChangeText={(email) => setEmail(email)}
             />
             <TextInput
@@ -88,7 +112,10 @@ export default function RegisterModal({ ...props }) {
               onChangeText={(password) => setPassword(password)}
             />
             <Pressable
-              style={modalStyles.modal_button}
+              style={({ pressed }) => [
+                modalStyles.modal_button,
+                { backgroundColor: pressed ? "#333" : "black" },
+              ]}
               onPress={() => onSignUp()}
             >
               <Text
