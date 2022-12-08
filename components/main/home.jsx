@@ -23,6 +23,10 @@ export default function Home({ navigation }) {
       (async () => {
         const id = await SecureStore.getItemAsync("id");
         const token = await SecureStore.getItemAsync("token");
+
+        if (id === undefined || token === undefined) {
+          navigation.replace('Landing');
+        }
         await get(`${API_URL}/users/${id}`, token)
           .then(
             async ({

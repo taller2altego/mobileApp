@@ -3,17 +3,11 @@ import { Image, Pressable, Text, View } from "react-native";
 import { LandingStyles } from "../styles";
 import RegisterModal from "./register";
 import LoginModal from "./login";
-import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
-
 
 export default function Landing({ navigation }) {
   const [modalRegisterVisible, setModalRegisterVisible] = useState(false);
   const [modalLoginVisible, setModalLoginVisible] = useState(false);
-  const [fontsLoaded] = useFonts({
-    poppins: require("../../assets/fonts/Poppins-Regular.ttf"),
-    "poppins-bold": require("../../assets/fonts/Poppins-Bold.ttf"),
-  });
 
   const toggleRegisterModal = () => {
     setModalRegisterVisible(!modalRegisterVisible);
@@ -31,14 +25,8 @@ export default function Landing({ navigation }) {
   }, []);
 
   const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded) {
-      await SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded]);
-
-  if (!fontsLoaded) {
-    return null;
-  }
+    await SplashScreen.hideAsync();
+  }, []);
 
   return (
     <View style={[LandingStyles.land_container]} onLayout={onLayoutRootView}>
@@ -55,7 +43,7 @@ export default function Landing({ navigation }) {
       <View style={LandingStyles.logo}>
         <Image
           source={require("../../images/car.jpg")}
-          style={[LandingStyles.tinyLogo, {backgroundColor:'transparent'}]}
+          style={[LandingStyles.tinyLogo, { backgroundColor: 'transparent' }]}
         />
       </View>
       <View style={[LandingStyles.land_text_container]}>
