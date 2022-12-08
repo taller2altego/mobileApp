@@ -33,7 +33,7 @@ export default function AuthToken({ navigation }) {
 
   return (
     <View style={Profilestyles.profile_container}>
-      <View style={RecoverStyles.input_text}>
+      <View style={[RecoverStyles.input_text, { marginTop: 100 }]}>
         <TextInput
           style={RecoverStyles.input_text_container}
           placeholder="Ingrese su token aqui..."
@@ -60,11 +60,9 @@ export default function AuthToken({ navigation }) {
                 lineHeight: 38,
               }}
             >
-              Volver atras
+              Volver
             </Text>
           </Pressable>
-        </View>
-        <View style={LandingStyles.land_buttons_container_v2}>
           <Pressable
             style={({ pressed }) => [
               MapStyles.confirmTripButton,

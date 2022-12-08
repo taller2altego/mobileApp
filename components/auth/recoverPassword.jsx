@@ -80,8 +80,6 @@ export default function RecoverPassword({ navigation }) {
               Volver atras
             </Text>
           </Pressable>
-        </View>
-        <View style={LandingStyles.land_buttons_container_v2}>
           <Pressable
             style={({ pressed }) => [
               MapStyles.confirmTripButton,
