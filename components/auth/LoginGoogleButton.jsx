@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { useEffect, useState } from "react";
 import * as Google from "expo-auth-session/providers/google";
-import { authPost } from "../../utils/requests";
+import { authPost, get } from "../../utils/requests";
 import { AntDesign } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";
 import { setUserData } from "../../redux/actions/UpdateUserData";
@@ -40,6 +40,12 @@ export default function LoginGoogleButton({ setErrorMessage, ...props }) {
         } = info;
         await SecureStore.setItemAsync("token", token);
         await SecureStore.setItemAsync("id", id.toString());
+
+        const user = await get(`${API_URL}/users/${id.toString()}`, token);
+        if (user.data.defaultAddress === null) {
+          props.navigation.navigate("DefaultLocationRequest");
+          return;
+        }
         props.navigation.navigate("Home");
       })
       .catch((e) => {
