@@ -56,6 +56,7 @@ export default function ProfileTab({ navigation }) {
         dispatch(clearDriverData());
         dispatch(clearUserData());
         dispatch(clearTravelDetails());
+        setErrorMessage("");
         navigation.navigate("Landing");
       })
       .catch((e) => {
@@ -308,6 +309,7 @@ export default function ProfileTab({ navigation }) {
             onPress={() =>
               navigation.navigate("WalletVisualization")
             }
+            
             style={[Profilestyles.edit_profile_button, { marginTop: 10}]}
           >
             <Text style={[Profilestyles.edit_button_text, {fontFamily: "poppins" }]}>Wallet</Text>

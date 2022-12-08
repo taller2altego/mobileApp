@@ -2,7 +2,14 @@ import { useRef, useState } from "react";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import * as SecureStore from "expo-secure-store";
 import MapViewDirections from "react-native-maps-directions";
-import { View, Text, Pressable, Image, Switch, ToastAndroid } from "react-native";
+import {
+  View,
+  Text,
+  Pressable,
+  Image,
+  Switch,
+  ToastAndroid,
+} from "react-native";
 
 import WaitingModal from "./Waiting";
 import { MapStyles, TravelStyles, customMap } from "../styles";
@@ -87,11 +94,11 @@ export default function ConfirmationTravel({ navigation }) {
     const token = await SecureStore.getItemAsync("token");
     const srcAddress = await fetch(
       "https://maps.googleapis.com/maps/api/geocode/json?address=" +
-      origin.latitude +
-      "," +
-      origin.longitude +
-      "&key=" +
-      GOOGLE_API_KEY
+        origin.latitude +
+        "," +
+        origin.longitude +
+        "&key=" +
+        GOOGLE_API_KEY
     )
       .then((response) => response.json())
       .then((responseJson) => {
@@ -99,11 +106,11 @@ export default function ConfirmationTravel({ navigation }) {
       });
     const dstAddress = await fetch(
       "https://maps.googleapis.com/maps/api/geocode/json?address=" +
-      destination.latitude +
-      "," +
-      destination.longitude +
-      "&key=" +
-      GOOGLE_API_KEY
+        destination.latitude +
+        "," +
+        destination.longitude +
+        "&key=" +
+        GOOGLE_API_KEY
     )
       .then((response) => response.json())
       .then((responseJson) => responseJson.results[0].formatted_address);
@@ -120,12 +127,14 @@ export default function ConfirmationTravel({ navigation }) {
       paidWithCredits: payWithCreditsBox,
       token: pushToken,
       price,
-      date
+      date,
     };
 
     return authPost(`${API_URL}/travels`, token, body)
       .then(({ data }) => {
-        dispatch(setNewTravel({ _id: data.data._id, userId: data.data.userId }));
+        dispatch(
+          setNewTravel({ _id: data.data._id, userId: data.data.userId })
+        );
         setModalWaitingVisible(!modalWaitingVisible);
       })
       .catch((error) => {
@@ -154,13 +163,13 @@ export default function ConfirmationTravel({ navigation }) {
         customMapStyle={customMap}
       >
         {origin ? (
-          <Marker
-            coordinate={origin}
-            identifier="originMark"
-            pinColor="black"
-          >
-            <View style={{ backgroundColor: "white", padding: 3, borderWidth: 1 }}>
-              <Text style={{ fontFamily: "poppins", fontSize: 8 }}>{currentTravelData.originAddress}</Text>
+          <Marker coordinate={origin} identifier="originMark" pinColor="black">
+            <View
+              style={{ backgroundColor: "white", padding: 3, borderWidth: 1 }}
+            >
+              <Text style={{ fontFamily: "poppins", fontSize: 8 }}>
+                {currentTravelData.originAddress}
+              </Text>
             </View>
           </Marker>
         ) : (
@@ -173,8 +182,12 @@ export default function ConfirmationTravel({ navigation }) {
             identifier="destMark"
             pinColor="black"
           >
-            <View style={{ backgroundColor: "white", padding: 3, borderWidth: 1 }}>
-              <Text style={{ fontFamily: "poppins", fontSize: 8 }}>{currentTravelData.destinationAddress}</Text>
+            <View
+              style={{ backgroundColor: "white", padding: 3, borderWidth: 1 }}
+            >
+              <Text style={{ fontFamily: "poppins", fontSize: 8 }}>
+                {currentTravelData.destinationAddress}
+              </Text>
             </View>
           </Marker>
         ) : (
@@ -238,7 +251,10 @@ export default function ConfirmationTravel({ navigation }) {
 
       <View style={TravelStyles.buttonContainer}>
         <Pressable
-          style={MapStyles.confirmTripButton}
+          style={({ pressed }) => [
+            MapStyles.confirmTripButton,
+            { backgroundColor: pressed ? "#333" : "black" },
+          ]}
           onPress={() => createTravel(navigation)}
         >
           <Text

@@ -38,9 +38,11 @@ export default function RegisterModal({ ...props }) {
       .then((data) => SecureStore.setItemAsync("id", data.id.toString()))
       .then(() => {
         props.toggle();
+        setErrorMessage("");
         props.navigation.navigate("DefaultLocationRequest");
       })
       .catch((error) => {
+        console.log(error)
         setErrorMessage(JSON.stringify(error.response.data.message));
       });
   };
@@ -50,7 +52,12 @@ export default function RegisterModal({ ...props }) {
       <View style={modalStyles.modal_extern_view}>
         <View style={[modalStyles.modal_view]}>
           <Pressable onPress={props.toggle}>
-            <Entypo name="cross" size={26} color="black" style={{left: 5, top: 5}}/>
+            <Entypo
+              name="cross"
+              size={26}
+              color="black"
+              style={{ left: 5, top: 5 }}
+            />
           </Pressable>
           <View style={[modalStyles.flex_modal]}>
             <TextInput
@@ -88,7 +95,10 @@ export default function RegisterModal({ ...props }) {
               onChangeText={(password) => setPassword(password)}
             />
             <Pressable
-              style={modalStyles.modal_button}
+              style={({ pressed }) => [
+                modalStyles.modal_button,
+                { backgroundColor: pressed ? "#333" : "black" },
+              ]}
               onPress={() => onSignUp()}
             >
               <Text

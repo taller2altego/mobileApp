@@ -21,38 +21,41 @@ export default function DefaultLocationRequest({ navigation }) {
     patch(`${API_URL}/users/${id}/location`, token, {
       defaultAddress,
       defaultLatitude: defaultAddressCoordinates.latitude,
-      defaultLongitude: defaultAddressCoordinates.longitude
+      defaultLongitude: defaultAddressCoordinates.longitude,
     }).then(() => {
       navigation.replace("Home");
     });
   };
 
   return (
-    <ScrollView style={{top: "10%", padding: 20}} keyboardShouldPersistTaps="always">
+    <ScrollView
+      style={{ top: "10%", padding: 20 }}
+      keyboardShouldPersistTaps="always"
+    >
       <View>
-      <Text
-        style={{
-          alignSelf: "center",
-          fontFamily: "poppins-bold",
-          fontSize: 25,
-          textAlign: "center",
-        }}
-      >
-        Ubicacion predeterminada
-      </Text>
-      <Text
-        style={{
-          alignSelf: "center",
-          fontFamily: "poppins",
-          fontSize: 15,
-          textAlign: "center",
-          marginTop: 10,
-        }}
-      >
-        Esta ubicacion va a ser usada como predeterminada para tus viajes
-      </Text>
+        <Text
+          style={{
+            alignSelf: "center",
+            fontFamily: "poppins-bold",
+            fontSize: 25,
+            textAlign: "center",
+          }}
+        >
+          Ubicacion predeterminada
+        </Text>
+        <Text
+          style={{
+            alignSelf: "center",
+            fontFamily: "poppins",
+            fontSize: 15,
+            textAlign: "center",
+            marginTop: 10,
+          }}
+        >
+          Esta ubicacion va a ser usada como predeterminada para tus viajes
+        </Text>
       </View>
-      <View style={{marginTop: 50}}>
+      <View style={{ marginTop: 50 }}>
         <GooglePlacesAutocomplete
           styles={{ textInput: Homestyles.searchInput }}
           placeholder="Direccion Predeterminada"
@@ -81,10 +84,13 @@ export default function DefaultLocationRequest({ navigation }) {
             language: "en",
           }}
         />
-        </View>
+      </View>
       {correctInput ? (
         <Pressable
-          style={{ alignSelf: "center", marginTop: 20 }}
+          style={({ pressed }) => [
+            { alignSelf: "center", marginTop: 20 },
+            { backgroundColor: pressed ? "#333" : "black" },
+          ]}
           onPress={() => {
             handleConfirm();
           }}
@@ -93,7 +99,10 @@ export default function DefaultLocationRequest({ navigation }) {
         </Pressable>
       ) : (
         <Pressable
-          style={{ alignSelf: "center", marginTop: 20 }}
+          style={({ pressed }) => [
+            { alignSelf: "center", marginTop: 20 },
+            { backgroundColor: pressed ? "#333" : "black" },
+          ]}
           disabled={true}
         >
           <Text style={{ fontFamily: "poppins", fontSize: 20, color: "gray" }}>
