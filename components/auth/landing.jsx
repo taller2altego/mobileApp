@@ -51,11 +51,11 @@ export default function Landing({ navigation }) {
         toggle={toggleLoginModal}
         navigation={navigation}
       ></LoginModal>
-      <View style={[LandingStyles.logo]}>
+      <View style={LandingStyles.logo}>
         <Image
-          style={LandingStyles.tinyLogo}
+          style={[LandingStyles.tinyLogo, {backgroundColor:'transparent'}]}
           source={{
-            uri: "https://png.pngtree.com/png-clipart/20190520/original/pngtree-auto-logo-car-png-image_4236175.jpg",
+            uri: "https://w7.pngwing.com/pngs/715/917/png-transparent-car-computer-icons-taxi-driver-compact-car-white-rectangle-thumbnail.png",
           }}
         />
       </View>
