@@ -211,7 +211,7 @@ export default function ConfirmationTravel({ navigation }) {
         size={30}
         color="black"
         style={{ position: "absolute", top: 20, left: 5 }}
-        onPress={() => navigation.navigate("Home")}
+        onPress={() => navigation.replace("Home")}
       />
       {tripAvailable ? (
         <View style={MapStyles.tripInfoContainer}>

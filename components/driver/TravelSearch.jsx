@@ -88,7 +88,7 @@ export default function TravelSearch({ navigation }) {
     // limpio travel info y dejo de pedir viajes.
     await SecureStore.setItemAsync('askForTravel', 'false');
     await SecureStore.deleteItemAsync('travelInfo');
-    navigation.navigate("Home");
+    navigation.replace("Home");
   };
 
   return (

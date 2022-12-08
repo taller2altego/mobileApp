@@ -160,13 +160,9 @@ export default function TravelInProgressDriver({ navigation }) {
       paidWithCredits: travel.data.data.paidWithCredits,
       payToDriver: false,
     };
-    return authPost(
-      `${API_URL}/travels/${travelData._id}/reject?isTravelCancelled='true'`,
-      token,
-      body
-    )
-      .then(navigation.navigate("Home"))
-      .catch((error) => handlerUnauthorizedError(navigation, error));
+    return authPost(`${API_URL}/travels/${travelData._id}/reject?isTravelCancelled='true'`, token, body)
+      .then(() => navigation.replace("Home"))
+      .catch(error => handlerUnauthorizedError(navigation, error));
   };
 
   return (

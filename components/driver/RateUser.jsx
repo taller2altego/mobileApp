@@ -49,29 +49,18 @@ export default function RateUser({ navigation }) {
     })();
   }, []);
 
-  const sendRatingToUser = async () => {
-    setAlreadyRated(true);
-    const token = await SecureStore.getItemAsync("token");
-    return patch(`${API_URL}/users/${userId}`, token, {
-      score: Math.floor(rating),
-    })
-      .then(() => {
-        return patch(`${API_URL}/travels/${travelId}`, token, {
-          userScore: Math.floor(rating),
-        })
-          .then(async () => {
-            if (comment != "") {
-              await authPost(`${API_URL}/comments/user`, token, {
-                userId,
-                description: comment,
-              });
-            }
-            navigation.navigate("Home");
-          })
-          .catch((error) => handlerUnauthorizedError(navigation, error));
-      })
-      .catch((error) => handlerUnauthorizedError(navigation, error));
-  };
+    const sendRatingToUser = async () => {
+        setAlreadyRated(true);
+        const token = await SecureStore.getItemAsync("token");
+        return patch(`${API_URL}/users/${userId}`, token, { score: Math.floor(rating) }).then(() => {
+            return patch(`${API_URL}/travels/${travelId}`, token, { userScore: Math.floor(rating) }).then(async () => {
+                if (comment != "") {
+                    await authPost(`${API_URL}/comments/user`, token, { userId, description: comment })
+                }
+                navigation.replace("Home");
+            }).catch(error => handlerUnauthorizedError(navigation, error));
+        }).catch(error => handlerUnauthorizedError(navigation, error));
+    };
 
   const months = {
     January: 1,
