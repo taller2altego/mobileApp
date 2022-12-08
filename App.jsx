@@ -30,6 +30,8 @@ import DefaultLocationRequest from "./components/auth/DefaultLocationRequest";
 import * as SecureStore from "expo-secure-store";
 import * as TaskManager from "expo-task-manager";
 import * as Location from "expo-location";
+import { useFonts } from "expo-font";
+
 
 import { get } from "./utils/requests";
 import envs from "./config/env";
@@ -65,20 +67,20 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
       } else {
         interval = setInterval(async () => {
           const flag = await SecureStore.getItemAsync('askForTravel');
-  
+
           console.log(flag);
-  
+
           if (flag === 'true') {
             const token = await SecureStore.getItemAsync("token");
             const pushToken = await SecureStore.getItemAsync("pushToken");
-  
+
             const url = `${API_URL}/travels?latitude=${location.coords.latitude}&longitude=${location.coords.longitude}&token=${pushToken}`;
             await get(url, token)
               .then(({ data: { data } }) => data)
               .then(data => SecureStore.setItemAsync('travelInfo', JSON.stringify({ ...data, driverLocation: location.coords })))
-              .then(() => {});
+              .then(() => { });
           }
-  
+
         }, 20000);
       }
     }
@@ -86,25 +88,35 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
 });
 
 export default function App() {
+
+  const [fontsLoaded] = useFonts({
+    poppins: require("./assets/fonts/Poppins-Regular.ttf"),
+    "poppins-bold": require("./assets/fonts/Poppins-Bold.ttf"),
+  });
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
   const startBackgroundUpdate = async () => {
     const { granted } = await Location.getBackgroundPermissionsAsync();
     if (!granted) {
       console.log("location tracking denied");
       return;
     }
-  
+
     const isTaskDefined = await TaskManager.isTaskDefined(LOCATION_TASK_NAME);
     if (!isTaskDefined) {
       console.log("Task is not defined");
       return;
     }
-  
+
     const hasStarted = await Location.hasStartedLocationUpdatesAsync(LOCATION_TASK_NAME);
-  
+
     if (hasStarted) {
       await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME);
     }
-  
+
     await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
       accuracy: Location.Accuracy.BestForNavigation,
       showsBackgroundLocationIndicator: true,
@@ -115,7 +127,7 @@ export default function App() {
         notificationColor: "#fff",
       }
     })
-    .catch(() => Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
+      .catch(() => Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
         accuracy: Location.Accuracy.BestForNavigation,
         showsBackgroundLocationIndicator: true,
         distanceInterval: 100,
@@ -125,23 +137,23 @@ export default function App() {
           notificationColor: "#fff",
         }
       })
-    )
-    .then(res => res);
+      )
+      .then(res => res);
   }
-  
+
   const requestPermissions = async () => {
     const foreground = await Location.requestForegroundPermissionsAsync();
     if (foreground.granted) await Location.requestBackgroundPermissionsAsync();
   }
-  
+
   requestPermissions()
     .then(() => startBackgroundUpdate())
-    .then(() => {});
+    .then(() => { });
 
   return (
     <Provider store={store}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Landing">
+        <Stack.Navigator initialRouteName="Home">
           <Stack.Screen
             name="Landing"
             component={LandingScreen}
