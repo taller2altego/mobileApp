@@ -30,7 +30,7 @@ export default function LoginGoogleButton({ setErrorMessage, ...props }) {
     if (response && response.type === "success") {
       setAccessToken(response.authentication.accessToken);
       accessToken && fetchUserInfo(response.authentication);
-    } else {
+    } else if (response) {
       ToastAndroid.showWithGravity(
         response.type,
         ToastAndroid.SHORT,
