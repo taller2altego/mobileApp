@@ -57,7 +57,7 @@ export default function ProfileTab({ navigation }) {
         dispatch(clearUserData());
         dispatch(clearTravelDetails());
         setErrorMessage("");
-        navigation.navigate("Landing");
+        navigation.replace("Landing");
       })
       .catch((e) => {
         const errMessage =

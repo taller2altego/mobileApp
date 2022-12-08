@@ -89,7 +89,6 @@ export default function DefaultLocationRequest({ navigation }) {
         <Pressable
           style={({ pressed }) => [
             { alignSelf: "center", marginTop: 20 },
-            { backgroundColor: pressed ? "#333" : "black" },
           ]}
           onPress={() => {
             handleConfirm();
@@ -101,7 +100,6 @@ export default function DefaultLocationRequest({ navigation }) {
         <Pressable
           style={({ pressed }) => [
             { alignSelf: "center", marginTop: 20 },
-            { backgroundColor: pressed ? "#333" : "black" },
           ]}
           disabled={true}
         >

@@ -17,6 +17,17 @@ export default function RegisterModal({ ...props }) {
   const [errorMessage, setErrorMessage] = useState("");
   const { API_URL, _ } = envs;
 
+  const validateInputs = () => {
+    let validInputs = true;
+    [email, password, phone, name, lastname].map((input) => {
+      if (input.trim().length === 0) {
+        validInputs = false
+      }
+    })
+
+    return validInputs
+  }
+
   const onSignUp = () => {
     const signUpBody = {
       name,
@@ -27,6 +38,12 @@ export default function RegisterModal({ ...props }) {
       role: "user",
     };
 
+    if (!validateInputs()) {
+      setErrorMessage("Todos los campos son obligatorios");
+      return;
+    }
+
+    setErrorMessage("");
     const loginBody = { email, password };
 
     return post(`${API_URL}/users`, signUpBody)
@@ -38,8 +55,7 @@ export default function RegisterModal({ ...props }) {
       .then((data) => SecureStore.setItemAsync("id", data.id.toString()))
       .then(() => {
         props.toggle();
-        setErrorMessage("");
-        props.navigation.navigate("DefaultLocationRequest");
+        props.navigation.replace("DefaultLocationRequest");
       })
       .catch((error) => {
         console.log(error)
@@ -76,6 +92,7 @@ export default function RegisterModal({ ...props }) {
               style={modalStyles.modal_input}
               placeholder="Email"
               placeholderTextColor="black"
+              keyboardType="email-address"
               onChangeText={(email) => setEmail(email)}
             />
             <TextInput

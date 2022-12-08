@@ -18,7 +18,23 @@ export default function Driver({ navigation }) {
   const dispatch = useDispatch();
   const { API_URL, _ } = envs;
 
+  const validateInputs = () => {
+    let validInputs = true;
+    [licensePlate, license, model].map((input) => {
+      if (input.trim().length === 0) {
+        validInputs = false
+      }
+    })
+
+    return validInputs
+  }
+
   const confirmData = async () => {
+    if (!validateInputs()) {
+      setErrorMessage("Todos los campos son obligatorios");
+      return;
+    }
+
     const id = await SecureStore.getItemAsync("id");
     const token = await SecureStore.getItemAsync("token");
     authPost(`${API_URL}/users/${id}/driver`, token, {
@@ -31,7 +47,7 @@ export default function Driver({ navigation }) {
         dispatch(setDriverData({ license, model, licensePlate }));
         dispatch(setIsDriver({ isDriver: true }));
         setErrorMessage("");
-        navigation.navigate("Home");
+        navigation.replace("Home");
       })
       .catch((error) => {
         handlerUnauthorizedError(navigation, error);

@@ -16,6 +16,17 @@ export default function LoginModal({ ...props }) {
   const dispatch = useDispatch();
   const { API_URL, _ } = envs;
 
+  const validateInputs = () => {
+    let validInputs = true;
+    [email, password].map((input) => {
+      if (input.trim().length === 0) {
+        validInputs = false
+      }
+    })
+
+    return validInputs
+  }
+
   const getUserInfo = async (id, token) => {
     return get(`${API_URL}/users/${id}`, token)
       .then(({ data }) => data)
@@ -23,6 +34,11 @@ export default function LoginModal({ ...props }) {
   };
 
   const onSignIn = () => {
+    if (!validateInputs()) {
+      setErrorMessage("Todos los campos son obligatorios");
+      return;
+    }
+    setErrorMessage("");
     const body = { email, password };
     return post(`${API_URL}/login`, body, () => {})
       .then(async ({ data: { id, token } }) => {
@@ -40,7 +56,7 @@ export default function LoginModal({ ...props }) {
         dispatch(setIsDriver({ isDriver: userInfo.isDriver }));
         props.toggle();
         setErrorMessage("");
-        props.navigation.navigate("Home");
+        props.navigation.replace("Home");
       })
       .catch((e) => {
         const errMessage =
