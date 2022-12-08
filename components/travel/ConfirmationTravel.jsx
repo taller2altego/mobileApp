@@ -49,6 +49,7 @@ export default function ConfirmationTravel({ navigation }) {
   const [duration, setDuration] = useState(0);
   const [price, setPrice] = useState(0);
   const date = new Date().toISOString();
+  const [tripAvailable, setTripAvailable] = useState(true);
 
   const [modalWaitingVisible, setModalWaitingVisible] = useState(false);
   const { API_URL, GOOGLE_API_KEY } = envs;
@@ -201,6 +202,7 @@ export default function ConfirmationTravel({ navigation }) {
             strokeColor="black"
             strokeWidth={5}
             onReady={updateTripProps}
+            onError={() => setTripAvailable(false)}
           />
         )}
       </MapView>
@@ -211,65 +213,86 @@ export default function ConfirmationTravel({ navigation }) {
         style={{ position: "absolute", top: 20, left: 5 }}
         onPress={() => navigation.navigate("Home")}
       />
-      <View style={MapStyles.tripInfoContainer}>
-        <View>
-          <Image
-            style={{ width: 150, height: 100, bottom: 10 }}
-            source={{
-              uri: "https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,w_896,h_504/f_auto,q_auto/products/carousel/UberX.png",
-            }}
+      {tripAvailable ? (
+        <View style={MapStyles.tripInfoContainer}>
+          <View>
+            <Image
+              style={{ width: 150, height: 100, bottom: 10 }}
+              source={{
+                uri: "https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,w_896,h_504/f_auto,q_auto/products/carousel/UberX.png",
+              }}
+            />
+          </View>
+
+          <View style={{ paddingRight: 20 }}>
+            <Text style={{ fontFamily: "poppins", fontSize: 15 }}>
+              {duration} min
+            </Text>
+            <Text style={{ fontFamily: "poppins", fontSize: 15 }}>
+              {distance} km
+            </Text>
+            <Text style={{ fontFamily: "poppins", fontSize: 15 }}>
+              {parseFloat(price).toFixed(6)} Ethereum (est.)
+            </Text>
+          </View>
+        </View>
+      ) : (
+        <></>
+      )}
+
+      {tripAvailable ? (
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Text style={{ fontFamily: "poppins" }}>Utilizar FIUCreditos</Text>
+          <Switch
+            trackColor={{ false: "grey", true: "black" }}
+            thumbColor={"white"}
+            onValueChange={(newValue) => setPayWithCredits(newValue)}
+            value={payWithCreditsBox}
           />
         </View>
+      ) : (
+        <></>
+      )}
 
-        <View style={{ paddingRight: 20 }}>
-          <Text style={{ fontFamily: "poppins", fontSize: 15 }}>
-            {duration} min
-          </Text>
-          <Text style={{ fontFamily: "poppins", fontSize: 15 }}>
-            {distance} km
-          </Text>
-          <Text style={{ fontFamily: "poppins", fontSize: 15 }}>
-            {parseFloat(price).toFixed(6)} Ethereum (est.)
-          </Text>
-        </View>
-      </View>
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Text style={{ fontFamily: "poppins" }}>Utilizar FIUCreditos</Text>
-        <Switch
-          trackColor={{ false: "grey", true: "black" }}
-          thumbColor={"white"}
-          onValueChange={(newValue) => setPayWithCredits(newValue)}
-          value={payWithCreditsBox}
-        />
-      </View>
-
-      <View style={TravelStyles.buttonContainer}>
-        <Pressable
-          style={({ pressed }) => [
-            MapStyles.confirmTripButton,
-            { backgroundColor: pressed ? "#333" : "black" },
-          ]}
-          onPress={() => createTravel(navigation)}
-        >
-          <Text
-            style={{
-              fontFamily: "poppins-bold",
-              color: "white",
-              textAlign: "center",
-              lineHeight: 38,
-            }}
+      {tripAvailable ? (
+        <View style={TravelStyles.buttonContainer}>
+          <Pressable
+            style={({ pressed }) => [
+              MapStyles.confirmTripButton,
+              { backgroundColor: pressed ? "#333" : "black" },
+            ]}
+            onPress={() => createTravel(navigation)}
           >
-            Iniciar Viaje
-          </Text>
-        </Pressable>
-      </View>
-      <View></View>
+            <Text
+              style={{
+                fontFamily: "poppins-bold",
+                color: "white",
+                textAlign: "center",
+                lineHeight: 38,
+              }}
+            >
+              Iniciar Viaje
+            </Text>
+          </Pressable>
+        </View>
+      ) : (
+        <Text
+          style={{
+            fontFamily: "poppins-bold",
+            color: "black",
+            textAlign: "center",
+            fontSize: 20,
+          }}
+        >
+          Viaje no disponible
+        </Text>
+      )}
     </View>
   );
 }
