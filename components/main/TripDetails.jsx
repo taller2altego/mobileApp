@@ -14,6 +14,7 @@ import {
   authPost,
 } from "../../utils/requests";
 import envs from "../../config/env";
+import { ScrollView } from "react-native-gesture-handler";
 
 export default function TripDetails({ route, navigation }) {
   const [alreadyRated, setAlreadyRated] = useState(false);
@@ -41,7 +42,7 @@ export default function TripDetails({ route, navigation }) {
             setPrice(data.price);
             setDate(data.date);
             setDriverScore(data.driverScore);
-            return data
+            return data;
           })
           .then(async ({ driverId }) => {
             await get(`${API_URL}/drivers/${driverId}`, token).then(
@@ -119,153 +120,143 @@ export default function TripDetails({ route, navigation }) {
   };
 
   return (
-    <View style={{ flex: 1, alignItems: "center" }}>
-      <Ionicons
-        name="arrow-back"
-        size={24}
-        color="black"
-        style={{ top: 35, left: 15 }}
-        onPress={() => navigation.navigate("Home")}
-      />
-      <View
-        style={{
-          flex: 1,
-          flexDirection: "row",
-          justifyContent: "flex-start",
-          alignItems: "center",
-          left: 30,
-        }}
-      >
-        <View>
-          <Text
-            style={{
-              fontFamily: "poppins-bold",
-              fontSize: 25,
-              marginBottom: 30,
-            }}
-          >
-            Informacion Del Viaje
-          </Text>
-          <Text style={{ fontFamily: "poppins", fontSize: 18 }}>{source}</Text>
-          <Text style={{ fontFamily: "poppins", fontSize: 18 }}>
-            {destination}
-          </Text>
-          <Text style={{ fontFamily: "poppins", fontSize: 18 }}>
-            {price + "$"}
-          </Text>
-          <Text style={{ fontFamily: "poppins", fontSize: 18 }}>
-            {day}/{months[month]}/{year}
-          </Text>
-        </View>
-      </View>
-      <Text
-        style={{
-          fontFamily: "poppins",
-          left: 30,
-          fontSize: 20,
-          marginBottom: 20,
-        }}
-      >
-        {!alreadyRated
-          ? `Puntua tu viaje con el driver ${driver}`
-          : `${driverScore} estrellas`}
-      </Text>
-      {!alreadyRated && (
-        <AirbnbRating
-          defaultRating={driverScore}
-          size={35}
-          selectedColor="black"
-          showRating={false}
-          isDisabled={alreadyRated}
-          onFinishRating={(rating) => setDriverScore(rating)}
+    <ScrollView>
+      <View style={{ flex: 1, alignItems: "center", padding: 10 }}>
+        <Ionicons
+          name="arrow-back"
+          size={24}
+          color="black"
+          style={{ top: 35, left: 15, position: "absolute" }}
+          onPress={() => navigation.goBack()}
         />
-      )}
-      {!alreadyRated && (
-        <View style={TravelStyles.comment_container}>
-          <TextInput
-            style={[TravelStyles.input_text, { width: 300 }]}
-            placeholder="Comente su experiencia aqui..."
-            onChangeText={(newText) => setComment(newText)}
-            defaultValue={comment}
-            maxLength={500}
-          />
+
+        <View
+          style={{
+            flex: 1,
+            flexDirection: "row",
+            justifyContent: "flex-start",
+            alignItems: "center",
+          }}
+        >
+          <View style={{ marginBottom: "10%", marginTop: "15%" }}>
+            <Text
+              style={{
+                fontFamily: "poppins-bold",
+                fontSize: 25,
+                textAlign: "center",
+              }}
+            >
+              Informacion Del Viaje
+            </Text>
+            <Text style={{ fontFamily: "poppins", fontSize: 18 }}>
+              {source}
+            </Text>
+            <Text style={{ fontFamily: "poppins", fontSize: 18 }}>
+              {destination}
+            </Text>
+            <Text style={{ fontFamily: "poppins", fontSize: 18 }}>
+              {price + " eth."}
+            </Text>
+            <Text style={{ fontFamily: "poppins", fontSize: 18 }}>
+              {day}/{months[month]}/{year}
+            </Text>
+          </View>
         </View>
-      )}
-      <View style={[TravelStyles.travelContainer, { marginBottom: 10 }]}>
-        <View style={TravelStyles.buttonContainer}>
-          <Text style={{ fontFamily: "poppins", fontSize: 20 }}></Text>
-          <Pressable
-            style={[
-              MapStyles.confirmTripButton,
-              {
-                width: (30 * Dimensions.get("window").width) / 100,
-                marginRight: 10,
-              },
-            ]}
-            onPress={() => comeBack(navigation)}
-          >
-            <Text
-              style={{
-                fontFamily: "poppins-bold",
-                color: "white",
-                textAlign: "center",
-                lineHeight: 38,
-              }}
-            >
-              Volver atras
-            </Text>
-          </Pressable>
-          <Pressable
-            style={[
-              MapStyles.confirmTripButton,
-              {
-                width: (30 * Dimensions.get("window").width) / 100,
-                marginRight: 10,
-              },
-            ]}
-            onPress={() => sendReport(navigation)}
-          >
-            <Text
-              style={{
-                fontFamily: "poppins-bold",
-                color: "white",
-                textAlign: "center",
-                lineHeight: 38,
-              }}
-            >
-              Denunciar
-            </Text>
-          </Pressable>
-          {!alreadyRated ? (
+        <Text
+          style={{
+            fontFamily: "poppins",
+            fontSize: 20,
+            marginBottom: 20,
+          }}
+        >
+          {!alreadyRated
+            ? `Puntua tu viaje con el driver ${driver}`
+            : `${driverScore} estrellas`}
+        </Text>
+        {!alreadyRated && (
+          <AirbnbRating
+            defaultRating={driverScore}
+            size={35}
+            selectedColor="black"
+            showRating={false}
+            isDisabled={alreadyRated}
+            onFinishRating={(rating) => setDriverScore(rating)}
+          />
+        )}
+        {!alreadyRated && (
+          <View style={TravelStyles.comment_container}>
+            <TextInput
+              style={[TravelStyles.input_text, { width: 300 }]}
+              placeholder="Comente su experiencia aqui..."
+              onChangeText={(newText) => setComment(newText)}
+              defaultValue={comment}
+              maxLength={500}
+            />
+          </View>
+        )}
+        <View style={[TravelStyles.travelContainer, { marginBottom: 10 }]}>
+          <View style={TravelStyles.buttonContainer}>
+            <Text style={{ fontFamily: "poppins", fontSize: 20 }}></Text>
+            {!alreadyRated ? (
+              <Pressable
+                style={[
+                  driverScore != 0
+                    ? [
+                        MapStyles.confirmTripButton,
+                        {
+                          width: (50 * Dimensions.get("window").width) / 100,
+                          marginTop: "10%",
+                        },
+                      ]
+                    : [
+                        MapStyles.confirmTripButton,
+                        {
+                          backgroundColor: "#bbb",
+                          width: (50 * Dimensions.get("window").width) / 100,
+                          marginTop: "10%",
+                        },
+                      ],
+                ]}
+                disabled={driverScore == 0}
+                onPress={() => sendRatingToDriver()}
+              >
+                <Text
+                  style={{
+                    fontFamily: "poppins-bold",
+                    textAlign: "center",
+                    lineHeight: 38,
+                    color: "white",
+                  }}
+                >
+                  Puntuar
+                </Text>
+              </Pressable>
+            ) : (
+              <></>
+            )}
             <Pressable
               style={[
-                driverScore != 0
-                  ? MapStyles.confirmTripButton
-                  : [
-                      MapStyles.confirmTripButton,
-                      { backgroundColor: "#bbb" },
-                      { width: (30 * Dimensions.get("window").width) / 100 },
-                    ],
+                {
+                  width: (50 * Dimensions.get("window").width) / 100,
+                  alignSelf: "center",
+                },
               ]}
-              disabled={driverScore == 0}
-              onPress={() => sendRatingToDriver()}
+              onPress={() => sendReport(navigation)}
             >
               <Text
                 style={{
                   fontFamily: "poppins-bold",
+                  color: "#d55",
                   textAlign: "center",
                   lineHeight: 38,
-                  color: "white",
                 }}
               >
-                Puntuar
+                Denunciar Conductor
               </Text>
             </Pressable>
-          ) : (
-            <></>
-          )}
+          </View>
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 }

@@ -14,10 +14,6 @@ export default function ResetPassword({ route, navigation }) {
 
     // states
     const { API_URL } = envs;
-    const [fontsLoaded] = useFonts({
-        "poppins": require("../../assets/fonts/Poppins-Regular.ttf"),
-        "poppins-bold": require("../../assets/fonts/Poppins-Bold.ttf"),
-    });
 
     const changePassword = (navigation) => {
         if (password == '' || (password != confirmPassword)) {
@@ -36,10 +32,6 @@ export default function ResetPassword({ route, navigation }) {
     const comeBack = (navigation) => {
         navigation.navigate("Landing")
     };
-
-    if (!fontsLoaded) {
-        return null;
-    }
 
     return (
         <View style={Profilestyles.profile_container}>

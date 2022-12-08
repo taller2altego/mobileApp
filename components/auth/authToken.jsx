@@ -12,10 +12,6 @@ export default function AuthToken({ navigation }) {
 
     // states
     const { API_URL } = envs;
-    const [fontsLoaded] = useFonts({
-        "poppins": require("../../assets/fonts/Poppins-Regular.ttf"),
-        "poppins-bold": require("../../assets/fonts/Poppins-Bold.ttf"),
-    });
 
     const validateToken = (navigation) => {
         return authPost(`${API_URL}/auth`, token)
@@ -28,10 +24,6 @@ export default function AuthToken({ navigation }) {
     const comeBack = (navigation) => {
         navigation.navigate("Landing");
     };
-
-    if (!fontsLoaded) {
-        return null;
-    }
 
     return (
         <View style={Profilestyles.profile_container}>

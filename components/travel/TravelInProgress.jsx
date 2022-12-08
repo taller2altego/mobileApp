@@ -1,13 +1,14 @@
-import { useRef, useState } from "react";
-import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
-import { MapStyles, TravelStyles } from "../styles";
+import { useRef, useState, useCallback, useEffect } from "react";
+import MapView, { AnimatedRegion, Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import { MapStyles, TravelStyles, modalStyles, customMap } from "../styles";
 import MapViewDirections from "react-native-maps-directions";
-import { View, Text, Pressable, Image } from "react-native";
+import { View, Text, Pressable, Image, Modal, Dimensions } from "react-native";
 import { useSelector } from "react-redux";
 import { useFonts } from "expo-font";
 import envs from "../../config/env";
-
-const PRICE_PER_KM = 100;
+import { useFocusEffect } from '@react-navigation/native';
+import * as SecureStore from "expo-secure-store";
+import { get } from "../../utils/requests";
 
 const edgePadding = {
   top: 100,
@@ -15,49 +16,73 @@ const edgePadding = {
   bottom: 100,
   left: 100,
 };
-const INITIAL_POSITION = {
-  latitude: -34.6035,
-  longitude: -58.4611,
-  latitudeDelta: 0.1,
-  longitudeDelta: 0.1,
-};
+
+const screen = Dimensions.get("window");
+const ASPECT_RATIO = screen.width / screen.height;
+const LATITUDE_DELTA = 0.02;
+const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 export default function TravelInProgress({ navigation }) {
   const currentTravelData = useSelector((store) => store.travelDetailsData);
+  const userMarkerRef = useRef();
+  const travelDetails = useSelector((store) => store.currentTravel);
+  const mapRef = useRef(null);
   const [distance, setDistance] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [driver, setDriver] = useState("Raul Gomez");
-  const [modalWaitingVisible, setModalWaitingVisible] = useState(false);
+  const [modalFinishVisible, setModalFinishVisible] = useState(false);
+  const [actualPosition, setActualPosition] = useState({
+    currentLoc: {
+      latitude: currentTravelData.origin.latitude,
+      longitude: currentTravelData.origin.longitude,
+    },
+    animatedCoords: new AnimatedRegion({
+      latitude: currentTravelData.origin.latitude,
+      longitude: currentTravelData.origin.longitude,
+      latitudeDelta: LATITUDE_DELTA,
+      longitudeDelta: LONGITUDE_DELTA,
+    })
+  })
+  
   const origin = currentTravelData.origin;
   const destination = currentTravelData.destination;
+  const travelId = travelDetails._id;
+  const driverId = currentTravelData.driverId;
 
   const { API_URL, GOOGLE_API_KEY } = envs;
 
-  // origen -- actual conductor hasta llegar a la casa del usuario
-  // destino -- casa del usuario
+  useFocusEffect(useCallback(() => {
+    let interval = setInterval(async () => {
+      const token = await SecureStore.getItemAsync("token");
 
-  // origen actual posicion del conductor con el usuario, inicial en domicilio del usuario
-  // destino -- travel.destination
+      await get(`${API_URL}/travels/${travelId}/driver`, token).then(({ data }) => {
+        if (data.data.isFinished) {
+          setModalFinishVisible(true);
+        }
+        console.log(data.data)
+        const position = data.data.currentDriverPosition;
+        animate(position.latitude, position.longitude);
+        setActualPosition({...actualPosition, currentLoc: {latitude: position.latitude, longitude: position.longitude}})
+      }
+      );
+    }, 10000);
+    return () => {
+      clearInterval(interval);
+    };
+  }, []));
 
-  // const driverId = await SecureStore.getItemAsync("id");
-  // const token = await SecureStore.getItemAsync("token");
-  // get()
-
-  const cancelTravel = (navigation) => {
-    // request para eliminar el viaje en el travel
-    // limpiar inputs de destino y origen en main
-    navigation.navigate("Home");
+  const animate = (latitude, longitude) => {
+    const newCoordinate = { latitude, longitude };
+    if (userMarkerRef.current) {
+      console.log(newCoordinate)
+      actualPosition.animatedCoords.timing(newCoordinate).start()
+        mapRef.current.animateToRegion({
+          latitude: newCoordinate.latitude,
+          longitude: newCoordinate.longitude,
+          longitudeDelta: LONGITUDE_DELTA,
+          latitudeDelta: LATITUDE_DELTA,
+        });
+      };
   };
-
-  const mapRef = useRef(null);
-  const [fontsLoaded] = useFonts({
-    poppins: require("../../assets/fonts/Poppins-Regular.ttf"),
-    "poppins-bold": require("../../assets/fonts/Poppins-Bold.ttf"),
-  });
-
-  // const onDriverSearch = () => {
-  //   navigation.navigate("DriverSearch");
-  // };
 
   const updateTripProps = (args) => {
     if (args) {
@@ -66,36 +91,28 @@ export default function TravelInProgress({ navigation }) {
     }
   };
 
-  const zoomOnDirections = () => {
-    mapRef.current.fitToSuppliedMarkers(["originMark", "destMark"], {
-      animated: true,
-      edgePadding: edgePadding,
-    });
-  };
-
-  if (!fontsLoaded) {
-    return null;
-  }
-
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
       <MapView
         ref={mapRef}
-        style={MapStyles.map}
+        customMapStyle={customMap}
+        style={MapStyles.mapUserDriverComing}
         provider={PROVIDER_GOOGLE}
-        onMapLoaded={() => {
-          zoomOnDirections();
+        initialRegion={{
+          latitude: origin.latitude,
+          longitude: origin.longitude,
+          latitudeDelta: LATITUDE_DELTA,
+          longitudeDelta: LONGITUDE_DELTA,
         }}
-        initialRegion={INITIAL_POSITION}
       >
-        {origin && <Marker coordinate={origin} identifier="originMark" />}
+        <Marker.Animated ref={userMarkerRef} coordinate={actualPosition.animatedCoords} image={require("../../assets/user.png")}/>
         {destination && (
-          <Marker coordinate={destination} identifier="destMark" />
+          <Marker coordinate={destination} identifier="destMark" image={require("../../assets/flag.png")}/>
         )}
-        {origin && destination && (
+        {actualPosition && destination && (
           <MapViewDirections
             apikey={GOOGLE_API_KEY}
-            origin={origin}
+            origin={{latitude: actualPosition.currentLoc.latitude, longitude: actualPosition.currentLoc.longitude}}
             destination={destination}
             strokeColor="black"
             strokeWidth={5}
@@ -103,44 +120,25 @@ export default function TravelInProgress({ navigation }) {
           />
         )}
       </MapView>
-      <View style={MapStyles.tripInfoContainer}>
-        <View style={{ paddingLeft: 35 }}></View>
-        <Image
-          style={MapStyles.carImage}
-          source={{
-            uri: "https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,w_896,h_504/f_auto,q_auto/products/carousel/UberX.png",
-          }}
-        />
-        <View style={{ paddingRight: 20 }}>
-          <Text style={{ fontFamily: "poppins", fontSize: 15 }}>
-            {" "}
-            Driver: {driver}
-          </Text>
-          <Text style={{ fontFamily: "poppins", fontSize: 15 }}>
-            {" "}
-            {distance} km
-          </Text>
-        </View>
-      </View>
-      <View style={TravelStyles.travelContainer}>
-        <View style={TravelStyles.buttonContainer}>
-          <Pressable
-            style={MapStyles.confirmTripButton}
-            onPress={() => navigation.navigate("ProfileVisualization")}
-          >
-            <Text
-              style={{
-                fontFamily: "poppins-bold",
-                color: "white",
-                textAlign: "center",
-                lineHeight: 38,
-              }}
+      <Modal
+        transparent={true}
+        visible={modalFinishVisible}
+        onRequestClose={() => {
+          setModalFinishVisible(!modalFinishVisible);
+        }}
+      >
+        <View style={modalStyles.centered_view}>
+          <View style={modalStyles.modal_view_travel}>
+            <Text style={[modalStyles.text_modal_style, {fontFamily: "poppins"}]}>Has llegado a destino!</Text>
+            <Pressable
+              style={[modalStyles.button, modalStyles.button_close, {fontFamily: "poppins-bold"}]}
+              onPress={() => navigation.replace("Home")}
             >
-              Visualizar Chofer
-            </Text>
-          </Pressable>
+              <Text style={modalStyles.text_style}>Finalizar Viaje</Text>
+            </Pressable>
+          </View>
         </View>
-      </View>
+      </Modal>
     </View>
   );
 }

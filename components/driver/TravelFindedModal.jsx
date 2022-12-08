@@ -62,7 +62,7 @@ export default function TravelFindedModal({ navigation, setModalTravelFindedVisi
                 alignItems: "center", justifyContent: "center",
                 marginLeft: 6
               }]} onPress={rejectTravel}>
-                <Text style={{ fontSize: 20, color: "white", fontFamily: "poppins"  }}>Volver</Text>
+                <Text style={{ fontSize: 20, color: "white", fontFamily: "poppins"  }}>Rechazar</Text>
               </Pressable>
               <Pressable style={[modalStyles.modal_button, {
                 width: (45 * Dimensions.get("window").width) / 100,
