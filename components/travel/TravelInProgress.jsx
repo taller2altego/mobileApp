@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import MapView, { AnimatedRegion, Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { MapStyles, TravelStyles, modalStyles, customMap } from "../styles";
 import MapViewDirections from "react-native-maps-directions";
@@ -30,16 +30,18 @@ export default function TravelInProgress({ navigation }) {
   const [distance, setDistance] = useState(0);
   const [duration, setDuration] = useState(0);
   const [modalFinishVisible, setModalFinishVisible] = useState(false);
-  const currentOrigin = new AnimatedRegion({
+  const [actualPosition, setActualPosition] = useState({
+    currentLoc: {
+      latitude: currentTravelData.origin.latitude,
+      longitude: currentTravelData.origin.longitude,
+    },
+    animatedCoords: new AnimatedRegion({
       latitude: currentTravelData.origin.latitude,
       longitude: currentTravelData.origin.longitude,
       latitudeDelta: LATITUDE_DELTA,
       longitudeDelta: LONGITUDE_DELTA,
     })
-  const [position, setPosition] = useState({
-      latitude: currentTravelData.origin.latitude,
-      longitude: currentTravelData.origin.longitude,
-    })
+  })
   
   const origin = currentTravelData.origin;
   const destination = currentTravelData.destination;
@@ -58,8 +60,8 @@ export default function TravelInProgress({ navigation }) {
         }
         console.log(data.data)
         const position = data.data.currentDriverPosition;
-        setPosition({latitude: position.latitude, longitude: position.longitude})
         animate(position.latitude, position.longitude);
+        setActualPosition({...actualPosition, currentLoc: {latitude: position.latitude, longitude: position.longitude}})
       }
       );
     }, 10000);
@@ -71,15 +73,15 @@ export default function TravelInProgress({ navigation }) {
   const animate = (latitude, longitude) => {
     const newCoordinate = { latitude, longitude };
     if (userMarkerRef.current) {
-      currentOrigin.timing(newCoordinate).start(() => {
+      console.log(newCoordinate)
+      actualPosition.animatedCoords.timing(newCoordinate).start()
         mapRef.current.animateToRegion({
           latitude: newCoordinate.latitude,
           longitude: newCoordinate.longitude,
           longitudeDelta: LONGITUDE_DELTA,
           latitudeDelta: LATITUDE_DELTA,
         });
-      });
-    }
+      };
   };
 
   const updateTripProps = (args) => {
@@ -103,14 +105,14 @@ export default function TravelInProgress({ navigation }) {
           longitudeDelta: LONGITUDE_DELTA,
         }}
       >
-        <Marker.Animated ref={userMarkerRef} coordinate={currentOrigin} image={require("../../assets/user.png")}/>
+        <Marker.Animated ref={userMarkerRef} coordinate={actualPosition.animatedCoords} image={require("../../assets/user.png")}/>
         {destination && (
           <Marker coordinate={destination} identifier="destMark" image={require("../../assets/flag.png")}/>
         )}
-        {position && destination && (
+        {actualPosition && destination && (
           <MapViewDirections
             apikey={GOOGLE_API_KEY}
-            origin={{latitude: position.latitude, longitude: position.longitude}}
+            origin={{latitude: actualPosition.currentLoc.latitude, longitude: actualPosition.currentLoc.longitude}}
             destination={destination}
             strokeColor="black"
             strokeWidth={5}
@@ -130,7 +132,7 @@ export default function TravelInProgress({ navigation }) {
             <Text style={[modalStyles.text_modal_style, {fontFamily: "poppins"}]}>Has llegado a destino!</Text>
             <Pressable
               style={[modalStyles.button, modalStyles.button_close, {fontFamily: "poppins-bold"}]}
-              onPress={() => navigation.navigate("Home")}
+              onPress={() => navigation.replace("Home")}
             >
               <Text style={modalStyles.text_style}>Finalizar Viaje</Text>
             </Pressable>

@@ -12,10 +12,6 @@ import { useSelector } from "react-redux";
 const API_KEY = "AIzaSyCa-kIrd3qRNKDJuHylT3VdLywUwWRbgXQ";
 
 export default function RateUser({ navigation }) {
-    const [fontsLoaded] = useFonts({
-        poppins: require("../../assets/fonts/Poppins-Regular.ttf"),
-        "poppins-bold": require("../../assets/fonts/Poppins-Bold.ttf"),
-    });
     const [rating, handleRating] = useState();
     const [userScore, setUserScore] = useState();
     const [source, setSource] = useState();
@@ -75,10 +71,6 @@ export default function RateUser({ navigation }) {
         November: 11,
         December: 12,
     };
-
-    if (!fontsLoaded) {
-        return null;
-    }
 
     const a = moment(date);
     const year = a.format("YYYY");

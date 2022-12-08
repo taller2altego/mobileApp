@@ -12,10 +12,6 @@ export default function RecoverPassword({ navigation }) {
     const [invalidEmail, setInvalidEmail] = useState(false);
     // states
     const { API_URL } = envs;
-    const [fontsLoaded] = useFonts({
-        "poppins": require("../../assets/fonts/Poppins-Regular.ttf"),
-        "poppins-bold": require("../../assets/fonts/Poppins-Bold.ttf"),
-    });
 
     const sendMail = (navigation) => {
         if (validator.isEmail(email) === false) {
@@ -32,10 +28,6 @@ export default function RecoverPassword({ navigation }) {
     const comeBack = (navigation) => {
         navigation.navigate("Landing")
     };
-
-    if (!fontsLoaded) {
-        return null;
-    }
 
     return (
         <View style={Profilestyles.profile_container}>

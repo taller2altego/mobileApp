@@ -18,10 +18,6 @@ export default function WalletVisualization({ navigation }) {
   const [isDriver, setIsDriver] = useState(false)
   // states
   const { API_URL } = envs;
-  const [fontsLoaded] = useFonts({
-    "poppins": require("../../assets/fonts/Poppins-Regular.ttf"),
-    "poppins-bold": require("../../assets/fonts/Poppins-Bold.ttf"),
-  });
 
   useEffect(() => {
     (async () => {
@@ -57,10 +53,6 @@ export default function WalletVisualization({ navigation }) {
         setInsufficientFunds(true);
       });
   };
-
-  if (!fontsLoaded) {
-    return null;
-  }
 
   return (
     <View style={{padding: 10, justifyContent: "center", alignItems: "center"}}>

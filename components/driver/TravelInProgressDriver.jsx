@@ -56,11 +56,6 @@ export default function TravelInProgressDriver({ navigation }) {
   const [arriveOnDestination, setArriveOnDestination] = useState(false);
   const [roadTofinalDestination, setRoadTofinalDestination] = useState(false);
 
-  const [fontsLoaded] = useFonts({
-    poppins: require("../../assets/fonts/Poppins-Regular.ttf"),
-    "poppins-bold": require("../../assets/fonts/Poppins-Bold.ttf"),
-  });
-
   const updateDriverPosition = async () => {
     return setInterval(async () => {
       const { latitude, longitude } = await SecureStore
@@ -151,11 +146,7 @@ export default function TravelInProgressDriver({ navigation }) {
       .then(navigation.navigate("Home"))
       .catch(error => handlerUnauthorizedError(navigation, error));
   };
-
-  if (!fontsLoaded) {
-    return null;
-  }
-
+  
   return (
     <View style={{ flex: 1, backgroundColor: "#eee" }}>
       <MapView
