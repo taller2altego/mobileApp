@@ -30,6 +30,9 @@ export default function LoginGoogleButton({ setErrorMessage, ...props }) {
       setAccessToken(response.authentication.accessToken);
       accessToken && fetchUserInfo(response.authentication);
     }
+    return () => {
+      setErrorMessage("");
+    }
   }, [response, accessToken]);
 
   const fetchUserInfo = (authentication) => {
