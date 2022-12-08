@@ -158,7 +158,7 @@ export default function TravelInProgressDriver({ navigation }) {
       payToDriver: false,
     };
     return authPost(`${API_URL}/travels/${travelData._id}/reject?isTravelCancelled='true'`, token, body)
-      .then(navigation.replace("Home"))
+      .then(() => navigation.replace("Home"))
       .catch(error => handlerUnauthorizedError(navigation, error));
   };
 

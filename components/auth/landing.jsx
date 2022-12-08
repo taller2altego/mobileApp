@@ -51,9 +51,15 @@ export default function Landing({ navigation }) {
         toggle={toggleLoginModal}
         navigation={navigation}
       ></LoginModal>
-      <View style={[LandingStyles.logo]}>
+      <View style={[LandingStyles.logo,{flexDirection: 'row', justifyContent: 'space-evenly'}]}>
         <Image
-          style={LandingStyles.tinyLogo}
+          style={[LandingStyles.tinyLogo, {position: 'relative'}]}
+          source={{
+            uri: "https://www.todofondos.net/wp-content/uploads/1080x1920-Fondo-de-pantalla-de-fondo-blanco-576x1024.jpg",
+          }}
+        />
+        <Image
+          style={[LandingStyles.tinyLogo, {position: 'absolute'}]}
           source={{
             uri: "https://w7.pngwing.com/pngs/715/917/png-transparent-car-computer-icons-taxi-driver-compact-car-white-rectangle-thumbnail.png",
           }}

@@ -80,7 +80,7 @@ export default function DriverIncoming({ navigation }) {
     dispatch(clearCurrentTravel());
 
     return authPost(`${API_URL}/travels/${travelId}/reject?isTravelCancelled='true'`, token, body)
-      .then(navigation.replace("Home"))
+      .then(() => navigation.replace("Home"))
       .catch(error => handlerUnauthorizedError(navigation, error));
   };
 
@@ -112,7 +112,7 @@ export default function DriverIncoming({ navigation }) {
       >
         {origin && <Marker coordinate={origin} identifier="originMark" image={require("../../assets/user.png")} />}
         {destination && (
-          <Marker coordinate={destination} identifier="destMark" image={require("../../assets/flag.png")}/>
+          <Marker coordinate={destination} identifier="destMark" image={require("../../assets/flag.png")} />
         )}
         {currentOrigin && <Marker coordinate={currentOrigin} identifier="driverPosition" image={require("../../assets/car.png")} />}
         {origin && destination && (
