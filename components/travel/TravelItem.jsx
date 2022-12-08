@@ -34,7 +34,7 @@ export default function TravelItem({
   return (
     <TouchableOpacity style={[styles.item, backgroundColor]} onPress={onPress}>
       <Text style={[styles.title, textColor]}>{`${item.destinationAddress}`}</Text>
-      <Text style={[styles.subtitle, textColor]}>{`$${item.price}`}</Text>
+      <Text style={[styles.subtitle, textColor]}>{`${item.price} eth.`}</Text>
       <Text
         style={[styles.subtitle, textColor]}
       >{`${day} de ${months[month]} - ${hours}:${minutes} ${ampm}`}</Text>

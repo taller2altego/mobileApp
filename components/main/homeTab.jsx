@@ -77,19 +77,18 @@ export default function HomeTab({ navigation }) {
 
   useEffect(() => {
     (async () => {
-
       await SecureStore.deleteItemAsync('askForTravel');
       await registerForPushNotificationsAsync()
         .then(async token => {
           
           console.log(token);
           await SecureStore.setItemAsync("pushToken", token);
-        });
+        })
+        .catch(err => console.log(err));
 
       const id = await SecureStore.getItemAsync("id");
       const token = await SecureStore.getItemAsync("token");
       const params = { page: 1, limit: 4 };
-
       await get(`${API_URL}/travels/users/${id}`, token, {}, params)
         .then(({ data: { data } }) => {
           const dataFiltered = data.filter(item => item.status === 'finished');
