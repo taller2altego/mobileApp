@@ -8,7 +8,7 @@ import { DriverStyles, modalStyles, LandingStyles } from "../styles";
 import * as SecureStore from "expo-secure-store";
 import envs from "../../config/env";
 import { ScrollView } from "react-native-gesture-handler";
-import { KeyboardAvoidingView } from "react-native-web";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function Driver({ navigation }) {
   const [license, setLicense] = useState("");
@@ -56,16 +56,24 @@ export default function Driver({ navigation }) {
   };
 
   return (
-    <View style={{ padding: 20, flex: 1 }}>
-      <View style={{ flex: 1, top: "10%" }}>
-        <Text style={[DriverStyles.driver_title, { fontFamily: "poppins" }]}>
+    <ScrollView>
+      <View style={{padding: 15}}>
+      <Ionicons
+        name="arrow-back"
+        size={24}
+        color="black"
+        style={{ alignSelf: "flex-start", top: 40, left: 10, position: "absolute" }}
+        onPress={() => navigation.goBack()}
+      />
+      <View>
+        <Text style={[DriverStyles.driver_title, { fontFamily: "poppins", marginTop: "20%" }]}>
           Gracias por manejar con nosotros
         </Text>
         <Text style={[DriverStyles.driver_subtitle, { fontFamily: "poppins" }]}>
           Ingresa los siguientes datos para poder empezar a usar fiuber
         </Text>
-      </View>
-      <View style={{ flex: 4, justifyContent: "space-evenly" }}>
+        </View>
+      <View style={{ flex: 1, marginTop: "15%" }}>
         <TextInput
           style={{
             fontFamily: "poppins",
@@ -74,6 +82,7 @@ export default function Driver({ navigation }) {
             paddingLeft: 10,
             fontSize: 15,
             height: 40,
+            marginBottom: "10%"
           }}
           onChangeText={setLicense}
           placeholder="N de Licencia"
@@ -86,6 +95,7 @@ export default function Driver({ navigation }) {
             paddingLeft: 10,
             fontSize: 15,
             height: 40,
+            marginBottom: "10%"
           }}
           onChangeText={setLicensePlate}
           placeholder="N de Patente"
@@ -98,12 +108,13 @@ export default function Driver({ navigation }) {
             paddingLeft: 10,
             fontSize: 15,
             height: 40,
+            marginBottom: "10%"
           }}
           onChangeText={setModel}
           placeholder="Modelo"
         />
       </View>
-      <View style={{ flex: 1, justifyContent: "flex-end" }}>
+      <View style={{ marginTop: "15%" }}>
         <Pressable
           style={({ pressed }) => [
             modalStyles.modal_button,
@@ -116,7 +127,8 @@ export default function Driver({ navigation }) {
           </Text>
         </Pressable>
       </View>
-      <Text style={DriverStyles.error_modal}>{errorMessage}</Text>
-    </View>
+      <Text style={[DriverStyles.error_modal, {marginTop: "5%"}]}>{errorMessage}</Text>
+      </View>
+    </ScrollView>
   );
 }
