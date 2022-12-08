@@ -6,6 +6,7 @@ import LoginModal from "./login";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 
+
 export default function Landing({ navigation }) {
   const [modalRegisterVisible, setModalRegisterVisible] = useState(false);
   const [modalLoginVisible, setModalLoginVisible] = useState(false);
@@ -53,10 +54,8 @@ export default function Landing({ navigation }) {
       ></LoginModal>
       <View style={LandingStyles.logo}>
         <Image
+          source={require("../../images/car.jpg")}
           style={[LandingStyles.tinyLogo, {backgroundColor:'transparent'}]}
-          source={{
-            uri: "https://w7.pngwing.com/pngs/715/917/png-transparent-car-computer-icons-taxi-driver-compact-car-white-rectangle-thumbnail.png",
-          }}
         />
       </View>
       <View style={[LandingStyles.land_text_container]}>
