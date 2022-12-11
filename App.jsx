@@ -32,7 +32,6 @@ import * as TaskManager from "expo-task-manager";
 import * as Location from "expo-location";
 import { useFonts } from "expo-font";
 
-
 import { get } from "./utils/requests";
 import envs from "./config/env";
 const { API_URL, _ } = envs;
@@ -59,28 +58,36 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
     if (location) {
       console.log(location);
 
-      const updatePositionIsRequired = await SecureStore.getItemAsync('updatingLocation');
-      console.log(updatePositionIsRequired)
+      const updatePositionIsRequired = await SecureStore.getItemAsync(
+        "updatingLocation"
+      );
 
       if (updatePositionIsRequired) {
-        await SecureStore.setItemAsync("updatingLocation", JSON.stringify({ driverLocation: location.coords }));
+        await SecureStore.setItemAsync(
+          "updatingLocation",
+          JSON.stringify({ driverLocation: location.coords })
+        );
       } else {
         interval = setInterval(async () => {
-          const flag = await SecureStore.getItemAsync('askForTravel');
+          const flag = await SecureStore.getItemAsync("askForTravel");
 
           console.log(flag);
 
-          if (flag === 'true') {
+          if (flag === "true") {
             const token = await SecureStore.getItemAsync("token");
             const pushToken = await SecureStore.getItemAsync("pushToken");
 
             const url = `${API_URL}/travels?latitude=${location.coords.latitude}&longitude=${location.coords.longitude}&token=${pushToken}`;
             await get(url, token)
               .then(({ data: { data } }) => data)
-              .then(data => SecureStore.setItemAsync('travelInfo', JSON.stringify({ ...data, driverLocation: location.coords })))
-              .then(() => { });
+              .then((data) =>
+                SecureStore.setItemAsync(
+                  "travelInfo",
+                  JSON.stringify({ ...data, driverLocation: location.coords })
+                )
+              )
+              .then(() => {});
           }
-
         }, 20000);
       }
     }
@@ -88,7 +95,6 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
 });
 
 export default function App() {
-
   const [fontsLoaded] = useFonts({
     poppins: require("./assets/fonts/Poppins-Regular.ttf"),
     "poppins-bold": require("./assets/fonts/Poppins-Bold.ttf"),
@@ -111,7 +117,9 @@ export default function App() {
       return;
     }
 
-    const hasStarted = await Location.hasStartedLocationUpdatesAsync(LOCATION_TASK_NAME);
+    const hasStarted = await Location.hasStartedLocationUpdatesAsync(
+      LOCATION_TASK_NAME
+    );
 
     if (hasStarted) {
       await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME);
@@ -125,30 +133,31 @@ export default function App() {
         notificationTitle: "Location",
         notificationBody: "Location tracking in background",
         notificationColor: "#fff",
-      }
+      },
     })
-      .catch(() => Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-        accuracy: Location.Accuracy.BestForNavigation,
-        showsBackgroundLocationIndicator: true,
-        distanceInterval: 100,
-        foregroundService: {
-          notificationTitle: "Location",
-          notificationBody: "Location tracking in background",
-          notificationColor: "#fff",
-        }
-      })
+      .catch(() =>
+        Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
+          accuracy: Location.Accuracy.BestForNavigation,
+          showsBackgroundLocationIndicator: true,
+          distanceInterval: 100,
+          foregroundService: {
+            notificationTitle: "Location",
+            notificationBody: "Location tracking in background",
+            notificationColor: "#fff",
+          },
+        })
       )
-      .then(res => res);
-  }
+      .then((res) => res);
+  };
 
   const requestPermissions = async () => {
     const foreground = await Location.requestForegroundPermissionsAsync();
     if (foreground.granted) await Location.requestBackgroundPermissionsAsync();
-  }
+  };
 
   requestPermissions()
     .then(() => startBackgroundUpdate())
-    .then(() => { });
+    .then(() => {});
 
   return (
     <Provider store={store}>
