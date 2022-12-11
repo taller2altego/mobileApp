@@ -24,6 +24,7 @@ export default function TripDetails({ route, navigation }) {
   const [driver, setDriver] = useState();
   const [date, setDate] = useState();
   const [driverScore, setDriverScore] = useState();
+  const [driverId, setDriverId] = useState();
   const [comment, setComment] = useState("");
 
   const { API_URL, _ } = envs;
@@ -42,6 +43,7 @@ export default function TripDetails({ route, navigation }) {
             setPrice(data.price);
             setDate(data.date);
             setDriverScore(data.driverScore);
+            setDriverId(data.driverId);
             return data;
           })
           .then(async ({ driverId }) => {
@@ -112,6 +114,7 @@ export default function TripDetails({ route, navigation }) {
       destination,
       dateTravel,
       driver,
+      driverId,
     });
   };
 
@@ -202,20 +205,20 @@ export default function TripDetails({ route, navigation }) {
                 style={[
                   driverScore != 0
                     ? [
-                        MapStyles.confirmTripButton,
-                        {
-                          width: (50 * Dimensions.get("window").width) / 100,
-                          marginTop: "10%",
-                        },
-                      ]
+                      MapStyles.confirmTripButton,
+                      {
+                        width: (50 * Dimensions.get("window").width) / 100,
+                        marginTop: "10%",
+                      },
+                    ]
                     : [
-                        MapStyles.confirmTripButton,
-                        {
-                          backgroundColor: "#bbb",
-                          width: (50 * Dimensions.get("window").width) / 100,
-                          marginTop: "10%",
-                        },
-                      ],
+                      MapStyles.confirmTripButton,
+                      {
+                        backgroundColor: "#bbb",
+                        width: (50 * Dimensions.get("window").width) / 100,
+                        marginTop: "10%",
+                      },
+                    ],
                 ]}
                 disabled={driverScore == 0}
                 onPress={() => sendRatingToDriver()}
