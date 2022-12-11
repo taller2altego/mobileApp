@@ -2,7 +2,7 @@ import { useRef, useState, useEffect, useCallback } from "react";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { MapStyles, TravelStyles, customMap } from "../styles";
 import MapViewDirections from "react-native-maps-directions";
-import { View, Text, Pressable, Image } from "react-native";
+import { View, Text, Pressable, Image, ToastAndroid } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useFonts } from "expo-font";
 import { get, authPost, handlerUnauthorizedError } from "../../utils/requests";
@@ -57,6 +57,17 @@ export default function DriverIncoming({ navigation }) {
             const position = data.data.currentDriverPosition;
             setCurrentOrigin(position);
 
+            if (data.data.isCancelled) {
+              ToastAndroid.showWithGravity(
+                "El viaje ha sido cancelado",
+                ToastAndroid.SHORT,
+                ToastAndroid.CENTER
+              );
+              dispatch(clearCurrentTravel());
+              navigation.replace("Home");
+              return;
+            }
+
             if (data.data.isStarted) {
               navigation.navigate("TravelInProgress");
             }
@@ -76,14 +87,14 @@ export default function DriverIncoming({ navigation }) {
     const body = {
       driverId: travel.data.data.driverId,
       price: travel.data.data.price,
-      paidWithCredits: true,
-      payToDriver: false,
+      paidWithCredits: travel.data.data.paidWithCredits,
+      payToDriver: true
     };
 
     dispatch(clearCurrentTravel());
 
     return authPost(`${API_URL}/travels/${travelId}/reject?isTravelCancelled='true'`, token, body)
-      .then(() => navigation.replace("Home"))
+      .then(() => navigation.navigate("Home"))
       .catch(error => handlerUnauthorizedError(navigation, error));
   };
 

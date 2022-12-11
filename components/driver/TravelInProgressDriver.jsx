@@ -6,7 +6,7 @@ import MapView, {
 } from "react-native-maps";
 import { MapStyles, customMap } from "../styles";
 import MapViewDirections from "react-native-maps-directions";
-import { View, Text, Pressable, Dimensions } from "react-native";
+import { View, Text, Pressable, Dimensions, ToastAndroid } from "react-native";
 import { useSelector } from "react-redux";
 import { useFonts } from "expo-font";
 import envs from "../../config/env";
@@ -58,6 +58,22 @@ export default function TravelInProgressDriver({ navigation }) {
 
   const updateDriverPosition = async () => {
     return setInterval(async () => {
+
+      if (travelData._id) {
+        const isCancelled = await get(`${API_URL}/travels/${travelData._id}/driver`, token)
+          .then(({ data }) => data.data.isCancelled);
+
+        if (isCancelled) {
+          ToastAndroid.showWithGravity(
+            "El viaje ha sido cancelado",
+            ToastAndroid.SHORT,
+            ToastAndroid.CENTER
+          );
+          navigation.replace("Home");
+          return;
+        }
+      }
+
       const data = await SecureStore.getItemAsync("updatingLocation")
         .then((location) => (location === null ? null : JSON.parse(location)))
         .then((location) => {
