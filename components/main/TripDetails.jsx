@@ -51,7 +51,6 @@ export default function TripDetails({ route, navigation }) {
             await get(`${API_URL}/drivers/${driverId}`, token)
               .then(({ data: { userId, user: { name, lastname } } }) => {
                 setDriver(`${name} ${lastname}`);
-                console.log(userId);
                 serUserIdDriver(userId);
               });
           })
