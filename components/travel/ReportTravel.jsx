@@ -26,7 +26,7 @@ export default function ReportTravel({ route, navigation }) {
     const token = await SecureStore.getItemAsync("token");
     const data = {
       userId: parseInt(id),
-      driverId: item.driver,
+      driverId: item.driverId,
       description: reportText,
     };
     return authPost(`${API_URL}/reports`, token, data)
