@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { Text, View , FlatList} from "react-native";
+import { Text, View, FlatList } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import { useSelector } from "react-redux";
 import { get, handlerUnauthorizedError } from "../../utils/requests";
@@ -20,6 +20,7 @@ export default function VisualizationTab({ navigation }) {
   const [driverCarModel, setDriverCarModel] = useState();
   const [data, setData] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
+  const [userIdDriver, setUserIdDriver] = useState();
 
   // Driver Data
   const currentTravelData = useSelector((store) => store.currentTravel);
@@ -47,6 +48,7 @@ export default function VisualizationTab({ navigation }) {
             licensePlate,
             model,
             user: { name, lastname },
+            userId,
           },
         }) => {
           setName(name);
@@ -54,6 +56,7 @@ export default function VisualizationTab({ navigation }) {
           setDriverScore(totalScore);
           setDriverPlate(licensePlate);
           setDriverCarModel(model);
+          setUserIdDriver(userId);
         }
       ).catch(error => handlerUnauthorizedError(navigation, error));
 
@@ -62,15 +65,13 @@ export default function VisualizationTab({ navigation }) {
         page: 1,
         limit: 4,
       };
-
-      await get(`${API_URL}/comments/driver/${currentTravelData.driverId}`, token)
+      await get(`${API_URL}/comments/driver/${userIdDriver}`, token)
         .then((data) => {
           setData(data.data.comments);
         })
         .catch(err => handlerUnauthorizedError(navigation, err));
-
     })();
-  }, []));
+  }, [userIdDriver]));
 
   return (
     <View style={{ flex: 1 }}>
@@ -104,13 +105,13 @@ export default function VisualizationTab({ navigation }) {
         </Text>
       </View>
       <View style={{ flex: 3 }}>
-            <FlatList
-              data={data}
-              renderItem={renderItem}
-              keyExtractor={(item) => item.id}
-              extraData={selectedId}
-            />
-          </View>
+        <FlatList
+          data={data}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+          extraData={selectedId}
+        />
+      </View>
     </View>
   );
 }

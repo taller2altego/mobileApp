@@ -25,6 +25,7 @@ export default function TripDetails({ route, navigation }) {
   const [date, setDate] = useState();
   const [driverScore, setDriverScore] = useState();
   const [driverId, setDriverId] = useState();
+  const [userIdDriver, serUserIdDriver] = useState();
   const [comment, setComment] = useState("");
 
   const { API_URL, _ } = envs;
@@ -47,15 +48,12 @@ export default function TripDetails({ route, navigation }) {
             return data;
           })
           .then(async ({ driverId }) => {
-            await get(`${API_URL}/drivers/${driverId}`, token).then(
-              ({
-                data: {
-                  user: { name, lastname },
-                },
-              }) => {
+            await get(`${API_URL}/drivers/${driverId}`, token)
+              .then(({ data: { userId, user: { name, lastname } } }) => {
                 setDriver(`${name} ${lastname}`);
-              }
-            );
+                console.log(userId);
+                serUserIdDriver(userId);
+              });
           })
           .catch((err) => handlerUnauthorizedError(navigation, err));
       })();
@@ -65,7 +63,7 @@ export default function TripDetails({ route, navigation }) {
   const sendRatingToDriver = async () => {
     const token = await SecureStore.getItemAsync("token");
     setAlreadyRated(true);
-    return patch(`${API_URL}/drivers/${driver}`, token, {
+    return patch(`${API_URL}/drivers/${driverId}`, token, {
       score: Math.floor(driverScore),
     })
       .then(() => {
@@ -75,7 +73,7 @@ export default function TripDetails({ route, navigation }) {
           .then(async () => {
             if (comment != "") {
               await authPost(`${API_URL}/comments/driver`, token, {
-                userId: driver,
+                userId: userIdDriver,
                 description: comment,
               });
             }
@@ -163,19 +161,14 @@ export default function TripDetails({ route, navigation }) {
             <Text style={{ fontFamily: "poppins", fontSize: 18 }}>
               {day}/{months[month]}/{year}
             </Text>
+            {alreadyRated && (<Text style={{ fontFamily: "poppins", fontSize: 18 }}>
+              {driverScore} estrellas
+            </Text>)}
           </View>
         </View>
-        <Text
-          style={{
-            fontFamily: "poppins",
-            fontSize: 20,
-            marginBottom: 20,
-          }}
-        >
-          {!alreadyRated
-            ? `Puntua tu viaje con el driver ${driver}`
-            : `${driverScore} estrellas`}
-        </Text>
+        {!alreadyRated && (<Text style={{ fontFamily: "poppins", fontSize: 20, marginBottom: 20, }}>
+          Puntua tu viaje con el driver {driver}
+        </Text>)}
         {!alreadyRated && (
           <AirbnbRating
             defaultRating={driverScore}
