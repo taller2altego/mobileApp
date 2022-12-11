@@ -59,12 +59,15 @@ export default function TravelInProgressDriver({ navigation }) {
   const updateDriverPosition = async () => {
     return setInterval(async () => {
       const data = await SecureStore.getItemAsync("updatingLocation")
-        .then((location) => (location === null ? null : JSON.parse(location)))
+        .then((location) =>
+          location === null || location == JSON.stringify({ updating: "true" })
+            ? null
+            : JSON.parse(location)
+        )
         .then((location) => {
           if (location === null) {
             return null;
           }
-
           return {
             latitude: location.driverLocation.latitude,
             longitude: location.driverLocation.longitude,
@@ -99,8 +102,11 @@ export default function TravelInProgressDriver({ navigation }) {
   };
 
   useFocusEffect(
-    useCallback(async () => {
-      const interval = await updateDriverPosition();
+    useCallback(() => {
+      let interval = (async () => {
+        return await updateDriverPosition();
+      })();
+
       return () => {
         clearInterval(interval);
       };
@@ -160,9 +166,13 @@ export default function TravelInProgressDriver({ navigation }) {
       paidWithCredits: travel.data.data.paidWithCredits,
       payToDriver: false,
     };
-    return authPost(`${API_URL}/travels/${travelData._id}/reject?isTravelCancelled='true'`, token, body)
+    return authPost(
+      `${API_URL}/travels/${travelData._id}/reject?isTravelCancelled='true'`,
+      token,
+      body
+    )
       .then(() => navigation.replace("Home"))
-      .catch(error => handlerUnauthorizedError(navigation, error));
+      .catch((error) => handlerUnauthorizedError(navigation, error));
   };
 
   return (
