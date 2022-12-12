@@ -57,6 +57,7 @@ export default function TravelInProgressDriver({ navigation }) {
   const [roadTofinalDestination, setRoadTofinalDestination] = useState(false);
 
   const updateDriverPosition = async () => {
+    const token = await SecureStore.getItemAsync("token");
     return setInterval(async () => {
 
       if (travelData._id) {
